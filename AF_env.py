@@ -2,8 +2,7 @@ import numpy as np
 from gym import Env
 from gym.spaces import Discrete, MultiDiscrete
 
-class AuditoryForaging(Env):
-    """
+"""
     POMDP model
     -----------
     State 0 (tone cloud without target) and states representing tone cloud with target are treated as partially observable states.
@@ -28,23 +27,25 @@ class AuditoryForaging(Env):
     dict_action_possible: Dictionary with values as action tuples, each tuple representing (lick_choice, attention_choice).
     """
 
-    # Problem-setup parameters
-    # Note: Possible attention values and their costs are entered in the increasing order
-    D_ENV_SPEC = {
-        'exp_setup': {
-            'prob_01': .7, 'no_signal_nodes': 4., 'no_penalty_nodes': 7., 'no_ITI_nodes': 4.,
-        },
-        'agent_reward': {
-            'lick_cost': -1., 'food_reward': 10., 'attention_cost': np.array([0, -2.]),
-        },
-        'agent_sensory': {
-            'attention_possible': np.array([0, 1]),
-        },
-    }
-    D_ENV_SPEC['exp_setup']['no_nodes'] = 1 + D_ENV_SPEC['exp_setup']['no_signal_nodes'] + D_ENV_SPEC['exp_setup']['no_penalty_nodes'] + D_ENV_SPEC['exp_setup']['no_ITI_nodes']
-    D_ENV_SPEC['agent_sensory']['observation_possible'] = np.concatenate((np.array([0,0.5,1]), np.arange(1 + D_ENV_SPEC['exp_setup']['no_signal_nodes'], D_ENV_SPEC['exp_setup']['no_nodes'])))
+# Problem-setup parameters
+# Note: Possible attention values and their costs are entered in the increasing order
+env_spec = {
+    'exp_setup': {
+        'prob_01': .7, 'no_signal_nodes': 4., 'no_penalty_nodes': 7., 'no_ITI_nodes': 4.,
+    },
+    'agent_reward': {
+        'lick_cost': -1., 'food_reward': 10., 'attention_cost': np.array([0, -2.]),
+    },
+    'agent_sensory': {
+        'attention_possible': np.array([0, 1]),
+    },
+}
+env_spec['exp_setup']['no_nodes'] = 1 + env_spec['exp_setup']['no_signal_nodes'] + env_spec['exp_setup']['no_penalty_nodes'] + env_spec['exp_setup']['no_ITI_nodes']
+env_spec['agent_sensory']['observation_possible'] = np.concatenate((np.array([0,0.5,1]), np.arange(1 + env_spec['exp_setup']['no_signal_nodes'], env_spec['exp_setup']['no_nodes'])))
 
-    def __init__(self):
+class AuditoryForaging(Env):
+
+    def __init__(self, env_spec):
         """
         Args
         ----
@@ -52,7 +53,7 @@ class AuditoryForaging(Env):
             Environment specification.
         """
 
-        self.env_spec = self.D_ENV_SPEC
+        self.env_spec = env_spec
 
         # Experimental setup
         self.prob_01 = self.env_spec['exp_setup']['prob_01']
@@ -239,7 +240,7 @@ class AuditoryForaging(Env):
         print(f"Total Reward : {self.collected_reward}")
         print("=============================================================================")
 
-env = AuditoryForaging()
+env = AuditoryForaging(env_spec)
 done = False
 state = env.reset()
 while not done:
