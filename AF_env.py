@@ -29,23 +29,23 @@ from gym.spaces import Discrete, MultiDiscrete
 
 # Problem-setup parameters
 # Note: Possible attention values and their costs are entered in the increasing order
-env_spec = {
-    'exp_setup': {
-        'prob_01': .7, 'no_signal_nodes': 4., 'no_penalty_nodes': 7., 'no_ITI_nodes': 4.,
-    },
-    'agent_reward': {
-        'lick_cost': -1., 'food_reward': 10., 'attention_cost': np.array([0, -2.]),
-    },
-    'agent_sensory': {
-        'attention_possible': np.array([0, 1]),
-    },
-}
-env_spec['exp_setup']['no_nodes'] = 1 + env_spec['exp_setup']['no_signal_nodes'] + env_spec['exp_setup']['no_penalty_nodes'] + env_spec['exp_setup']['no_ITI_nodes']
-env_spec['agent_sensory']['observation_possible'] = np.concatenate((np.array([0,0.5,1]), np.arange(1 + env_spec['exp_setup']['no_signal_nodes'], env_spec['exp_setup']['no_nodes'])))
+# env_spec = {
+#     'exp_setup': {
+#         'prob_01': .7, 'no_signal_nodes': 4., 'no_penalty_nodes': 7., 'no_ITI_nodes': 4.,
+#     },
+#     'agent_reward': {
+#         'lick_cost': -1., 'food_reward': 10., 'attention_cost': np.array([0, -2.]),
+#     },
+#     'agent_sensory': {
+#         'attention_possible': np.array([0, 1]),
+#     },
+# }
+# env_spec['exp_setup']['no_nodes'] = 1 + env_spec['exp_setup']['no_signal_nodes'] + env_spec['exp_setup']['no_penalty_nodes'] + env_spec['exp_setup']['no_ITI_nodes']
+# env_spec['agent_sensory']['observation_possible'] = np.concatenate((np.array([0,0.5,1]), np.arange(1 + env_spec['exp_setup']['no_signal_nodes'], env_spec['exp_setup']['no_nodes'])))
 
 class AuditoryForaging(Env):
 
-    def __init__(self, env_spec):
+    def __init__(self, prob_01 = .7, no_signal_nodes = 4., no_penalty_nodes = 7., no_ITI_nodes = 4., lick_cost = -1., food_reward = 10., high_attention_cost = -2., attention_possible = np.array([0, 1]), attention_based_obs=np.array([0,0.5,1])):
         """
         Args
         ----
@@ -53,23 +53,23 @@ class AuditoryForaging(Env):
             Environment specification.
         """
 
-        self.env_spec = env_spec
 
         # Experimental setup
-        self.prob_01 = self.env_spec['exp_setup']['prob_01']
-        self.no_signal_nodes = self.env_spec['exp_setup']['no_signal_nodes']
-        self.no_penalty_nodes = self.env_spec['exp_setup']['no_penalty_nodes']
-        self.no_ITI_nodes =  self.env_spec['exp_setup']['no_ITI_nodes']
-        self.no_nodes = self.env_spec['exp_setup']['no_nodes']
+        self.prob_01 = prob_01
+        self.no_signal_nodes = no_signal_nodes
+        self.no_penalty_nodes = no_penalty_nodes
+        self.no_ITI_nodes =  no_ITI_nodes
+        self.no_nodes = 1 + self.no_signal_nodes + self.no_penalty_nodes + self.no_ITI_nodes
 
         # Agent's RL model parameters
-        self.lick_cost = self.env_spec['agent_reward']['lick_cost']
-        self.food_reward = self.env_spec['agent_reward']['food_reward']
-        self.attention_cost = self.env_spec['agent_reward']['attention_cost']
+        self.lick_cost = lick_cost
+        self.food_reward = food_reward
+        self.high_attention_cost = high_attention_cost
+        self.attention_cost = np.array([0,self.high_attention_cost])
 
         # Agent's sensory model parameters (may or may not be known)
-        self.attention_possible = self.env_spec['agent_sensory']['attention_possible']
-        self.observation_possible = self.env_spec['agent_sensory']['observation_possible']
+        self.attention_possible = attention_possible
+        self.observation_possible = np.concatenate((attention_based_obs, np.arange(1 + self.no_signal_nodes, self.no_nodes)))
 
         # Look-up dictionaries to map numbers used in OpenAI version (dict keys) to physical quantities in the foraging task (dict values).
         self.dict_observation_possible = dict(enumerate(self.observation_possible))
@@ -96,9 +96,9 @@ class AuditoryForaging(Env):
         """
 
         env_param = (
-            self.env_spec['agent_reward']['lick_cost'],
-            self.env_spec['agent_reward']['food_reward'],
-            self.env_spec['agent_reward']['attention_cost'],
+            self.lick_cost,
+            self.food_reward,
+            self.high_attention_cost,
         )
         return env_param
 
@@ -107,9 +107,9 @@ class AuditoryForaging(Env):
         Updates environment with parameters.
         """
 
-        self.env_spec['agent_reward']['lick_cost'] = env_param[0]
-        self.env_spec['agent_reward']['food_reward'] = env_param[1]
-        self.env_spec['agent_reward']['attention_cost'] = env_param[2]
+        self.lick_cost = env_param[0]
+        self.food_reward = env_param[1]
+        self.high_attention_cost = env_param[2]
 
     def get_state(self):
         """
@@ -219,7 +219,7 @@ class AuditoryForaging(Env):
         # Observation
         obs = self.observe_step(attention_choice)
 
-        self.render(current_state, lick_choice, attention_choice, rw, obs)
+        # self.render(current_state, lick_choice, attention_choice, rw, obs)
 
         return obs, self.collected_reward, done, info
 
@@ -239,10 +239,10 @@ class AuditoryForaging(Env):
         print(f"Current State : {current_state}\nLick Choice : {lick_choice}\nAttention Choice : {attention_choice}\nReward Received: {rw}\nNext State: {self.state}\nNext Observation: {self.observation_possible[obs]}")
         print(f"Total Reward : {self.collected_reward}")
         print("=============================================================================")
-
-env = AuditoryForaging(env_spec)
-done = False
-state = env.reset()
-while not done:
-    action = env.action_space.sample()
-    obs, reward, done, info = env.step(action)
+#
+# env = AuditoryForaging(env_spec)
+# done = False
+# state = env.reset()
+# while not done:
+#     action = env.action_space.sample()
+#     obs, reward, done, info = env.step(action)
