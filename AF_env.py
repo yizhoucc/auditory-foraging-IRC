@@ -45,7 +45,7 @@ from gym.spaces import Discrete, MultiDiscrete
 
 class AuditoryForaging(Env):
 
-    def __init__(self, prob_01 = .7, no_signal_nodes = 4., no_penalty_nodes = 7., no_ITI_nodes = 4., lick_cost = -1., food_reward = 10., high_attention_cost = -2., attention_possible = np.array([0, 1]), attention_based_obs=np.array([0,0.5,1])):
+    def __init__(self, prob_01 = .7, no_signal_nodes = 4, no_penalty_nodes = 7, no_ITI_nodes = 4, lick_cost = -1., food_reward = 10., high_attention_cost = -2., attention_possible = np.array([0, 1]), attention_based_obs=np.array([0,0.5,1])):
         """
         Args
         ----
@@ -76,13 +76,13 @@ class AuditoryForaging(Env):
         self.dict_action_possible = dict(enumerate([(lick_choice,attention_choice) for lick_choice in range(2) for attention_choice in self.attention_possible]))
 
         # Agent's observation space, which may be different from experimentalist's observation space!
-        self.obs_space = MultiDiscrete(len(self.dict_observation_possible))
+        self.observation_space = MultiDiscrete([len(self.dict_observation_possible)])
 
         # Agent's action space, note that the experimentalist might not have direct access to attention choice!
         self.action_space = Discrete(len(self.dict_action_possible))
 
         # State space
-        self.state_space = MultiDiscrete(self.no_nodes)
+        self.state_space = MultiDiscrete([self.no_nodes])
 
         # Initial state is the beginning of pink noise
         self.state = 1 + self.no_signal_nodes + self.no_penalty_nodes
@@ -196,6 +196,7 @@ class AuditoryForaging(Env):
         if self.state>=1 + self.no_signal_nodes and self.state<self.no_nodes:
             obs = list(self.observation_possible).index(self.state)
 
+        obs = (obs,)
         return obs
 
     def step(self, action):
@@ -229,7 +230,10 @@ class AuditoryForaging(Env):
         """
 
         self.state = 1 + self.no_signal_nodes + self.no_penalty_nodes
-        return self.state
+
+        obs = self.observe_step(0)
+        # return self.state
+        return obs
 
     def render(self, current_state, lick_choice, attention_choice, rw, obs):
         """
@@ -240,7 +244,7 @@ class AuditoryForaging(Env):
         print(f"Total Reward : {self.collected_reward}")
         print("=============================================================================")
 #
-# env = AuditoryForaging(env_spec)
+# env = AuditoryForaging()
 # done = False
 # state = env.reset()
 # while not done:
