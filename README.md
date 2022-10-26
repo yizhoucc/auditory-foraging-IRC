@@ -1,2 +1,2 @@
-# Auditory-foraging-IRC---Toy-Problem
-Using IRC to solve an auditory foraging toy problem.
+# Auditory-foraging-IRC
+Using IRC to solve an auditory foraging problem.
