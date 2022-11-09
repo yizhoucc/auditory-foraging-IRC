@@ -272,7 +272,7 @@ class BaseDistribution(torch.nn.Module):
 
         """
         super(BaseDistribution, self).__init__()
-
+        
         if isinstance(x_space, MultiDiscrete):
             self.num_vars = len(x_space.nvec)
         if isinstance(x_space, Box):
@@ -287,7 +287,6 @@ class BaseDistribution(torch.nn.Module):
             for idx in idxs:
                 assert set(idx).issubset(range(self.num_vars)), f"Variable indices {idx} is invalid."
             self.idxs = idxs
-
         if phis is None:
             phis = [None]*len(self.idxs)
         else:
@@ -302,8 +301,7 @@ class BaseDistribution(torch.nn.Module):
                     self.phis.apend(BasicContinuousPotential(len(idx)))
             else:
                 self.phis.append(phi)
-            self.num_params.append(len(self.phis[-1].get_param_vec()))
-
+            self.num_params.append(len(self.phis[-1].get_param_vec()))        
         self.y_space = y_space
         if self.y_space is None:
             self.param_net = None
@@ -413,6 +411,7 @@ class BaseDistribution(torch.nn.Module):
             Log likelihood of data samples.
 
         """
+
         if ys is None: # p(x)
             logp = self.energy(xs)-self.logpartition()
         else: # p(x|y)
@@ -480,6 +479,7 @@ class BaseDistribution(torch.nn.Module):
 
         """
         num_samples = len(xs)
+
         if ws is None:
             ws = np.ones(num_samples)
         ws /= ws.sum()
@@ -490,6 +490,7 @@ class BaseDistribution(torch.nn.Module):
         num_batches = num_samples*num_epochs//batch_size
         losses = []
         tic = time.time()
+
         for b_idx in range(1, num_batches+1):
             s_idxs = self.rng.choice(num_samples, batch_size, p=ws)
             if ys is None:
@@ -571,6 +572,8 @@ class DiscreteDistribution(BaseDistribution):
     ):
         with torch.no_grad():
             p = torch.nn.functional.softmax(self.energy(self._all_xs()), dim=0)
+        
+
         xs = self.rng.choice(
             np.prod(self.x_space.nvec),
             size=None if num_samples is None else (num_samples,),

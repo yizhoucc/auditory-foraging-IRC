@@ -45,7 +45,7 @@ from gym.spaces import Discrete, MultiDiscrete
 
 class AuditoryForaging(Env):
 
-    def __init__(self, prob_01 = 1, no_signal_nodes = 4, no_penalty_nodes = 7, no_ITI_nodes = 4, lick_cost = -1., food_reward = 3, high_attention_cost = -0.5, attention_possible = np.array([0, 1]), attention_based_obs=np.array([0,0.5,1])):
+    def __init__(self, prob_01 = 0.5, no_signal_nodes = 4, no_penalty_nodes = 7, no_ITI_nodes = 4, lick_cost = -1., food_reward = 3, high_attention_cost = -0.5, attention_possible = np.array([0, 1]), attention_based_obs=np.array([0,0.5,1])):
         """
         Args
         ----

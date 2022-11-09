@@ -76,6 +76,7 @@ class BeliefAgent:
 
         """
         returns, optimalities = [], []
+
         for _ in range(num_episodes):
             episode = self.run_one_episode(num_steps=num_steps)
             rewards = episode['rewards']
@@ -124,20 +125,45 @@ class BeliefAgent:
         obss.append(info['obs'])
         beliefs.append(belief)
         if q_probs is not None:
+
             q_states.append(np.array(self.model.env.query_states()))
-            q_probs.append(self.query_probs(belief, q_states[-1]))
+
+            #Lokesh changed the following line. The previous version was more suitable for box foraging I think. Check about 10 lines from here, I changed there too in a same way.
+            #Now we are querying probabilities for all the states.
+            #Just formatted in way the input was given before.
+            # q_probs.append(self.query_probs(belief, q_states[-1])) #original
+            q_prob_elt = []
+            for state_ind in range(len(belief)):
+                q_prob_elt.append(self.query_probs(belief, np.expand_dims(state_ind, axis=(0,1)))[0])
+            q_probs.append(q_prob_elt)
+            # q_probs.append(self.query_probs(belief, np.expand_dims(np.arange(len(belief)), axis=0))) #waste, can delete
+
+        
         t = 0
         while True:
             action, _ = self.algo.predict(belief)
             actions.append(action)
             belief, reward, done, info = self.model.step(action, env)
+
             rewards.append(reward)
             states.append(info['state'])
             obss.append(info['obs'])
             beliefs.append(belief)
             if q_probs is not None:
                 q_states.append(np.array(self.model.env.query_states()))
-                q_probs.append(self.query_probs(belief, q_states[-1]))
+                
+                
+                #Lokesh changed the following line. The previous version was more suitable for box foraging I think. Check about 10 lines before here, I changed there too in a same way.
+                #Now we are querying probabilities for all the states.
+                #Just formatted in way the input was given before.
+                # q_probs.append(self.query_probs(belief, q_states[-1])) #original
+                q_prob_elt = []
+                for state_ind in range(len(belief)):
+                    q_prob_elt.append(self.query_probs(belief, np.expand_dims(state_ind, axis=(0,1)))[0])
+                q_probs.append(q_prob_elt)
+                # q_probs.append(self.query_probs(belief, np.expand_dims(np.arange(len(belief)), axis=0))) #waste, can delete
+            
+            
             optimalities.append(self.model.p_s.est_stats['optimality'])
             fvus.append(self.model.p_s.est_stats['fvu'])
             t += 1
@@ -158,6 +184,40 @@ class BeliefAgent:
             episode['q_probs'] = np.array(q_probs)
         self.algo.policy.set_training_mode(_to_restore_train)
         return episode
+
+    
+    #Lokesh added to find policy distribution given a belief
+    def find_policy_dist(self,
+        belief,
+        env: Optional[GymEnv] = None,
+        num_samples: int = 1000,
+    ):
+        r"""Samples actions given a belief to find policy distribution for a given belief.
+
+        Args
+        ----
+        env:
+            The environment to interact with.
+        num_samples:
+            Number of samples to compute the histogram from.
+
+        Returns
+        -------
+        pmf: numpy array
+            Vector denoting probability mass function. Index represents action choice.
+
+        """
+        _to_restore_train = self.algo.policy.training # policy will be set to evaluation mode temporarily
+        self.algo.policy.set_training_mode(False)
+        num_actions = len(self.model.env.dict_action_possible)
+        hist_count = np.zeros(num_actions)
+        for _ in range(num_samples):
+            action, _ = self.algo.predict(belief)
+            hist_count[action] += 1
+        pmf = hist_count/num_samples
+        return pmf
+    
+    
 
     def query_probs(self, belief: Array, states: Array):
         r"""Returns probabilities of queried states.
@@ -180,6 +240,7 @@ class BeliefAgent:
         with torch.no_grad():
             probs = np.exp(self.model.p_s.loglikelihood(states).cpu().numpy())
         return probs
+        
 
     def episode_likelihood(self,
         actions: Array,
@@ -407,15 +468,17 @@ class BeliefAgentFamily(BaseJob):
         agent = BeliefAgent(model, algo, gamma=config['algo_kwargs']['gamma'])
         return agent
 
-    def main(self, config, num_epochs, verbose=1):
+    def main(self, config, num_epochs, verbose=2):
+
         if 'episode_path' in config:
             ckpt, preview = self._compute_logp(config, num_epochs, verbose)
         else:
             ckpt, preview = self._train_agent(config, num_epochs, verbose)
         return ckpt, preview
 
-    def _train_agent(self, config, num_epochs=40, verbose=1):
+    def _train_agent(self, config, num_epochs=40, verbose=2):
         r"""Trains an agent."""
+        
         agent = self.create_agent(config)
         if verbose>0:
             print("Belief agent (seed {}) initialized for environment parameter:".format(config['seed']))
@@ -451,8 +514,8 @@ class BeliefAgentFamily(BaseJob):
             for key in ['epochs', 'r_means', 'r_sems', 'belief_optimalities']:
                 preview[key] = np.array(preview[key])
             return preview
-
         try:
+
             epoch, ckpt, preview = self.load_ckpt(config)
             agent.load_state_dict(tensor_dict(ckpt['agent_state']))
             if verbose>0:
@@ -497,6 +560,7 @@ class BeliefAgentFamily(BaseJob):
                 )
             if verbose>0:
                 print(f"Initial checkpoint saved.")
+
         t_train, count = 0., 0
         while epoch<num_epochs:
             tic = time.time()
@@ -571,7 +635,7 @@ class BeliefAgentFamily(BaseJob):
     def train_agents(self,
         env_params: Iterable[Array],
         seeds: Optional[Iterable[int]] = None,
-        num_epochs: int = 40,
+        num_epochs: int = 40, 
         verbose: int = 1,
         **kwargs,
     ):
@@ -580,6 +644,8 @@ class BeliefAgentFamily(BaseJob):
             seeds = [0]
             if verbose>0:
                 print(f"Use default seeds {seeds} for each env_param.")
+        
+        
         self.batch(self._random_configs(env_params, seeds), num_epochs=num_epochs, verbose=verbose, **kwargs)
 
     def train_agents_on_param_grid(self,
