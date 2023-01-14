@@ -363,3 +363,21 @@ class AuditoryForaging(Env):
         elif observation==4:
             belief[7] = 1
         return belief
+
+    def sample_state(self, belief):
+        r"""Samples a state from the distribution described by the belief vector.
+
+        Args
+        ----
+        belief:
+            A belief vector that describe a distribution over states. Currently
+            `belief` is an array of state probabilities, summed up to 1.
+
+        Returns
+        -------
+        state:
+            The tuple of environment state.
+
+        """
+        state = (self.rng.choice(self.no_nodes, p=belief),)
+        return state
