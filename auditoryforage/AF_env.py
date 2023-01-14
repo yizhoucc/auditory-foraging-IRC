@@ -266,7 +266,7 @@ class AuditoryForaging(Env):
         return [(1,)]
 
 
-    def update_belief(self, previous_belief, observation, action):
+    def update_belief(self, previous_belief, action, observation):
         """
         Updating belief, given previous belief, new observation, and past action.
         """
