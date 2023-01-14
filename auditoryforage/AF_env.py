@@ -53,7 +53,7 @@ class AuditoryForaging(Env):
         """
         self.spec = Config(spec).fill(D_ENV_SPEC)
         self.rng = rng if isinstance(rng, RandGen) else np.random.default_rng(rng)
-        
+
         # Experimental setup
         self.prob_01 = self.spec.experiment.prob_01
         self.no_signal_nodes = self.spec.experiment.no_signal_nodes
@@ -91,7 +91,7 @@ class AuditoryForaging(Env):
 
         # Initial rewards collected is 0
         self.collected_reward = 0
-        
+
     def get_param(self):
         """
         Returns environment parameters.
@@ -142,7 +142,7 @@ class AuditoryForaging(Env):
             food_reward_value = self.food_reward
         else:
             food_reward_value = 0
-        
+
         if self.state == self.no_signal_nodes + 1:
             penalty_cost_value = self.penalty_cost
         else:
@@ -151,8 +151,8 @@ class AuditoryForaging(Env):
         if self.state == self.no_signal_nodes + 2:
             iti_cost_value = self.iti_cost
         else:
-            iti_cost_value = 0            
-        
+            iti_cost_value = 0
+
         rw = food_reward_value + attention_cost_value + lick_cost_value + penalty_cost_value + iti_cost_value
 
         return rw
@@ -166,7 +166,7 @@ class AuditoryForaging(Env):
         # If current state is node 0 (tone cloud without target)
         if self.state == 0:
             if lick_choice == 1: #penalty
-                next_state = 1 + self.no_signal_nodes 
+                next_state = 1 + self.no_signal_nodes
             else: #no penalty
                 next_state = self.state + np.random.choice(2, p=[1-self.prob_01, self.prob_01])
 
@@ -258,13 +258,13 @@ class AuditoryForaging(Env):
         print(f"Current State : {current_state}\nLick Choice : {lick_choice}\nAttention Choice : {attention_choice}\nReward Received: {rw}\nNext State: {self.state}\nNext Observation: {self.observation_possible[obs]}")
         print(f"Total Reward : {self.collected_reward}")
         print("=============================================================================")
-    
-    
+
+
     #Had to add this for printing in ipynb. Not sure if it's needed.
     def query_states(self):
         r"""Query states for belief visualization."""
         return [(1,)]
-        
+
 
     def update_belief(self, previous_belief, observation, action):
         """
@@ -283,7 +283,7 @@ class AuditoryForaging(Env):
         new_belief = new_belief/np.sum(new_belief) #Normalization
         return new_belief
 
-    
+
     def find_transition_matrix(self):
         """
         Function returns the transition matrix of the form transition_matrix(current_state,future_state,current_lick_choice).
@@ -332,3 +332,34 @@ class AuditoryForaging(Env):
             observation_matrix[np.where(self.observation_possible == i)[0][0],i,0] = 1
             observation_matrix[np.where(self.observation_possible == i)[0][0],i,1] = 1
         return observation_matrix
+
+    def init_belief(self, observation):
+        r"""Initializes belief with observation.
+
+        Args
+        ----
+        observation:
+            Initial observation at the start of an episode, may not be provided
+            by the current environment.
+
+        Returns
+        -------
+        belief:
+            A belief vector compatible with the given observation.
+
+        """
+
+        if not(self.no_nodes==7 and len(self.observation_possible)==5):
+            raise NotImplementedError("Only the example environment is implemented.")
+        belief = np.zeros(shape=7)
+        if observation==0:
+            belief[0] = 1
+        elif observation==1:
+            belief[:5] = 0.2
+        elif observation==2:
+            belief[1:5] = 0.25
+        elif observation==3:
+            belief[6] = 1
+        elif observation==4:
+            belief[7] = 1
+        return belief
