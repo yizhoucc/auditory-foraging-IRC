@@ -261,9 +261,9 @@ class AuditoryForaging(Env):
 
 
     #Had to add this for printing in ipynb. Not sure if it's needed.
-    def query_states(self):
-        r"""Query states for belief visualization."""
-        return [(1,)]
+    # def query_states(self):
+    #     r"""Query states for belief visualization."""
+    #     return [(1,)]
 
 
     def update_belief(self, previous_belief, action, observation):
@@ -381,3 +381,21 @@ class AuditoryForaging(Env):
         """
         state = (self.rng.choice(self.no_nodes, p=belief),)
         return state
+
+    def query_probs(self, belief, states):
+        r"""Returns probabilities of queried states given belief vector.
+
+        Args
+        ----
+        belief: (no_nodes,)
+            Probabilities of all states.
+        states: (num_queries, 1)
+            States of interest.
+
+        Returns
+        -------
+        probs: (num_queries,)
+            Probabilities of each queried state.
+
+        """
+        return belief[states[:, 0].astype(int)]
