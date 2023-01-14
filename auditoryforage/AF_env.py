@@ -352,16 +352,16 @@ class AuditoryForaging(Env):
         if not(self.no_nodes==7 and len(self.observation_possible)==5):
             raise NotImplementedError("Only the example environment is implemented.")
         belief = np.zeros(shape=7)
-        if observation==0:
+        if observation==(0,):
             belief[0] = 1
-        elif observation==1:
+        elif observation==(1,):
             belief[:5] = 0.2
-        elif observation==2:
+        elif observation==(2,):
             belief[1:5] = 0.25
-        elif observation==3:
+        elif observation==(3,):
+            belief[5] = 1
+        elif observation==(4,):
             belief[6] = 1
-        elif observation==4:
-            belief[7] = 1
         return belief
 
     def sample_state(self, belief):
