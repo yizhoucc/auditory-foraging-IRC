@@ -7,14 +7,8 @@ auditory_foraging_v1:
   agent:
     lick_cost: -1.0
     food_reward: 3.0
-    # high_attention_cost: -0.5
     attention_cost_coeff: 1
     attention_cost_temp: 1
-    # attention_possible: [0, 1]
-
     no_attention_modes: 3
-    
-    # attention_based_obs: [0,0.5,1] # Don't need 0.5?
-    # attention_based_obs: [0, 1] # Fixed it to food present or absent, can potentially get rid of this?
     penalty_cost: -8.0
     iti_cost: -4.0

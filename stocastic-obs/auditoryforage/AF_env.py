@@ -106,7 +106,6 @@ class AuditoryForaging(Env):
         env_param = (
             self.lick_cost,
             self.food_reward,
-            # self.high_attention_cost,
             self.attention_cost_coeff,
             self.attention_cost_temp,
         )
@@ -119,10 +118,8 @@ class AuditoryForaging(Env):
 
         self.lick_cost = env_param[0]
         self.food_reward = env_param[1]
-        # self.high_attention_cost = env_param[2]
         self.attention_cost_coeff = env_param[2]
         self.attention_cost_temp = env_param[3]
-        # self.attention_cost = np.array([0,self.high_attention_cost])
 
     def get_state(self):
         """
@@ -284,7 +281,7 @@ class AuditoryForaging(Env):
         transition_matrix = self.find_transition_matrix()
         observation_matrix = self.find_observation_matrix()
         new_belief = np.zeros(self.no_nodes)
-
+        
         for state in range(self.no_nodes):
             # note the transpose below, because of the way we made transition_matrix: (current state, next state, action)
             new_belief[state] = observation_matrix[observation,state,int(attention_choice)] * np.reshape(np.transpose(transition_matrix[:,state,int(lick_choice)]),(1,self.no_nodes)) @ previous_belief
@@ -336,16 +333,14 @@ class AuditoryForaging(Env):
         for attention in range(len(self.attention_possible)):
             observation_matrix[0,0,attention] = self.obs_certainity_possible[attention]
             observation_matrix[1,0,attention] = 1 - self.obs_certainity_possible[attention]
-    
         # Considering 'food' states (partially observable)
-        for i in range(self.no_signal_nodes+1):
+        for i in range(1,self.no_signal_nodes+1):
             for attention in range(len(self.attention_possible)):
                 observation_matrix[0,i,attention] = 1 - self.obs_certainity_possible[attention]
                 observation_matrix[1,i,attention] = self.obs_certainity_possible[attention]
         # Considering 'non-trial' (fully observable) nodes
         for i in range(self.no_signal_nodes+1,self.no_nodes):
-            observation_matrix[np.where(self.observation_possible == i)[0][0],i,0] = 1
-            observation_matrix[np.where(self.observation_possible == i)[0][0],i,1] = 1
+            observation_matrix[np.where(self.observation_possible == i)[0][0],i,:] = 1
         return observation_matrix
 
     def init_belief(self, observation):
@@ -363,20 +358,38 @@ class AuditoryForaging(Env):
             A belief vector compatible with the given observation.
 
         """
-
-        if not(self.no_nodes==7 and len(self.observation_possible)==5):
+        if observation[0] not in range(len(self.observation_possible)):
             raise NotImplementedError("Only the example environment is implemented.")
-        belief = np.zeros(shape=7)
-        if observation==(0,):
-            belief[0] = 1
-        elif observation==(1,):
-            belief[:5] = 0.2
-        elif observation==(2,):
-            belief[1:5] = 0.25
-        elif observation==(3,):
-            belief[5] = 1
-        elif observation==(4,):
-            belief[6] = 1
+        belief = np.zeros(shape=self.no_nodes)
+
+        if observation[0] not in range(2):
+            belief[observation[0]+self.no_signal_nodes-1] = 1
+        else:
+            certainity_sum = np.sum(self.obs_certainity_possible)
+            if observation[0] == 0:
+                normalization = (1 - self.no_signal_nodes) * certainity_sum + self.no_signal_nodes * self.no_attention_modes
+                belief[0] = certainity_sum/normalization
+                belief[1:self.no_signal_nodes+1] = (self.no_attention_modes - certainity_sum)/normalization
+            elif observation[0] == 1:
+                normalization = (self.no_signal_nodes - 1) * certainity_sum + self.no_attention_modes
+                belief[0] = (self.no_attention_modes - certainity_sum)/normalization
+                belief[1:self.no_signal_nodes+1] = certainity_sum/normalization
+        
+
+        # if not(self.no_nodes==7 and len(self.observation_possible)==5):
+        #     raise NotImplementedError("Only the example environment is implemented.")
+        # belief = np.zeros(shape=7)
+        # if observation==(0,):
+        #     belief[0] = 1
+        # elif observation==(1,):
+        #     belief[:5] = 0.2
+        # elif observation==(2,):
+        #     belief[1:5] = 0.25
+        # elif observation==(3,):
+        #     belief[5] = 1
+        # elif observation==(4,):
+        #     belief[6] = 1
+        
         return belief
 
     def sample_state(self, belief):
