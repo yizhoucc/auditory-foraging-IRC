@@ -1,112 +1,82 @@
 import matplotlib.pyplot as plt
 import numpy as np
-from itertools import product
-
-import matplotlib.pyplot as plt
-import numpy as np
-from itertools import product
-
-from matplotlib.colors import LinearSegmentedColormap
 from matplotlib.colors import ListedColormap
 
-def plot_auditory_foraging_v1_episode(episode, num_shades=None, num_states=None, figsize=(15, 3),bbox_to_anchor=(1.5, 1.05)):
+class PlotHelper():
+    def __init__(self, num_steps, no_attention_modes, correct_lick_choice_idxs, wrong_lick_choice_idxs, attention_choice_idxs, obs_certainity_possible, num_states, figsize=(15, 3),bbox_to_anchor=(1.5, 1.05)):
+        self.num_steps = num_steps
+        self.no_attention_modes = no_attention_modes
+        self.correct_lick_choice_idxs = correct_lick_choice_idxs
+        self.wrong_lick_choice_idxs = wrong_lick_choice_idxs
+        self.attention_choice_idxs = attention_choice_idxs
+        self.obs_certainity_possible = obs_certainity_possible
+        self.num_states = num_states
+        self.figsize = figsize
+        self.bbox_to_anchor = bbox_to_anchor
 
-    # action 0 impllies no lick and no attention
-    # action 1 impllies no lick and yes attention
-    # action 2 impllies yes lick and no attention
-    # action 3 impllies yes lick and yes attention
+    def make_plot(self, plot_variable, label, feature_color_list = [], for_belief = False, action_color_list = ['blue','magenta','crimson']):
+        fig_w, fig_h = self.figsize
+        aspect = self.num_steps*fig_h/fig_w*1.5
+        fig, ax = plt.subplots(figsize=self.figsize) 
+        attention_choice_lists = []
+        attention_choice_text = []
+        for attention_choice in range(self.no_attention_modes):
+            attention_choice_lists.append(ax.scatter(np.arange(self.num_steps+1)[self.attention_choice_idxs[attention_choice]], .3 * np.ones(sum(self.attention_choice_idxs[attention_choice])), color=action_color_list[attention_choice], marker='o', s=50))
+            attention_choice_text.append(f'Obs. conf. {self.obs_certainity_possible[attention_choice]}')
+        
+        correct_lick_choice = ax.scatter(np.arange(self.num_steps+1)[self.correct_lick_choice_idxs], -0.3 * np.ones(sum(self.correct_lick_choice_idxs)), color='cyan', marker='^', s=50)
+        wrong_lick_choice = ax.scatter(np.arange(self.num_steps+1)[self.wrong_lick_choice_idxs], -0.3 * np.ones(sum(self.wrong_lick_choice_idxs)), color='cyan', marker='v', s=50)
+        feature_colors = ListedColormap(feature_color_list)
+        if for_belief:
+            h = ax.imshow(plot_variable.T, aspect=aspect, extent=[-0.5, self.num_steps+0.5, -0.5, 0.5], vmin=0, vmax=1, origin='lower', cmap='gist_gray',)
+            cbar = plt.colorbar(h, label=label)
+            cbar.set_ticks(np.arange(2))
+            ax.set_yticks(1/self.num_states * np.arange(self.num_states) - 0.5 + 0.5 * 1/self.num_states)
+            ax.set_yticklabels([f'{i}' for i in range(self.num_states)])
+        else:
+            h = ax.imshow(plot_variable.T, aspect=aspect, extent=[-0.5, self.num_steps+0.5, -0.5, 0.5], vmin=np.min(plot_variable) - 0.5, vmax=np.max(plot_variable) + 0.5, origin='lower', cmap=feature_colors)
+            cbar = plt.colorbar(h, label=label)
+            cbar.set_ticks(np.arange(np.min(plot_variable), np.max(plot_variable)+1))
+            ax.set_yticks([])
+            ax.set_ylabel('')
+        action_legend_list = [correct_lick_choice,wrong_lick_choice] + attention_choice_lists
+        ax.legend(action_legend_list, ['correct_lick_choice','wrong_lick_choice']+attention_choice_text, bbox_to_anchor=self.bbox_to_anchor, fontsize=12)
+        ax.set_xlim([-0.5, self.num_steps+0.5])
+        ax.set_xticks([0, self.num_steps])
+        ax.set_xlabel('Time')
+        return fig
 
+
+def plot_AF_episode(episode, env):        
+    obs_certainity_possible = env.obs_certainity_possible
+    dict_action_possible = env.dict_action_possible #{key: (lick_choice,attention_choice)}
+    no_attention_modes = env.no_attention_modes
+    licking_actions = [action_key for action_key in dict_action_possible if dict_action_possible[action_key][0] == 1]
+    attention_action_keys = []
+    for attention_choice in range(no_attention_modes):
+        attention_action_keys.append([action_key for action_key in dict_action_possible if dict_action_possible[action_key][1] == attention_choice])
     num_steps = episode['num_steps']
     states = episode['states']
     observations = episode['observations']
     actions = episode['actions']
     rewards = episode['rewards']
-    #Lokesh changed temporarily
-    # assert not np.any(episode['q_states']-np.array([(1,)]))
     probs = episode['q_probs']
-    beliefs = episode['beliefs']
-    
-    if num_shades is None:
-        num_shades = observations.max()
-    if num_states is None:
-        num_states = states.max()+1
+    num_states = states.max()+1
 
     #Modeling assumption - Based on current observation, you choose whether to lick at the current state, and whether to attend at next state. 
     offset_actions = np.insert(actions, -1, 0, axis=0) #offset actions to match time steps, as it looks like the action at last time step is not taken.
     offset_rewards = np.insert(rewards, -1, 0, axis=0) #offset actions to match time steps, as it looks like the rewards at last time step is not computed.
-    correct_lick_choice_idxs = ((offset_actions==2)|(offset_actions==3))&(offset_rewards>=0)
-    wrong_lick_choice_idxs = ((offset_actions==2)|(offset_actions==3))&(offset_rewards<0)
-    attention_choice_idxs = ((offset_actions==1)|(offset_actions==3))
-
-    fig_w, fig_h = figsize
-    aspect = num_steps*fig_h/fig_w*1.5
+    correct_lick_choice_idxs = list(map(lambda action_choice: True if action_choice in licking_actions else False, offset_actions))&(offset_rewards>=0)
+    wrong_lick_choice_idxs = list(map(lambda action_choice: True if action_choice in licking_actions else False, offset_actions))&(offset_rewards<0)
+    attention_choice_idxs = []
+    for attention_choice in range(no_attention_modes):
+        attention_choice_idxs.append(list(map(lambda action_choice: True if action_choice in attention_action_keys[attention_choice] else False, offset_actions)))
+    env_plotter = PlotHelper(num_steps, no_attention_modes, correct_lick_choice_idxs, wrong_lick_choice_idxs, attention_choice_idxs, obs_certainity_possible, num_states)
     figs = []
-
-
-    fig, ax = plt.subplots(figsize=figsize)
-    attention_choice = ax.scatter(np.arange(num_steps+1)[attention_choice_idxs], np.zeros(sum(attention_choice_idxs)), color='blue', marker='o', s=50)
-    correct_lick_choice = ax.scatter(np.arange(num_steps+1)[correct_lick_choice_idxs], np.zeros(sum(correct_lick_choice_idxs)), color='magenta', marker='^', s=50)
-    wrong_lick_choice = ax.scatter(np.arange(num_steps+1)[wrong_lick_choice_idxs], np.zeros(sum(wrong_lick_choice_idxs)), color='magenta', marker='v', s=50)
-
-    cmap_manual =   ListedColormap(['yellow','green','limegreen','palegreen','lime','red','maroon'])
-    h = ax.imshow(
-        states.T, aspect=aspect, extent=[-0.5, num_steps+0.5, -0.5, 0.5],
-        vmin=np.min(states) - 0.5, vmax=np.max(states) + 0.5, origin='lower', cmap=cmap_manual,
-    )
-
-
-    cbar = plt.colorbar(h, label='True Sate')
-    cbar.set_ticks(np.arange(np.min(states), np.max(states)+1))
-    ax.legend([correct_lick_choice,wrong_lick_choice,attention_choice], ['correct_lick_choice','wrong_lick_choice','attention_choice'], bbox_to_anchor=bbox_to_anchor, fontsize=12)
-    ax.set_xlim([-0.5, num_steps+0.5])
-    ax.set_xticks([0, num_steps])
-    ax.set_yticks([])
-    ax.set_xlabel('Time')
-    ax.set_ylabel('')
+    fig = env_plotter.make_plot(plot_variable = states, label = 'True Sate', feature_color_list = ['yellow','green','limegreen','palegreen','lime','red','maroon'])
     figs.append(fig)
-    
-    
-
-    fig, ax = plt.subplots(figsize=figsize)
-    attention_choice = ax.scatter(np.arange(num_steps+1)[attention_choice_idxs], np.zeros(sum(attention_choice_idxs)), color='blue', marker='o', s=50)
-    correct_lick_choice = ax.scatter(np.arange(num_steps+1)[correct_lick_choice_idxs], np.zeros(sum(correct_lick_choice_idxs)), color='magenta', marker='^', s=50)
-    wrong_lick_choice = ax.scatter(np.arange(num_steps+1)[wrong_lick_choice_idxs], np.zeros(sum(wrong_lick_choice_idxs)), color='magenta', marker='v', s=50)
-    cmap_manual =   ListedColormap(['black','grey','white','red','maroon'])
-    h = ax.imshow(
-        observations.T, aspect=aspect, extent=[-0.5, num_steps+0.5, -0.5, 0.5],
-        vmin=np.min(observations) - 0.5, vmax=np.max(observations) + 0.5, origin='lower', cmap=cmap_manual,
-    )
-
-
-    cbar = plt.colorbar(h, label='Observation')
-    cbar.set_ticks(np.arange(np.min(observations), np.max(observations)+1))
-    ax.legend([correct_lick_choice,wrong_lick_choice,attention_choice], ['correct_lick_choice','wrong_lick_choice','attention_choice'], bbox_to_anchor=bbox_to_anchor, fontsize=12)
-    ax.set_xlim([-0.5, num_steps+0.5])
-    ax.set_xticks([0, num_steps])
-    ax.set_yticks([])
-    ax.set_xlabel('Time')
-    ax.set_ylabel('')
+    fig = env_plotter.make_plot(plot_variable = observations, label = 'Observation', feature_color_list = ['black','grey','white','red','maroon'])
     figs.append(fig)
-
-    
-    fig, ax = plt.subplots(figsize=figsize)
-    attention_choice = ax.scatter(np.arange(num_steps+1)[attention_choice_idxs], np.zeros(sum(attention_choice_idxs)), color='blue', marker='o', s=50)
-    correct_lick_choice = ax.scatter(np.arange(num_steps+1)[correct_lick_choice_idxs], np.zeros(sum(correct_lick_choice_idxs)), color='magenta', marker='^', s=50)
-    wrong_lick_choice = ax.scatter(np.arange(num_steps+1)[wrong_lick_choice_idxs], np.zeros(sum(wrong_lick_choice_idxs)), color='magenta', marker='v', s=50)
-    h = ax.imshow(
-        probs.T, aspect=aspect, extent=[-0.5, num_steps+0.5, -0.5, 0.5],
-        vmin=0, vmax=1, origin='lower', cmap='gist_gray',
-    )
-
-    cbar = plt.colorbar(h, label='Belief')
-    cbar.set_ticks([0, 1])
-    ax.legend([correct_lick_choice,wrong_lick_choice,attention_choice], ['correct_lick_choice','wrong_lick_choice','attention_choice'], bbox_to_anchor=bbox_to_anchor, fontsize=12)
-    ax.set_xlim([-0.5, num_steps+0.5])
-    ax.set_xticks([0, num_steps])
-    ax.set_yticks(1/num_states * np.arange(num_states) - 0.5 + 0.5 * 1/num_states)
-    ax.set_yticklabels([f'{i}' for i in range(num_states)])
-    
-    ax.set_xlabel('Time')
-    ax.set_ylabel('States')
+    fig = env_plotter.make_plot(plot_variable = probs, label = 'Belief', for_belief = True)    
     figs.append(fig)
     return figs
