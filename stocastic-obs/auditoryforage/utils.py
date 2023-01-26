@@ -14,7 +14,7 @@ class PlotHelper():
         self.figsize = figsize
         self.bbox_to_anchor = bbox_to_anchor
 
-    def make_plot(self, plot_variable, label, feature_color_list = [], for_belief = False, action_color_list = ['blue','magenta','crimson']):
+    def make_plot(self, plot_variable, label, feature_color_list = [], for_belief = False, action_color_list = ['blue','magenta','cyan']):
         fig_w, fig_h = self.figsize
         aspect = self.num_steps*fig_h/fig_w*1.5
         fig, ax = plt.subplots(figsize=self.figsize) 
@@ -24,8 +24,8 @@ class PlotHelper():
             attention_choice_lists.append(ax.scatter(np.arange(self.num_steps+1)[self.attention_choice_idxs[attention_choice]], .3 * np.ones(sum(self.attention_choice_idxs[attention_choice])), color=action_color_list[attention_choice], marker='o', s=50))
             attention_choice_text.append(f'Obs. conf. {self.obs_certainity_possible[attention_choice]}')
         
-        correct_lick_choice = ax.scatter(np.arange(self.num_steps+1)[self.correct_lick_choice_idxs], -0.3 * np.ones(sum(self.correct_lick_choice_idxs)), color='cyan', marker='^', s=50)
-        wrong_lick_choice = ax.scatter(np.arange(self.num_steps+1)[self.wrong_lick_choice_idxs], -0.3 * np.ones(sum(self.wrong_lick_choice_idxs)), color='cyan', marker='v', s=50)
+        correct_lick_choice = ax.scatter(np.arange(self.num_steps+1)[self.correct_lick_choice_idxs], -0.3 * np.ones(sum(self.correct_lick_choice_idxs)), color='darkorange', marker='^', s=50)
+        wrong_lick_choice = ax.scatter(np.arange(self.num_steps+1)[self.wrong_lick_choice_idxs], -0.3 * np.ones(sum(self.wrong_lick_choice_idxs)), color='darkorange', marker='v', s=50)
         feature_colors = ListedColormap(feature_color_list)
         if for_belief:
             h = ax.imshow(plot_variable.T, aspect=aspect, extent=[-0.5, self.num_steps+0.5, -0.5, 0.5], vmin=0, vmax=1, origin='lower', cmap='gist_gray',)
@@ -73,9 +73,9 @@ def plot_AF_episode(episode, env):
         attention_choice_idxs.append(list(map(lambda action_choice: True if action_choice in attention_action_keys[attention_choice] else False, offset_actions)))
     env_plotter = PlotHelper(num_steps, no_attention_modes, correct_lick_choice_idxs, wrong_lick_choice_idxs, attention_choice_idxs, obs_certainity_possible, num_states)
     figs = []
-    fig = env_plotter.make_plot(plot_variable = states, label = 'True Sate', feature_color_list = ['yellow','green','limegreen','palegreen','lime','red','maroon'])
+    fig = env_plotter.make_plot(plot_variable = states, label = 'True Sate', feature_color_list = ['khaki','green','limegreen','palegreen','lime','red','maroon'])
     figs.append(fig)
-    fig = env_plotter.make_plot(plot_variable = observations, label = 'Observation', feature_color_list = ['black','grey','white','red','maroon'])
+    fig = env_plotter.make_plot(plot_variable = observations, label = 'Observation', feature_color_list = ['black','white','red','maroon'])
     figs.append(fig)
     fig = env_plotter.make_plot(plot_variable = probs, label = 'Belief', for_belief = True)    
     figs.append(fig)
