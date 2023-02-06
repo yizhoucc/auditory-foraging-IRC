@@ -112,7 +112,9 @@ class BeliefAgent:
         """
         _to_restore_train = self.algo.policy.training # policy will be set to evaluation mode temporarily
         self.algo.policy.set_training_mode(False)
+        
         actions, rewards, states, observations, beliefs = [], [], [], [], []
+
         if q_states is None:
             get_queries = lambda env: env.query_states()
         elif isinstance(q_states, Iterable):
@@ -154,6 +156,7 @@ class BeliefAgent:
             t += 1
             if done or t==num_steps:
                 break
+        
         episode = {
             'num_steps': t,
             'actions': np.array(actions), # [0, t)
@@ -162,6 +165,7 @@ class BeliefAgent:
             'observations': np.array(observations), # [0, t]
             'beliefs': np.array(beliefs), # [0, t]
         }
+
         if get_queries is not None:
             diffs = ((_q_states-_q_states[0])**2).reshape(len(_q_states), -1).sum(axis=1)
             if np.all(diffs<1e-8): # merge fixed query set
@@ -273,3 +277,36 @@ class BeliefAgent:
 
             logps.append(pi.log_prob(torch.tensor(actions[t], dtype=torch.long, device=device)).item())
         return sum(logps)
+
+
+# Lokesh added this method to check if polcicies are consistent
+    def agent_action_distribution(self,
+            beliefs = None,
+        ) -> list:
+            r"""Returns action distributions for given belief vectors.
+
+            Args
+            ----
+            beliefs:
+                A numpy array containting belief vectors.
+
+            Returns
+            -------
+            action_distributions:
+                A list contatining action distributions for corresponding belief vectors.
+
+            """
+            device = self.model.device
+            self.algo.policy.eval().to(device)
+            # self.model.seed(seed)
+
+            # _to_restore_train = self.algo.policy.training # policy will be set to evaluation mode temporarily
+            # self.algo.policy.set_training_mode(False)
+            if beliefs is None:
+                raise NotImplementedError("Current version requires you to input the beliefs.")
+            action_distributions = []
+            for belief in beliefs:
+                pi = self.algo.policy.get_distribution(torch.from_numpy(belief)[None].to(device))
+                action_distributions.append([np.exp(pi.log_prob(torch.tensor(action, dtype=torch.long, device=device)).item()) for action in range(self.model.action_space.n)])
+            # self.algo.policy.set_training_mode(_to_restore_train)
+            return action_distributions
