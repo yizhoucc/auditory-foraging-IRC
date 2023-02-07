@@ -14,7 +14,7 @@ class PlotHelper():
         self.figsize = figsize
         self.bbox_to_anchor = bbox_to_anchor
 
-    def make_plot(self, plot_variable, label, feature_color_list = [], for_belief = False, action_color_list = ['blue','magenta','cyan']):
+    def make_plot(self, plot_variable, label, feature_color_list = [], for_belief = False, action_color_list = ['blue','blueviolet','indigo','magenta','darkcyan','cyan']):
         fig_w, fig_h = self.figsize
         aspect = self.num_steps*fig_h/fig_w*1.5
         fig, ax = plt.subplots(figsize=self.figsize) 

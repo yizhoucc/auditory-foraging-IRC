@@ -9,6 +9,6 @@ auditory_foraging_v1:
     food_reward: 3.0
     attention_cost_coeff: 1
     attention_cost_temp: 1
-    no_attention_modes: 3
+    no_attention_modes: 6
     penalty_cost: -8.0
     iti_cost: -4.0
