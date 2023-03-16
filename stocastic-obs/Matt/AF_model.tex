@@ -1,0 +1,88 @@
+\documentclass[11pt, oneside]{article}   	
+\usepackage{geometry}                		
+\geometry{letterpaper}                   		
+\usepackage{graphicx}					
+\usepackage{amssymb}
+\usepackage{xcolor}
+\usepackage{import}
+\usepackage{amsmath}
+%\import{/Users/lokeshboominathan/Documents/Notes}{TeX_definitions.tex}
+\title{Auditory foraging model}
+\author{}
+\date{}							
+\begin{document}
+\maketitle
+\section{Experimental parameters}
+\begin{itemize}
+\item Duration  of signal interval is 3 seconds.
+\item ITI drawn from a uniform distribution between 2 and 3 seconds (could be approximated).
+\item Penalty is 14 second time out.
+\item Noise interval drawn from exponential distribution with mean 5 seconds (extra 11 seconds criteria, could be ignored).
+\item Rewards alternated between 2 and 12mL in blocks of 60 trials. The coherence level of the signal was also changed accordingly.
+\item A session duration is roughly 75 minutes.
+\item Dataset has about 88 mice doing 1983 sessions in total.
+\end{itemize}  
+\section{Model parameters}
+\begin{itemize}  
+\item Each time step is 20 milli second (desired resolution to match actions).
+\item Signal will have 150 nodes (3 seconds).
+\item ITI will have 150 nodes (3 seconds).
+\item Penalty will have 700 nodes (14 seconds). Seems unreasonable, especially when it's fully observable and actions don't matter there.
+\item Noise will have one node with probability of transition as 1/(1 + 5). 5 is the mean of the exponential distribution.
+\item Assuming we are picking only trials of the same reward value.
+\end{itemize}
+\section{To do}
+\begin{itemize}
+\item How to handle the increased number of nodes?
+\begin{itemize}
+	\item Rough estimate, approximately 7 hours per set of parameters.
+	\item Would state aggregation be useful here? Where to incorporate that in the algorithm (in PPO)?
+\end{itemize}	
+\item What would be a better objective here - sum of discounted future rewards, or average reward? How would they impact?
+\begin{itemize}
+	\item If average reward is more suitable, is it easy to change the PPO algorithm in Stable-Baselines3?
+	\item Does it entail just changing the objective of the network that gives values function, while keeping the policy network the same?
+	\item Are there other algorithms that can be directly plugged in here instead?
+\end{itemize}
+\item Double check if number of time steps is provided at the right place (manager.yaml).
+\begin{itemize}
+	\item Clarify if it's the total number of time steps the algorithm has access to. That is, does it sample batches from that to run the algo.? One epoch is done when algo. has seen the whole 'k' number of time steps?
+	\item Any guess on how much is required for above choice of model parameters? How much data would be needed?
+	\item Where to change batch size for PPO? Need to change? What would be a good batch size?
+\end{itemize}
+\item How much data do we need to explain a 10-20\% change in reward rate?
+\item How to model alternating rewards case?
+\item How to model the value of reward decreasing over time?
+\item Is there a way to model non-stationarity across time, and across mice? (Might not be important for now).
+\end{itemize}
+\end{document}  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
