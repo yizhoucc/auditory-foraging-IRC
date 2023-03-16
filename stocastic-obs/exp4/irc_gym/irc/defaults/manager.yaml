@@ -12,7 +12,7 @@ defaults:
     policy:
       _target_: 'MlpPolicy'
     learn:
-      total_timesteps: 40000
+      total_timesteps: 2000
   likelihood:
     agent_key: null
     episode_key: null
@@ -31,7 +31,7 @@ runtime:
     device: cpu
     eval_config:
       num_episodes: 12
-      num_steps: 20
+      num_steps: 10000
     to_check_env: false
   likelihood: {}
 

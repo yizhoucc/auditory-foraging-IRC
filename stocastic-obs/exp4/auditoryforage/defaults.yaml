@@ -10,5 +10,5 @@ auditory_foraging_v1:
     attention_cost_coeff: 1
     attention_cost_temp: 1
     no_attention_modes: 6
-    penalty_cost: 0.0
+    penalty_cost: -50.0
     iti_cost: 0.0
