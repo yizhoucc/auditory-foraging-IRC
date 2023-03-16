@@ -190,14 +190,14 @@ class AuditoryForaging(Env):
                 # next_state = 1 + self.no_signal_nodes + self.no_penalty_nodes
                 
                 #for episodic
-                next_state = self.no_signal_nodes + self.no_penalty_nodes + np.random.randint(1, self.no_ITI_nodes/3+1)
+                next_state = self.no_signal_nodes + self.no_penalty_nodes + np.random.randint(1, int(self.no_ITI_nodes/3)+1)
 
         # If current state is in the end of tone cloud without target
         if self.state == self.no_signal_nodes:
             # next_state = 1 + self.no_signal_nodes + self.no_penalty_nodes
 
             #for episodic
-            next_state = self.no_signal_nodes + self.no_penalty_nodes + np.random.randint(1, self.no_ITI_nodes/3+1)
+            next_state = self.no_signal_nodes + self.no_penalty_nodes + np.random.randint(1, int(self.no_ITI_nodes/3)+1)
 
         # If current state is anywhere in between beginning of penalty period or just before the end of ITI
         if self.state>=1 + self.no_signal_nodes and self.state<self.no_nodes-1:
@@ -271,7 +271,7 @@ class AuditoryForaging(Env):
         # self.state = 1 + self.no_signal_nodes + self.no_penalty_nodes
 
         #for episodic
-        self.state = self.no_signal_nodes + self.no_penalty_nodes + np.random.randint(1, self.no_ITI_nodes/3+1)
+        self.state = self.no_signal_nodes + self.no_penalty_nodes + np.random.randint(1, int(self.no_ITI_nodes/3)+1)
 
         obs = self.observe_step(0)
         # return self.state
@@ -322,7 +322,7 @@ class AuditoryForaging(Env):
 
         # transition_matrix[(self.no_signal_nodes,1 + self.no_signal_nodes + self.no_penalty_nodes,0)] = 1
         #for episodic
-        for i in range(self.no_signal_nodes + self.no_penalty_nodes + 1, self.no_signal_nodes + self.no_penalty_nodes + 1 + self.no_ITI_nodes/3):
+        for i in range(self.no_signal_nodes + self.no_penalty_nodes + 1, self.no_signal_nodes + self.no_penalty_nodes + 1 + int(self.no_ITI_nodes/3)):
             transition_matrix[(self.no_signal_nodes, i, 0)] = 1/(self.no_ITI_nodes/3)
         
         transition_matrix[(self.no_nodes-1,0,0)] = 1
@@ -337,7 +337,7 @@ class AuditoryForaging(Env):
         #     transition_matrix[(i,1 + self.no_signal_nodes + self.no_penalty_nodes,1)] = 1
         #for episodic
         for i in range(1,self.no_signal_nodes+1):
-            for j in range(self.no_signal_nodes + self.no_penalty_nodes + 1, self.no_signal_nodes + self.no_penalty_nodes + 1 + self.no_ITI_nodes/3):
+            for j in range(self.no_signal_nodes + self.no_penalty_nodes + 1, self.no_signal_nodes + self.no_penalty_nodes + 1 + int(self.no_ITI_nodes/3)):
                 transition_matrix[(i, j, 1)] = 1/(self.no_ITI_nodes/3)
         
         for i in range(self.no_signal_nodes+1,self.no_nodes-1):
