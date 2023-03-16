@@ -1,9 +1,9 @@
 auditory_foraging_v1:
   experiment:
-    prob_01: 0.001
-    no_signal_nodes: 250
-    no_penalty_nodes: 500
-    no_ITI_nodes: 300
+    prob_01: 0.166666667
+    no_signal_nodes: 150
+    no_penalty_nodes: 700
+    no_ITI_nodes: 150
   agent:
     lick_cost: -1.0
     food_reward: 3.0
