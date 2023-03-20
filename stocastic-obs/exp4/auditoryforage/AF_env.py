@@ -77,7 +77,10 @@ class AuditoryForaging(Env):
         # self.attention_possible = np.array(self.spec.agent.attention_possible)
         self.attention_possible = np.arange(self.no_attention_modes)
         # self.observation_possible = np.concatenate((np.array(self.spec.agent.attention_based_obs), np.arange(1 + self.no_signal_nodes, self.no_nodes)))
-        self.observation_possible = np.concatenate((np.arange(2), np.arange(1 + self.no_signal_nodes, self.no_nodes)))
+        
+        #for episodic
+        # self.observation_possible = np.concatenate((np.arange(2), np.arange(1 + self.no_signal_nodes, self.no_nodes)))
+        self.observation_possible = np.arange(4)
 
         # Look-up dictionaries to map numbers used in OpenAI version (dict keys) to physical quantities in the foraging task (dict values).
         self.dict_observation_possible = dict(enumerate(self.observation_possible))
@@ -228,8 +231,13 @@ class AuditoryForaging(Env):
             # else:
             #     obs = list(self.observation_possible).index(1)
 
-        if self.state>=1 + self.no_signal_nodes and self.state<self.no_nodes:
-            obs = list(self.observation_possible).index(self.state)
+        #for episodic
+        # if self.state>=1 + self.no_signal_nodes and self.state<self.no_nodes:
+        #     obs = list(self.observation_possible).index(self.state)
+        if self.state == 1 + self.no_signal_nodes:
+            obs  = 2
+        if self.state > 1 + self.no_signal_nodes:
+            obs = 3
 
         obs = (obs,)
         return obs

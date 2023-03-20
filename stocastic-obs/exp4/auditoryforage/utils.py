@@ -51,6 +51,12 @@ def plot_AF_episode(episode, env):
     obs_certainity_possible = env.obs_certainity_possible
     dict_action_possible = env.dict_action_possible #{key: (lick_choice,attention_choice)}
     no_attention_modes = env.no_attention_modes
+
+    #for episodic
+    no_signal_nodes = env.no_signal_nodes
+    no_penalty_nodes = env.no_penalty_nodes
+    no_ITI_nodes = env.no_ITI_nodes
+
     licking_actions = [action_key for action_key in dict_action_possible if dict_action_possible[action_key][0] == 1]
     attention_action_keys = []
     for attention_choice in range(no_attention_modes):
@@ -73,7 +79,14 @@ def plot_AF_episode(episode, env):
         attention_choice_idxs.append(list(map(lambda action_choice: True if action_choice in attention_action_keys[attention_choice] else False, offset_actions)))
     env_plotter = PlotHelper(num_steps, no_attention_modes, correct_lick_choice_idxs, wrong_lick_choice_idxs, attention_choice_idxs, obs_certainity_possible, num_states)
     figs = []
+    
+    #for episodic
+    # fig = env_plotter.make_plot(plot_variable = states, label = 'True Sate', feature_color_list = ['khaki','green','limegreen','palegreen','lime','red','maroon'])
+    true_state_class = np.where(episode['states'] > 0 and episode['states'] <= no_signal_nodes,1,episode['states'])
+    true_state_class = np.where(true_state_class > no_signal_nodes and true_state_class <= no_signal_nodes + no_penalty_nodes,2,true_state_class)
+    true_state_class = np.where(true_state_class > no_signal_nodes + no_penalty_nodes,3,true_state_class)
     fig = env_plotter.make_plot(plot_variable = states, label = 'True Sate', feature_color_list = ['khaki','green','limegreen','palegreen','lime','red','maroon'])
+
     figs.append(fig)
     fig = env_plotter.make_plot(plot_variable = observations, label = 'Observation', feature_color_list = ['black','white','red','maroon'])
     figs.append(fig)
