@@ -328,8 +328,8 @@ class AuditoryForaging(Env):
         transition_matrix[(0,0,0)] = 1 - self.prob_01
         transition_matrix[(0,1,0)] = self.prob_01
 
-        # transition_matrix[(self.no_signal_nodes,1 + self.no_signal_nodes + self.no_penalty_nodes,0)] = 1
         #for episodic
+        # transition_matrix[(self.no_signal_nodes,1 + self.no_signal_nodes + self.no_penalty_nodes,0)] = 1
         for i in range(self.no_signal_nodes + self.no_penalty_nodes + 1, self.no_signal_nodes + self.no_penalty_nodes + 1 + int(self.no_ITI_nodes/3)):
             transition_matrix[(self.no_signal_nodes, i, 0)] = 1/(self.no_ITI_nodes/3)
         
@@ -341,9 +341,9 @@ class AuditoryForaging(Env):
         # lick cases
         transition_matrix[(0,self.no_signal_nodes+1,1)] = 1
 
+        #for episodic
         # for i in range(1,self.no_signal_nodes+1):
         #     transition_matrix[(i,1 + self.no_signal_nodes + self.no_penalty_nodes,1)] = 1
-        #for episodic
         for i in range(1,self.no_signal_nodes+1):
             for j in range(self.no_signal_nodes + self.no_penalty_nodes + 1, self.no_signal_nodes + self.no_penalty_nodes + 1 + int(self.no_ITI_nodes/3)):
                 transition_matrix[(i, j, 1)] = 1/(self.no_ITI_nodes/3)
@@ -374,9 +374,16 @@ class AuditoryForaging(Env):
             for attention in range(len(self.attention_possible)):
                 observation_matrix[0,i,attention] = 1 - self.obs_certainity_possible[attention]
                 observation_matrix[1,i,attention] = self.obs_certainity_possible[attention]
+        
         # Considering 'non-trial' (fully observable) nodes
-        for i in range(self.no_signal_nodes+1,self.no_nodes):
-            observation_matrix[np.where(self.observation_possible == i)[0][0],i,:] = 1
+        #for episodic
+        # for i in range(self.no_signal_nodes+1,self.no_nodes):
+        #     observation_matrix[np.where(self.observation_possible == i)[0][0],i,:] = 1
+        for i in range(self.no_signal_nodes+1,self.no_signal_nodes+1+self.no_penalty_nodes):
+            observation_matrix[2,i,:] = 1
+        for i in range(self.no_signal_nodes+1+self.no_penalty_nodes,self.no_nodes):
+            observation_matrix[3,i,:] = 1
+        
         return observation_matrix
 
     def init_belief(self, observation):
@@ -399,7 +406,15 @@ class AuditoryForaging(Env):
         belief = np.zeros(shape=self.no_nodes)
 
         if observation[0] not in range(2):
-            belief[observation[0]+self.no_signal_nodes-1] = 1
+            
+            #for episodic
+            # belief[observation[0]+self.no_signal_nodes-1] = 1
+            if observation[0] == 2:
+                belief[self.no_signal_nodes+1:self.no_signal_nodes+1+self.no_penalty_nodes] = 1/self.no_penalty_nodes
+            elif observation[0] == 3:
+                belief[self.no_signal_nodes+1+self.no_penalty_nodes:self.no_nodes] = 1/self.no_ITI_nodes
+
+
         else:
             certainity_sum = np.sum(self.obs_certainity_possible)
             if observation[0] == 0:

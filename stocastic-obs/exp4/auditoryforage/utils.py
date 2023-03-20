@@ -46,6 +46,20 @@ class PlotHelper():
         ax.set_xlabel('Time')
         return fig
 
+#for episodic
+def assign_state_class(true_state, no_signal_nodes, no_penalty_nodes):
+    if true_state == 0:
+        state_class = true_state
+    elif true_state <= no_signal_nodes:
+        state_class = 1
+    elif true_state <= no_signal_nodes + no_penalty_nodes:
+        state_class = 2
+    else:
+        state_class = 3
+    return state_class
+    
+
+
 
 def plot_AF_episode(episode, env):        
     obs_certainity_possible = env.obs_certainity_possible
@@ -82,10 +96,9 @@ def plot_AF_episode(episode, env):
     
     #for episodic
     # fig = env_plotter.make_plot(plot_variable = states, label = 'True Sate', feature_color_list = ['khaki','green','limegreen','palegreen','lime','red','maroon'])
-    true_state_class = np.where(episode['states'] > 0 and episode['states'] <= no_signal_nodes,1,episode['states'])
-    true_state_class = np.where(true_state_class > no_signal_nodes and true_state_class <= no_signal_nodes + no_penalty_nodes,2,true_state_class)
-    true_state_class = np.where(true_state_class > no_signal_nodes + no_penalty_nodes,3,true_state_class)
-    fig = env_plotter.make_plot(plot_variable = states, label = 'True Sate', feature_color_list = ['khaki','green','limegreen','palegreen','lime','red','maroon'])
+    
+    state_classes = np.array([[assign_state_class(true_state, no_signal_nodes, no_penalty_nodes)] for true_state in states.flatten()])
+    fig = env_plotter.make_plot(plot_variable = state_classes, label = 'Sate class', feature_color_list = ['khaki','green','red','maroon'])
 
     figs.append(fig)
     fig = env_plotter.make_plot(plot_variable = observations, label = 'Observation', feature_color_list = ['black','white','red','maroon'])

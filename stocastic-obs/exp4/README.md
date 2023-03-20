@@ -8,7 +8,8 @@ increasing # iti nodes to 150.
 setting 0 reward for iti and penalty.
 reducing # of epochs to 20.
 changing to episodic tasks.
-    - chaning observation model (should not have info on time)
+    - chaning observe_step (should not have info on time).
+    - change find_observation_matrix.
     - set done when it reaches the penalty node. 
     - changing transition to iti nodes.
     - change transition matrix as well, and check if belief updates are right.
@@ -18,4 +19,8 @@ set defaults-learn to 2000 in manager.yaml in irc
 set runtime-num_steps to 10000 in manager.yaml in irc
 changed utils for visualization.
 
+remove prob_01 from run_episode line in notebook (not specific to this exp). 
+
+To do:
 increasing # of total_timesteps.
+change num_epochs for param_grid part.
