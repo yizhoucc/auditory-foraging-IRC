@@ -15,8 +15,9 @@ changing to episodic tasks.
     - change transition matrix as well, and check if belief updates are right.
     - check if the experement starts in the beginning of ITI.
     - Assign penalty cost as the termination cost.
-set defaults-learn to 2000 in manager.yaml in irc
-set runtime-num_steps to 10000 in manager.yaml in irc
+    - Assigned penalty cost to reward when licking at state 0, instead of penalizing after moving to penalty state. 
+set defaults-learn to 10000 in manager.yaml in irc
+set runtime-num_steps to 100000 in manager.yaml in irc
 changed utils for visualization.
 
 remove prob_01 from run_episode line in notebook (not specific to this exp). 

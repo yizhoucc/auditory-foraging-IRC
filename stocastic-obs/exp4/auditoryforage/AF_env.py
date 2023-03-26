@@ -158,7 +158,12 @@ class AuditoryForaging(Env):
         else:
             food_reward_value = 0
 
-        if self.state == self.no_signal_nodes + 1:
+        #for episodic
+        # if self.state == self.no_signal_nodes + 1:
+        #     penalty_cost_value = self.penalty_cost
+        # else:
+        #     penalty_cost_value = 0
+        if self.state == 0 and lick_choice == 1:
             penalty_cost_value = self.penalty_cost
         else:
             penalty_cost_value = 0
