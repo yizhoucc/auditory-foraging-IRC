@@ -16,6 +16,8 @@ changing to episodic tasks.
     - check if the experement starts in the beginning of ITI.
     - Assign penalty cost as the termination cost.
     - Assigned penalty cost to reward when licking at state 0, instead of penalizing after moving to penalty state. 
+    - Adjusted the attention costs in a way that least attention gives only attention cost of 0.
+    - Set high cost for penalty state to strongly penalise it (behavior could be quite sensitive, if too much then might never lick).
 set defaults-learn to 10000 in manager.yaml in irc
 set runtime-num_steps to 100000 in manager.yaml in irc
 changed utils for visualization.

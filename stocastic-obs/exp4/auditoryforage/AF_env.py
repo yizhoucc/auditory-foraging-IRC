@@ -150,7 +150,11 @@ class AuditoryForaging(Env):
         """
 
         self.attention_cost = np.array([-self.attention_cost_coeff * np.exp(certainity/self.attention_cost_temp) for certainity in self.obs_certainity_possible])
-        attention_cost_value = self.attention_cost[list(self.attention_possible).index(attention_choice)]
+
+        #for episodic
+        # attention_cost_value = self.attention_cost[list(self.attention_possible).index(attention_choice)]
+        attention_cost_value = self.attention_cost[list(self.attention_possible).index(attention_choice)] - self.attention_cost[0]
+        
         lick_cost_value = lick_choice * self.lick_cost
 
         if self.state>=1 and self.state<=self.no_signal_nodes and lick_choice == 1:
