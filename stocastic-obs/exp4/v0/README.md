@@ -27,3 +27,6 @@ remove prob_01 from run_episode line in notebook (not specific to this exp).
 To do:
 increasing # of total_timesteps.
 change num_epochs for param_grid part.
+
+TAKEAWAY:
+Ignoring the choice of attention, it looks like the policy is pretty decent. Need to try to reduce the attention cost to see if attention choices change.

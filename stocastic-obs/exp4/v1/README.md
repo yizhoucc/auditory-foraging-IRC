@@ -29,4 +29,4 @@ increasing # of total_timesteps.
 change num_epochs for param_grid part.
 
 TAKEAWAY:
-Ignoring the choice of attention, it looks like the policy is pretty decent. Need to try to reduce the attention cost to see if attention choices change.
+Using super large penalty cost leads to agent not being careful about its choices.
