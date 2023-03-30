@@ -30,4 +30,5 @@ change num_epochs for param_grid part.
 
 TAKEAWAY:
 Previously: In v0 we observe most are purple while there is not much change in variety of attention. On that note, we make the following change.
-Now: Increase temperature to flatter cost more, and increase scaling to discourage purple always.
+Intent: Increase temperature to flatter cost more, and increase scaling to discourage purple always.
+Now: Decresed both to do sanity check.
