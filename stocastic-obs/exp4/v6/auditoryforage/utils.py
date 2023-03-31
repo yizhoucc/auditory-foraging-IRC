@@ -14,7 +14,7 @@ class PlotHelper():
         self.figsize = figsize
         self.bbox_to_anchor = bbox_to_anchor
 
-    def make_episode_plot(self, plot_variable, label, feature_color_list = [], for_belief = False, action_color_list = ['blue','blueviolet','indigo','magenta','darkcyan','cyan']):
+    def make_plot(self, plot_variable, label, feature_color_list = [], for_belief = False, action_color_list = ['blue','blueviolet','indigo','magenta','darkcyan','cyan']):
         fig_w, fig_h = self.figsize
         aspect = self.num_steps*fig_h/fig_w*1.5
         fig, ax = plt.subplots(figsize=self.figsize) 
@@ -45,26 +45,6 @@ class PlotHelper():
         ax.set_xticks([0, self.num_steps])
         ax.set_xlabel('Time')
         return fig
-    
-    #for episodic
-    def make_hist_plots(self, offset_actions, observations, states, no_signal_nodes, no_attention_modes):
-        flatten_observations = observations.flatten()
-        flatten_states = states.flatten()
-        fig_w, fig_h = self.figsize
-        fig, axs = plt.subplots(3,2,figsize=(fig_w, 6*fig_h))
-        axs[0,0].hist(offset_actions[np.flatnonzero(flatten_observations == 3)]%no_attention_modes, bins = np.arange(-.5,no_attention_modes,1))
-        axs[0, 0].set(xticks = range(no_attention_modes), xlabel = 'attention levels', ylabel = 'count', title = 'attention during ITI')
-        axs[0,1].hist(((flatten_observations == 3) & (offset_actions >= no_attention_modes)).astype(int), bins = np.arange(-.5,2,1))
-        axs[0, 1].set(xticks = range(2), xlabel = 'lick choice', ylabel = 'count', title = 'lick during ITI')
-        axs[1, 0].hist(offset_actions[np.flatnonzero(flatten_states == 0)]%no_attention_modes, bins = np.arange(-.5,no_attention_modes,1))
-        axs[1, 0].set(xticks = range(no_attention_modes), xlabel = 'attention levels', ylabel = 'count', title = 'attention during noise')
-        axs[1, 1].hist(((flatten_states == 0) & (offset_actions >= no_attention_modes)).astype(int), bins = np.arange(-.5,2,1))
-        axs[1, 1].set(xticks = range(2), xlabel = 'lick choice', ylabel = 'count', title = 'lick during noise')
-        axs[2, 0].hist(offset_actions[np.flatnonzero((flatten_states >= 1) & (flatten_states <= no_signal_nodes))]%no_attention_modes, bins = np.arange(-.5,no_attention_modes,1))
-        axs[2, 0].set(xticks = range(no_attention_modes), xlabel = 'attention levels', ylabel = 'count', title = 'attention during signal')
-        axs[2, 1].hist(((flatten_states >= 1) & (flatten_states <= 150) & (offset_actions >= no_attention_modes)).astype(int), bins = np.arange(-.5,2,1))
-        axs[2, 1].set(xticks = range(2), xlabel = 'lick choice', ylabel = 'count', title = 'lick during noise')
-        return fig
 
 #for episodic
 def assign_state_class(true_state, no_signal_nodes, no_penalty_nodes):
@@ -77,6 +57,9 @@ def assign_state_class(true_state, no_signal_nodes, no_penalty_nodes):
     else:
         state_class = 3
     return state_class
+    
+
+
 
 def plot_AF_episode(episode, env):        
     obs_certainity_possible = env.obs_certainity_possible
@@ -108,19 +91,18 @@ def plot_AF_episode(episode, env):
     attention_choice_idxs = []
     for attention_choice in range(no_attention_modes):
         attention_choice_idxs.append(list(map(lambda action_choice: True if action_choice in attention_action_keys[attention_choice] else False, offset_actions)))
-    env_plotter = PlotHelper(num_steps, no_attention_modes, correct_lick_choice_idxs, wrong_lick_choice_idxs, attention_choice_idxs, obs_certainity_possible, num_states)    
+    env_plotter = PlotHelper(num_steps, no_attention_modes, correct_lick_choice_idxs, wrong_lick_choice_idxs, attention_choice_idxs, obs_certainity_possible, num_states)
     figs = []
     
     #for episodic
-    # fig = env_plotter.make_episode_plot(plot_variable = states, label = 'True Sate', feature_color_list = ['khaki','green','limegreen','palegreen','lime','red','maroon'])
+    # fig = env_plotter.make_plot(plot_variable = states, label = 'True Sate', feature_color_list = ['khaki','green','limegreen','palegreen','lime','red','maroon'])
     
     state_classes = np.array([[assign_state_class(true_state, no_signal_nodes, no_penalty_nodes)] for true_state in states.flatten()])
-    fig = env_plotter.make_episode_plot(plot_variable = state_classes, label = 'Sate class', feature_color_list = ['khaki','green','red','maroon'])
+    fig = env_plotter.make_plot(plot_variable = state_classes, label = 'Sate class', feature_color_list = ['khaki','green','red','maroon'])
+
     figs.append(fig)
-    fig = env_plotter.make_episode_plot(plot_variable = observations, label = 'Observation', feature_color_list = ['black','white','red','maroon'])
+    fig = env_plotter.make_plot(plot_variable = observations, label = 'Observation', feature_color_list = ['black','white','red','maroon'])
     figs.append(fig)
-    fig = env_plotter.make_episode_plot(plot_variable = probs, label = 'Belief', for_belief = True)    
-    figs.append(fig)
-    fig = env_plotter.make_hist_plots(offset_actions, observations, states, no_signal_nodes, no_attention_modes)
+    fig = env_plotter.make_plot(plot_variable = probs, label = 'Belief', for_belief = True)    
     figs.append(fig)
     return figs
