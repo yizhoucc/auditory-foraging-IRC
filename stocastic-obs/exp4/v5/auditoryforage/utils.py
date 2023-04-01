@@ -54,16 +54,16 @@ class PlotHelper():
         fig, axs = plt.subplots(3,2,figsize=(fig_w, 6*fig_h))
         axs[0,0].hist(offset_actions[np.flatnonzero(flatten_observations == 3)]%no_attention_modes, bins = np.arange(-.5,no_attention_modes,1))
         axs[0, 0].set(xticks = range(no_attention_modes), xlabel = 'attention levels', ylabel = 'count', title = 'attention during ITI')
-        axs[0,1].hist(((flatten_observations == 3) & (offset_actions >= no_attention_modes)).astype(int), bins = np.arange(-.5,2,1))
+        axs[0,1].hist((offset_actions[np.flatnonzero(flatten_observations == 3)]>= no_attention_modes).astype(int), bins = np.arange(-.5,2,1))
         axs[0, 1].set(xticks = range(2), xlabel = 'lick choice', ylabel = 'count', title = 'lick during ITI')
         axs[1, 0].hist(offset_actions[np.flatnonzero(flatten_states == 0)]%no_attention_modes, bins = np.arange(-.5,no_attention_modes,1))
         axs[1, 0].set(xticks = range(no_attention_modes), xlabel = 'attention levels', ylabel = 'count', title = 'attention during noise')
-        axs[1, 1].hist(((flatten_states == 0) & (offset_actions >= no_attention_modes)).astype(int), bins = np.arange(-.5,2,1))
+        axs[1, 1].hist((offset_actions[np.flatnonzero(flatten_states == 0)]>= no_attention_modes).astype(int), bins = np.arange(-.5,2,1))
         axs[1, 1].set(xticks = range(2), xlabel = 'lick choice', ylabel = 'count', title = 'lick during noise')
         axs[2, 0].hist(offset_actions[np.flatnonzero((flatten_states >= 1) & (flatten_states <= no_signal_nodes))]%no_attention_modes, bins = np.arange(-.5,no_attention_modes,1))
         axs[2, 0].set(xticks = range(no_attention_modes), xlabel = 'attention levels', ylabel = 'count', title = 'attention during signal')
-        axs[2, 1].hist(((flatten_states >= 1) & (flatten_states <= 150) & (offset_actions >= no_attention_modes)).astype(int), bins = np.arange(-.5,2,1))
-        axs[2, 1].set(xticks = range(2), xlabel = 'lick choice', ylabel = 'count', title = 'lick during noise')
+        axs[2, 1].hist((offset_actions[np.flatnonzero((flatten_states >= 1) & (flatten_states <= no_signal_nodes))]>= no_attention_modes).astype(int), bins = np.arange(-.5,2,1))
+        axs[2, 1].set(xticks = range(2), xlabel = 'lick choice', ylabel = 'count', title = 'lick during signal')
         return fig
 
 #for episodic
