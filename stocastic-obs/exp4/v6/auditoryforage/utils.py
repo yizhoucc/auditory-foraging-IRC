@@ -78,7 +78,32 @@ def assign_state_class(true_state, no_signal_nodes, no_penalty_nodes):
         state_class = 3
     return state_class
 
-def plot_AF_episode(episode, env):        
+def gaussian_like_belief(agent, no_nodes, dict_action_possible, licking_action_keys, attention_action_keys, no_signal_nodes, mu_length = 10, sigma_length = 10):
+    no_signal_and_noise_nodes = no_signal_nodes + 1
+    mu_vector = np.linspace(0, no_signal_and_noise_nodes-1, mu_length)
+    sigma_vector = np.linspace(0.1, (no_signal_and_noise_nodes-1)/2, sigma_length)
+    belief_matrix = np.zeros((mu_length, sigma_length, no_nodes))
+    action_prob_matrix = np.zeros((mu_length, sigma_length, len(dict_action_possible)))
+    lick_prob_matrix = np.zeros((mu_length, sigma_length))
+    attention_prob_matrix = np.zeros((mu_length, sigma_length, len(attention_action_keys)))
+    for mu_ind in range(mu_length):
+        for sigma_ind in range(sigma_length):
+            for belief_ind in range(0, no_signal_nodes+1):
+                belief_matrix[mu_ind, sigma_ind, belief_ind] = 1/np.sqrt(2 * np.pi * sigma_vector[sigma_ind]**2) * np.exp(-.5 * ((belief_ind-mu_vector[mu_ind])/sigma_vector[sigma_ind])**2)
+            belief_matrix[mu_ind, sigma_ind, :] /= np.sum(belief_matrix[mu_ind, sigma_ind, :])
+
+            action_prob_matrix[mu_ind, sigma_ind, :] = agent.agent_action_distribution(np.array([belief_matrix[mu_ind, sigma_ind, :]]))[0]
+            for lick_key in licking_action_keys:
+                lick_prob_matrix += action_prob_matrix[:, :, lick_key]
+            for attention_choice in range(len(attention_action_keys)):
+                for attention_keys in attention_action_keys[attention_choice]:
+                    attention_prob_matrix[:,:,attention_choice] += action_prob_matrix[:, :, attention_keys]
+    plt.figure()
+    plt.imshow(lick_prob_matrix)
+    plt.show()
+    # return mu_vector, sigma_vector, lick_prob_matrix, attention_prob_matrix, belief_matrix
+
+def plot_AF_episode(episode, env, agent):        
     obs_certainity_possible = env.obs_certainity_possible
     dict_action_possible = env.dict_action_possible #{key: (lick_choice,attention_choice)}
     no_attention_modes = env.no_attention_modes
@@ -87,11 +112,15 @@ def plot_AF_episode(episode, env):
     no_signal_nodes = env.no_signal_nodes
     no_penalty_nodes = env.no_penalty_nodes
     no_ITI_nodes = env.no_ITI_nodes
+    no_nodes = env.no_nodes
 
-    licking_actions = [action_key for action_key in dict_action_possible if dict_action_possible[action_key][0] == 1]
+    licking_action_keys = [action_key for action_key in dict_action_possible if dict_action_possible[action_key][0] == 1]
     attention_action_keys = []
     for attention_choice in range(no_attention_modes):
         attention_action_keys.append([action_key for action_key in dict_action_possible if dict_action_possible[action_key][1] == attention_choice])
+    
+    gaussian_like_belief(agent, no_nodes, dict_action_possible, licking_action_keys, attention_action_keys, no_signal_nodes, mu_length = 10, sigma_length = 10)
+    
     num_steps = episode['num_steps']
     states = episode['states']
     observations = episode['observations']
@@ -103,8 +132,8 @@ def plot_AF_episode(episode, env):
     #Modeling assumption - Based on current observation, you choose whether to lick at the current state, and whether to attend at next state. 
     offset_actions = np.insert(actions, -1, 0, axis=0) #offset actions to match time steps, as it looks like the action at last time step is not taken.
     offset_rewards = np.insert(rewards, -1, 0, axis=0) #offset actions to match time steps, as it looks like the rewards at last time step is not computed.
-    correct_lick_choice_idxs = list(map(lambda action_choice: True if action_choice in licking_actions else False, offset_actions))&(offset_rewards>=0)
-    wrong_lick_choice_idxs = list(map(lambda action_choice: True if action_choice in licking_actions else False, offset_actions))&(offset_rewards<0)
+    correct_lick_choice_idxs = list(map(lambda action_choice: True if action_choice in licking_action_keys else False, offset_actions))&(offset_rewards>=0)
+    wrong_lick_choice_idxs = list(map(lambda action_choice: True if action_choice in licking_action_keys else False, offset_actions))&(offset_rewards<0)
     attention_choice_idxs = []
     for attention_choice in range(no_attention_modes):
         attention_choice_idxs.append(list(map(lambda action_choice: True if action_choice in attention_action_keys[attention_choice] else False, offset_actions)))

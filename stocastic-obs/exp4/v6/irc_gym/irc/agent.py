@@ -140,8 +140,8 @@ class BeliefAgent:
         t = 0
         while True:
             action, _ = self.algo.predict(belief)
-            
-            # Lokesh added temporarily, could be used to get action probabilities
+
+            # Lokesh added temporarily, could be used to get action probabilities - actually added a separate method to do this better
             # belief_obs = self.algo.policy.obs_to_tensor(belief)[0]
             # dis = self.algo.policy.get_distribution(belief_obs)
             # probs = dis.distribution.probs
