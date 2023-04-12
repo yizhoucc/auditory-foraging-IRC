@@ -66,10 +66,12 @@ class PlotHelper():
         axs[2, 1].set(xticks = range(2), xlabel = 'lick choice', ylabel = 'count', title = 'lick during signal')
         return fig
     
-    def gaussian_like_belief(self, agent, no_nodes, dict_action_possible, licking_action_keys, attention_action_keys, no_signal_nodes, mu_length = 20, sigma_length = 10):
+    def gaussian_like_belief(self, agent, no_nodes, dict_action_possible, licking_action_keys, attention_action_keys, no_signal_nodes, mu_max = None, sigma_max_factor = 6, mu_length = 20, sigma_length = 10):
         no_signal_and_noise_nodes = no_signal_nodes + 1
-        mu_vector = np.linspace(0, no_signal_and_noise_nodes-1, mu_length)
-        sigma_vector = np.linspace(0.1, (no_signal_and_noise_nodes-1)/6, sigma_length)
+        mu_max = no_signal_and_noise_nodes-1 if mu_max == None else mu_max
+        sigma_max = mu_max/sigma_max_factor
+        mu_vector = np.linspace(0, mu_max, mu_length)
+        sigma_vector = np.linspace(0.1, sigma_max, sigma_length)
         belief_matrix = np.zeros((mu_length, sigma_length, no_nodes))
         action_prob_matrix = np.zeros((mu_length, sigma_length, len(dict_action_possible)))
         lick_prob_matrix = np.zeros((mu_length, sigma_length))
@@ -87,75 +89,54 @@ class PlotHelper():
             for attention_keys in attention_action_keys[attention_choice]:
                 attention_prob_matrix[:,:,attention_choice] += action_prob_matrix[:, :, attention_keys]
         
-        no_xticks = 7
-        no_yticks = 11
+        fig_w, fig_h = self.figsize
+
+        no_xticks = int(no_nodes/5)
+        no_yticks = int(mu_length/5)
+        no_rows_in_subplot = 2
+        no_cols_in_subplot = 5
+        xticks = np.around(np.linspace(0, no_signal_and_noise_nodes-1, no_xticks)).astype(int)
+        yticks = np.around(np.linspace(0, len(mu_vector)-1, no_yticks)).astype(int)
+        fig1, axs = plt.subplots(no_rows_in_subplot,no_cols_in_subplot,figsize=(1.2*fig_w, 4.75*fig_h))
+        for sigma_ind in range(len(sigma_vector)):
+            row_ind = sigma_ind//no_cols_in_subplot
+            col_ind = sigma_ind%no_cols_in_subplot
+            h = axs[row_ind, col_ind].imshow(belief_matrix[:, sigma_ind, :no_signal_and_noise_nodes])
+            cbar = plt.colorbar(h, label= 'prob.')
+            cbar.set_ticks(np.round([np.min(attention_prob_matrix[:,:,attention_choice]), np.max(attention_prob_matrix[:,:,attention_choice])],4))
+            axs[row_ind, col_ind].set(xticks = xticks, xticklabels = np.around(np.arange(no_nodes)[xticks]).astype(int), xlabel = 'node index')
+            axs[row_ind, col_ind].set(yticks = yticks, yticklabels = np.around(mu_vector[yticks]).astype(int), ylabel = 'mean (node)')
+            axs[row_ind, col_ind].set(title = f's.t.d of {round(sigma_vector[sigma_ind],2)}')
+
+
+        no_xticks = int(sigma_length/2)
+        no_yticks = int(mu_length/2)
         no_rows_in_subplot = 2
         no_cols_in_subplot = 3
-
         xticks = np.around(np.linspace(0, len(sigma_vector)-1, no_xticks)).astype(int)
         yticks = np.around(np.linspace(0, len(mu_vector)-1, no_yticks)).astype(int)
-        
-        plt.imshow(lick_prob_matrix)
-        print(np.round(np.min(lick_prob_matrix),2))
+        fig2 = plt.imshow(lick_prob_matrix)
         plt.colorbar(label= 'prob.', ticks = np.round([np.min(lick_prob_matrix), np.max(lick_prob_matrix)],2))
-        plt.xlabel('s.t.d (time)')
-        plt.ylabel('mean (time)')
+        plt.xlabel('s.t.d (node)')
+        plt.ylabel('mean (node)')
         plt.xticks(ticks = xticks, labels = np.around(sigma_vector[xticks]).astype(int))
         plt.yticks(ticks = yticks, labels = np.around(mu_vector[yticks]).astype(int))
         plt.title(f'prob. of licking')
-        plt.show()
+        # plt.show()
 
-        fig_w, fig_h = self.figsize
-        fig, axs = plt.subplots(no_rows_in_subplot,no_cols_in_subplot,figsize=(1.2*fig_w, 4.75*fig_h))
+        
+        fig3, axs = plt.subplots(no_rows_in_subplot,no_cols_in_subplot,figsize=(1.2*fig_w, 4.75*fig_h))
         for attention_choice in range(len(attention_action_keys)):
             row_ind = attention_choice//no_cols_in_subplot
             col_ind = attention_choice%no_cols_in_subplot
             h = axs[row_ind, col_ind].imshow(attention_prob_matrix[:,:,attention_choice])
             cbar = plt.colorbar(h, label= 'prob.')
             cbar.set_ticks(np.round([np.min(attention_prob_matrix[:,:,attention_choice]), np.max(attention_prob_matrix[:,:,attention_choice])],2))
-            axs[row_ind, col_ind].set(xticks = xticks, xticklabels = np.around(sigma_vector[xticks]).astype(int), xlabel = 's.t.d (time)')
-            axs[row_ind, col_ind].set(yticks = yticks, yticklabels = np.around(mu_vector[yticks]).astype(int), ylabel = 'mean (time)')
+            axs[row_ind, col_ind].set(xticks = xticks, xticklabels = np.around(sigma_vector[xticks]).astype(int), xlabel = 's.t.d (node)')
+            axs[row_ind, col_ind].set(yticks = yticks, yticklabels = np.around(mu_vector[yticks]).astype(int), ylabel = 'mean (node)')
             axs[row_ind, col_ind].set(title = f'prob. of attention {attention_choice}')
-
-        # row_ind = len(attention_action_keys)//no_cols_in_subplot
-        # col_ind = len(attention_action_keys)%no_cols_in_subplot
-        # h = axs[row_ind, col_ind].imshow(lick_prob_matrix)
-        # cbar = plt.colorbar(h, label= 'prob.')
-        # cbar.set_ticks([round(np.min(lick_prob_matrix),1), round(np.max(lick_prob_matrix),1)])
-        # axs[row_ind, col_ind].set(xticks = xticks, xticklabels = np.around(sigma_vector[xticks]).astype(int), xlabel = 'mean (time)')
-        # axs[row_ind, col_ind].set(yticks = yticks, yticklabels = np.around(mu_vector[yticks]).astype(int), ylabel = 's.t.d (time)')
-        # axs[row_ind, col_ind].set(title = f'prob. of licking')
-
-        return fig
-
-        # plt.figure()
-        # plt.imshow(lick_prob_matrix)
-        # plt.ylabel('mean (time)')
-        # plt.yticks(ticks = ytick_pos, labels = np.around(mu_vector[ytick_pos]).astype(int))
-        # plt.xlabel('s.t.d (time)')
-        # plt.xticks(ticks = xtick_pos, labels = np.around(sigma_vector[xtick_pos]).astype(int))
-        # plt.colorbar()
-        # plt.title('lick probability')
-        # plt.show()
-
-        # plt.figure()
-        # plt.imshow(attention_prob_matrix[:,:,0])
-        # plt.ylabel('mean (time)')
-        # # plt.yticks(mu_vector)
-        # plt.xlabel('s.t.d (time)')
-        # # plt.xticks(sigma_vector)
-        # plt.colorbar()
-        # plt.show()
-
-        # plt.figure()
-        # plt.imshow(attention_prob_matrix[:,:,4])
-        # plt.ylabel('mean (time)')
-        # # plt.yticks(mu_vector)
-        # plt.xlabel('s.t.d (time)')
-        # # plt.xticks(sigma_vector)
-        # plt.colorbar()
-        # plt.show()
-        # # return mu_vector, sigma_vector, lick_prob_matrix, attention_prob_matrix, belief_matrix
+        
+        return fig1, fig2, fig3
 
 
 #for episodic
@@ -210,8 +191,12 @@ def plot_AF_episode(episode, env, agent):
     # fig = env_plotter.make_episode_plot(plot_variable = states, label = 'True Sate', feature_color_list = ['khaki','green','limegreen','palegreen','lime','red','maroon'])
     
     state_classes = np.array([[assign_state_class(true_state, no_signal_nodes, no_penalty_nodes)] for true_state in states.flatten()])
-    fig= env_plotter.gaussian_like_belief(agent, no_nodes, dict_action_possible, licking_action_keys, attention_action_keys, no_signal_nodes)
-    figs.append(fig)
+    # fig= env_plotter.gaussian_like_belief(agent, no_nodes, dict_action_possible, licking_action_keys, attention_action_keys, no_signal_nodes, mu_max = None)
+    # figs.append(fig)
+    fig1, fig2, fig3 = env_plotter.gaussian_like_belief(agent, no_nodes, dict_action_possible, licking_action_keys, attention_action_keys, no_signal_nodes, mu_max = None)
+    figs.append(fig1)
+    figs.append(fig2)
+    figs.append(fig3)
     fig = env_plotter.make_episode_plot(plot_variable = state_classes, label = 'Sate class', feature_color_list = ['khaki','green','red','maroon'])
     figs.append(fig)
     fig = env_plotter.make_episode_plot(plot_variable = observations, label = 'Observation', feature_color_list = ['black','white','red','maroon'])
