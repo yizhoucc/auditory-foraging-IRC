@@ -78,10 +78,10 @@ def assign_state_class(true_state, no_signal_nodes, no_penalty_nodes):
         state_class = 3
     return state_class
 
-def gaussian_like_belief(agent, no_nodes, dict_action_possible, licking_action_keys, attention_action_keys, no_signal_nodes, mu_length = 10, sigma_length = 10):
+def gaussian_like_belief(agent, no_nodes, dict_action_possible, licking_action_keys, attention_action_keys, no_signal_nodes, mu_length = 20, sigma_length = 10):
     no_signal_and_noise_nodes = no_signal_nodes + 1
     mu_vector = np.linspace(0, no_signal_and_noise_nodes-1, mu_length)
-    sigma_vector = np.linspace(0.1, (no_signal_and_noise_nodes-1)/2, sigma_length)
+    sigma_vector = np.linspace(0.1, (no_signal_and_noise_nodes-1)/6, sigma_length)
     belief_matrix = np.zeros((mu_length, sigma_length, no_nodes))
     action_prob_matrix = np.zeros((mu_length, sigma_length, len(dict_action_possible)))
     lick_prob_matrix = np.zeros((mu_length, sigma_length))
@@ -100,6 +100,26 @@ def gaussian_like_belief(agent, no_nodes, dict_action_possible, licking_action_k
                     attention_prob_matrix[:,:,attention_choice] += action_prob_matrix[:, :, attention_keys]
     plt.figure()
     plt.imshow(lick_prob_matrix)
+    plt.ylabel('mean (time)')
+    # plt.yticks(mu_vector)
+    plt.xlabel('s.t.d (mean)')
+    # plt.xticks(sigma_vector)
+    plt.show()
+
+    plt.figure()
+    plt.imshow(attention_prob_matrix[:,:,0])
+    plt.ylabel('mean (time)')
+    # plt.yticks(mu_vector)
+    plt.xlabel('s.t.d (mean)')
+    # plt.xticks(sigma_vector)
+    plt.show()
+
+    plt.figure()
+    plt.imshow(np.log(attention_prob_matrix[:,:,4]))
+    plt.ylabel('mean (time)')
+    # plt.yticks(mu_vector)
+    plt.xlabel('s.t.d (mean)')
+    # plt.xticks(sigma_vector)
     plt.show()
     # return mu_vector, sigma_vector, lick_prob_matrix, attention_prob_matrix, belief_matrix
 
@@ -119,7 +139,7 @@ def plot_AF_episode(episode, env, agent):
     for attention_choice in range(no_attention_modes):
         attention_action_keys.append([action_key for action_key in dict_action_possible if dict_action_possible[action_key][1] == attention_choice])
     
-    gaussian_like_belief(agent, no_nodes, dict_action_possible, licking_action_keys, attention_action_keys, no_signal_nodes, mu_length = 10, sigma_length = 10)
+    gaussian_like_belief(agent, no_nodes, dict_action_possible, licking_action_keys, attention_action_keys, no_signal_nodes)
     
     num_steps = episode['num_steps']
     states = episode['states']
