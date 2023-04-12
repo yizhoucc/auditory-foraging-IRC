@@ -91,22 +91,19 @@ class PlotHelper():
         
         fig_w, fig_h = self.figsize
 
-        no_xticks = int(no_nodes/5)
+        no_xticks = int(no_nodes/20)
         no_yticks = int(mu_length/5)
-        no_rows_in_subplot = 2
-        no_cols_in_subplot = 5
+        no_rows_in_subplot = 10
         xticks = np.around(np.linspace(0, no_signal_and_noise_nodes-1, no_xticks)).astype(int)
         yticks = np.around(np.linspace(0, len(mu_vector)-1, no_yticks)).astype(int)
-        fig1, axs = plt.subplots(no_rows_in_subplot,no_cols_in_subplot,figsize=(1.2*fig_w, 4.75*fig_h))
+        fig1, axs = plt.subplots(no_rows_in_subplot,figsize=(1.5*fig_w, 15*fig_h))
         for sigma_ind in range(len(sigma_vector)):
-            row_ind = sigma_ind//no_cols_in_subplot
-            col_ind = sigma_ind%no_cols_in_subplot
-            h = axs[row_ind, col_ind].imshow(belief_matrix[:, sigma_ind, :no_signal_and_noise_nodes])
+            h = axs[sigma_ind].imshow(belief_matrix[:, sigma_ind, :no_signal_and_noise_nodes])
             cbar = plt.colorbar(h, label= 'prob.')
-            cbar.set_ticks(np.round([np.min(attention_prob_matrix[:,:,attention_choice]), np.max(attention_prob_matrix[:,:,attention_choice])],4))
-            axs[row_ind, col_ind].set(xticks = xticks, xticklabels = np.around(np.arange(no_nodes)[xticks]).astype(int), xlabel = 'node index')
-            axs[row_ind, col_ind].set(yticks = yticks, yticklabels = np.around(mu_vector[yticks]).astype(int), ylabel = 'mean (node)')
-            axs[row_ind, col_ind].set(title = f's.t.d of {round(sigma_vector[sigma_ind],2)}')
+            cbar.set_ticks(np.round([np.min(belief_matrix[:, sigma_ind, :no_signal_and_noise_nodes]), np.max(belief_matrix[:, sigma_ind, :no_signal_and_noise_nodes])],4))
+            axs[sigma_ind].set(xticks = xticks, xticklabels = np.around(np.arange(no_nodes)[xticks]).astype(int), xlabel = 'node index')
+            axs[sigma_ind].set(yticks = yticks, yticklabels = np.around(mu_vector[yticks]).astype(int), ylabel = 'mean (node)')
+            axs[sigma_ind].set(title = f's.t.d of {round(sigma_vector[sigma_ind],2)}')
 
 
         no_xticks = int(sigma_length/2)
@@ -115,6 +112,7 @@ class PlotHelper():
         no_cols_in_subplot = 3
         xticks = np.around(np.linspace(0, len(sigma_vector)-1, no_xticks)).astype(int)
         yticks = np.around(np.linspace(0, len(mu_vector)-1, no_yticks)).astype(int)
+        plt.figure()
         fig2 = plt.imshow(lick_prob_matrix)
         plt.colorbar(label= 'prob.', ticks = np.round([np.min(lick_prob_matrix), np.max(lick_prob_matrix)],2))
         plt.xlabel('s.t.d (node)')
