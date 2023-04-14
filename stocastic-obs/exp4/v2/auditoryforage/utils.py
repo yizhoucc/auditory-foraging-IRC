@@ -66,7 +66,7 @@ class PlotHelper():
         axs[2, 1].set(xticks = range(2), xlabel = 'lick choice', ylabel = 'count', title = 'lick during signal')
         return fig
     
-    def gaussian_like_belief(self, agent, no_nodes, dict_action_possible, licking_action_keys, attention_action_keys, no_signal_nodes, mu_max = None, sigma_max_factor = 6, mu_length = 20, sigma_length = 10):
+    def policy_for_gaussian_beliefs(self, agent, no_nodes, dict_action_possible, licking_action_keys, attention_action_keys, no_signal_nodes, mu_max = None, sigma_max_factor = 6, mu_length = 20, sigma_length = 10):
         no_signal_and_noise_nodes = no_signal_nodes + 1
         mu_max = no_signal_and_noise_nodes-1 if mu_max == None else mu_max
         sigma_max = mu_max/sigma_max_factor
@@ -81,7 +81,6 @@ class PlotHelper():
                 for belief_ind in range(0, no_signal_nodes+1):
                     belief_matrix[mu_ind, sigma_ind, belief_ind] = 1/np.sqrt(2 * np.pi * sigma_vector[sigma_ind]**2) * np.exp(-.5 * ((belief_ind-mu_vector[mu_ind])/sigma_vector[sigma_ind])**2)
                 belief_matrix[mu_ind, sigma_ind, :] /= np.sum(belief_matrix[mu_ind, sigma_ind, :])
-
                 action_prob_matrix[mu_ind, sigma_ind, :] = agent.agent_action_distribution(np.array([belief_matrix[mu_ind, sigma_ind, :]]))[0]
         for lick_key in licking_action_keys:
             lick_prob_matrix += action_prob_matrix[:, :, lick_key]
@@ -101,8 +100,8 @@ class PlotHelper():
             h = axs[sigma_ind].imshow(belief_matrix[:, sigma_ind, :no_signal_and_noise_nodes])
             cbar = plt.colorbar(h, label= 'prob.')
             cbar.set_ticks(np.round([np.min(belief_matrix[:, sigma_ind, :no_signal_and_noise_nodes]), np.max(belief_matrix[:, sigma_ind, :no_signal_and_noise_nodes])],4))
-            axs[sigma_ind].set(xticks = xticks, xticklabels = np.around(np.arange(no_nodes)[xticks]).astype(int), xlabel = 'node index')
-            axs[sigma_ind].set(yticks = yticks, yticklabels = np.around(mu_vector[yticks]).astype(int), ylabel = 'mean (node)')
+            axs[sigma_ind].set(xticks = xticks, xticklabels = np.around(np.arange(no_nodes)[xticks],1), xlabel = 'node index')
+            axs[sigma_ind].set(yticks = yticks, yticklabels = np.around(mu_vector[yticks],1), ylabel = 'mean (node)')
             axs[sigma_ind].set(title = f's.t.d of {round(sigma_vector[sigma_ind],2)}')
 
 
@@ -117,10 +116,9 @@ class PlotHelper():
         plt.colorbar(label= 'prob.', ticks = np.round([np.min(lick_prob_matrix), np.max(lick_prob_matrix)],2))
         plt.xlabel('s.t.d (node)')
         plt.ylabel('mean (node)')
-        plt.xticks(ticks = xticks, labels = np.around(sigma_vector[xticks]).astype(int))
-        plt.yticks(ticks = yticks, labels = np.around(mu_vector[yticks]).astype(int))
+        plt.xticks(ticks = xticks, labels = np.around(sigma_vector[xticks],1))
+        plt.yticks(ticks = yticks, labels = np.around(mu_vector[yticks],1))
         plt.title(f'prob. of licking')
-        # plt.show()
 
         
         fig3, axs = plt.subplots(no_rows_in_subplot,no_cols_in_subplot,figsize=(1.2*fig_w, 4.75*fig_h))
@@ -128,13 +126,105 @@ class PlotHelper():
             row_ind = attention_choice//no_cols_in_subplot
             col_ind = attention_choice%no_cols_in_subplot
             h = axs[row_ind, col_ind].imshow(attention_prob_matrix[:,:,attention_choice])
-            cbar = plt.colorbar(h, label= 'prob.')
+            cbar = plt.colorbar(h, label= 'prob.', shrink = .7)
             cbar.set_ticks(np.round([np.min(attention_prob_matrix[:,:,attention_choice]), np.max(attention_prob_matrix[:,:,attention_choice])],2))
-            axs[row_ind, col_ind].set(xticks = xticks, xticklabels = np.around(sigma_vector[xticks]).astype(int), xlabel = 's.t.d (node)')
-            axs[row_ind, col_ind].set(yticks = yticks, yticklabels = np.around(mu_vector[yticks]).astype(int), ylabel = 'mean (node)')
+            axs[row_ind, col_ind].set(xticks = xticks, xticklabels = np.around(sigma_vector[xticks],1), xlabel = 's.t.d (node)')
+            axs[row_ind, col_ind].set(yticks = yticks, yticklabels = np.around(mu_vector[yticks],1), ylabel = 'mean (node)')
             axs[row_ind, col_ind].set(title = f'prob. of attention {attention_choice}')
         
         return fig1, fig2, fig3
+
+    def policy_for_sampled_beliefs(self, agent, env, states, probs, no_nodes, dict_action_possible, licking_action_keys, attention_action_keys, no_signal_nodes, no_additional_episodes = 0, mu_max = None, sigma_max_factor = 6, mu_length = 20, sigma_length = 10):
+        no_signal_and_noise_nodes = no_signal_nodes + 1
+        episodes_states = states
+        episodes_beliefs = probs
+        for _ in range(no_additional_episodes):
+            episode = agent.run_one_episode(env=env, num_steps=10000, q_states = [[i] for i in range(env.no_nodes)])
+            episodes_states = np.concatenate((episodes_states,episode['states']))
+            episodes_beliefs = np.concatenate((episodes_beliefs,episode['q_probs']))
+        chosen_time = [i for i in range(len(episodes_states)) if episodes_states[i] < no_signal_and_noise_nodes]
+        chosen_beliefs = episodes_beliefs[chosen_time]
+        sorted_indices = np.argsort(np.sum(chosen_beliefs[:,1:no_signal_and_noise_nodes],1))
+        sorted_signal_prob = np.sum(chosen_beliefs[:,1:no_signal_and_noise_nodes],1)[sorted_indices]
+        sorted_beliefs = chosen_beliefs[sorted_indices]
+
+        action_prob_matrix = np.array([agent.agent_action_distribution(np.array([sorted_beliefs[index, :]]))[0] for index in range(len(sorted_beliefs))])
+        lick_prob_matrix = np.zeros(len(sorted_beliefs))
+        attention_prob_matrix = np.zeros((len(sorted_beliefs), len(attention_action_keys)))
+        for lick_key in licking_action_keys:
+            lick_prob_matrix += action_prob_matrix[:,lick_key]
+        for attention_choice in range(len(attention_action_keys)):
+            for attention_keys in attention_action_keys[attention_choice]:
+                attention_prob_matrix[:,attention_choice] += action_prob_matrix[:, attention_keys]
+
+        # fig_w, fig_h = self.figsize
+
+        # no_xticks = int(no_nodes/20)
+        # no_yticks = int(mu_length/5)
+        # no_rows_in_subplot = 10
+        # xticks = np.around(np.linspace(0, no_signal_and_noise_nodes-1, no_xticks)).astype(int)
+        # yticks = np.around(np.linspace(0, len(mu_vector)-1, no_yticks)).astype(int)
+        # fig1, axs = plt.subplots(no_rows_in_subplot,figsize=(1.5*fig_w, 15*fig_h))
+        # for sigma_ind in range(len(sigma_vector)):
+        #     h = axs[sigma_ind].imshow(belief_matrix[:, sigma_ind, :no_signal_and_noise_nodes])
+        #     cbar = plt.colorbar(h, label= 'prob.')
+        #     cbar.set_ticks(np.round([np.min(belief_matrix[:, sigma_ind, :no_signal_and_noise_nodes]), np.max(belief_matrix[:, sigma_ind, :no_signal_and_noise_nodes])],4))
+        #     axs[sigma_ind].set(xticks = xticks, xticklabels = np.around(np.arange(no_nodes)[xticks],1), xlabel = 'node index')
+        #     axs[sigma_ind].set(yticks = yticks, yticklabels = np.around(mu_vector[yticks],1), ylabel = 'mean (node)')
+        #     axs[sigma_ind].set(title = f's.t.d of {round(sigma_vector[sigma_ind],2)}')
+        plt.figure()
+        print(np.shape(sorted_beliefs))
+        fig1 = plt.imshow(sorted_beliefs[:,1:151].T)
+        print(np.max(sorted_beliefs[:,:151]))
+        plt.colorbar(label= 'prob.', ticks = np.round([np.min(sorted_beliefs[:,:151]), np.max(sorted_beliefs[:,:151])],2), shrink = .2)
+        plt.xlabel('time')
+        plt.ylabel('nodes')
+        # plt.xticks(ticks = xticks, labels = np.around(sigma_vector[xticks],1))
+        # plt.yticks(ticks = yticks, labels = np.around(mu_vector[yticks],1))
+        plt.title(f'Sampled beliefs')
+
+
+        plt.figure()
+        fig2 = plt.plot(sorted_signal_prob)
+        plt.xlabel('belief index')
+        plt.ylabel('signal probability')
+
+
+        # no_xticks = int(sigma_length/2)
+        # no_yticks = int(mu_length/2)
+        no_rows_in_subplot = 2
+        no_cols_in_subplot = 3
+        # xticks = np.around(np.linspace(0, len(sigma_vector)-1, no_xticks)).astype(int)
+        # yticks = np.around(np.linspace(0, len(mu_vector)-1, no_yticks)).astype(int)
+        plt.figure()
+        fig3 = plt.plot(sorted_signal_prob, lick_prob_matrix)
+        # plt.colorbar(label= 'prob.', ticks = np.round([np.min(lick_prob_matrix), np.max(lick_prob_matrix)],2))
+        plt.xlabel('signal belief')
+        # plt.ylabel('lick prob.')
+        # plt.xticks(ticks = xticks, labels = np.around(sigma_vector[xticks],1))
+        # plt.yticks(ticks = yticks, labels = np.around(mu_vector[yticks],1))
+        plt.title(f'prob. of licking')
+
+        # fig3, axs = plt.subplots(no_rows_in_subplot,no_cols_in_subplot,figsize=(1.2*fig_w, 4.75*fig_h))
+        for attention_choice in range(len(attention_action_keys)):
+            # row_ind = attention_choice//no_cols_in_subplot
+            # col_ind = attention_choice%no_cols_in_subplot
+            # h = axs[row_ind, col_ind].imshow(attention_prob_matrix[:,:,attention_choice])
+            # cbar = plt.colorbar(h, label= 'prob.', shrink = .7)
+            # cbar.set_ticks(np.round([np.min(attention_prob_matrix[:,:,attention_choice]), np.max(attention_prob_matrix[:,:,attention_choice])],2))
+            plt.plot(sorted_signal_prob, attention_prob_matrix[:,attention_choice])
+            # axs[row_ind, col_ind].set(xticks = xticks, xticklabels = np.around(sigma_vector[xticks],1), xlabel = 's.t.d (node)')
+            # axs[row_ind, col_ind].set(yticks = yticks, yticklabels = np.around(mu_vector[yticks],1), ylabel = 'mean (node)')
+            # axs[row_ind, col_ind].set(title = f'prob. of attention {attention_choice}')
+        plt.legend(['lick']+[f'attention {attention_choice}' for attention_choice in range(len(attention_action_keys))])
+        plt.xlabel('time')
+        plt.ylabel('prob.')
+        plt.title('')
+        return fig1, fig2, fig3
+        
+        # print(np.sum(sorted_beliefs[:,1:no_signal_and_noise_nodes],1))
+        # plt.stem(np.sum(sorted_beliefs[:,1:no_signal_and_noise_nodes],1))
+        # plt.show()
 
 
 #for episodic
@@ -189,18 +279,20 @@ def plot_AF_episode(episode, env, agent):
     # fig = env_plotter.make_episode_plot(plot_variable = states, label = 'True Sate', feature_color_list = ['khaki','green','limegreen','palegreen','lime','red','maroon'])
     
     state_classes = np.array([[assign_state_class(true_state, no_signal_nodes, no_penalty_nodes)] for true_state in states.flatten()])
-    # fig= env_plotter.gaussian_like_belief(agent, no_nodes, dict_action_possible, licking_action_keys, attention_action_keys, no_signal_nodes, mu_max = None)
-    # figs.append(fig)
-    fig1, fig2, fig3 = env_plotter.gaussian_like_belief(agent, no_nodes, dict_action_possible, licking_action_keys, attention_action_keys, no_signal_nodes, mu_max = None)
+    fig1, fig2, fig3 = env_plotter.policy_for_sampled_beliefs(agent, env, states, probs, no_nodes, dict_action_possible, licking_action_keys, attention_action_keys, no_signal_nodes)
     figs.append(fig1)
     figs.append(fig2)
     figs.append(fig3)
+    # fig1, fig2, fig3 = env_plotter.policy_for_gaussian_beliefs(agent, no_nodes, dict_action_possible, licking_action_keys, attention_action_keys, no_signal_nodes, mu_max = 20, mu_length = 20)
+    # figs.append(fig1)
+    # figs.append(fig2)
+    # figs.append(fig3)
     fig = env_plotter.make_episode_plot(plot_variable = state_classes, label = 'Sate class', feature_color_list = ['khaki','green','red','maroon'])
     figs.append(fig)
     fig = env_plotter.make_episode_plot(plot_variable = observations, label = 'Observation', feature_color_list = ['black','white','red','maroon'])
     figs.append(fig)
     fig = env_plotter.make_episode_plot(plot_variable = probs, label = 'Belief', for_belief = True)    
     figs.append(fig)
-    fig = env_plotter.make_hist_plots(offset_actions, observations, states, no_signal_nodes, no_attention_modes)
-    figs.append(fig)
+    # fig = env_plotter.make_hist_plots(offset_actions, observations, states, no_signal_nodes, no_attention_modes)
+    # figs.append(fig)
     return figs

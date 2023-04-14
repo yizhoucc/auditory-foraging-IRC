@@ -101,8 +101,8 @@ class PlotHelper():
             h = axs[sigma_ind].imshow(belief_matrix[:, sigma_ind, :no_signal_and_noise_nodes])
             cbar = plt.colorbar(h, label= 'prob.')
             cbar.set_ticks(np.round([np.min(belief_matrix[:, sigma_ind, :no_signal_and_noise_nodes]), np.max(belief_matrix[:, sigma_ind, :no_signal_and_noise_nodes])],4))
-            axs[sigma_ind].set(xticks = xticks, xticklabels = np.around(np.arange(no_nodes)[xticks]).astype(int), xlabel = 'node index')
-            axs[sigma_ind].set(yticks = yticks, yticklabels = np.around(mu_vector[yticks]).astype(int), ylabel = 'mean (node)')
+            axs[sigma_ind].set(xticks = xticks, xticklabels = np.around(np.arange(no_nodes)[xticks],1), xlabel = 'node index')
+            axs[sigma_ind].set(yticks = yticks, yticklabels = np.around(mu_vector[yticks],1), ylabel = 'mean (node)')
             axs[sigma_ind].set(title = f's.t.d of {round(sigma_vector[sigma_ind],2)}')
 
 
@@ -117,8 +117,8 @@ class PlotHelper():
         plt.colorbar(label= 'prob.', ticks = np.round([np.min(lick_prob_matrix), np.max(lick_prob_matrix)],2))
         plt.xlabel('s.t.d (node)')
         plt.ylabel('mean (node)')
-        plt.xticks(ticks = xticks, labels = np.around(sigma_vector[xticks]).astype(int))
-        plt.yticks(ticks = yticks, labels = np.around(mu_vector[yticks]).astype(int))
+        plt.xticks(ticks = xticks, labels = np.around(sigma_vector[xticks],1))
+        plt.yticks(ticks = yticks, labels = np.around(mu_vector[yticks],1))
         plt.title(f'prob. of licking')
         # plt.show()
 
@@ -128,10 +128,10 @@ class PlotHelper():
             row_ind = attention_choice//no_cols_in_subplot
             col_ind = attention_choice%no_cols_in_subplot
             h = axs[row_ind, col_ind].imshow(attention_prob_matrix[:,:,attention_choice])
-            cbar = plt.colorbar(h, label= 'prob.')
+            cbar = plt.colorbar(h, label= 'prob.', shrink = .7)
             cbar.set_ticks(np.round([np.min(attention_prob_matrix[:,:,attention_choice]), np.max(attention_prob_matrix[:,:,attention_choice])],2))
-            axs[row_ind, col_ind].set(xticks = xticks, xticklabels = np.around(sigma_vector[xticks]).astype(int), xlabel = 's.t.d (node)')
-            axs[row_ind, col_ind].set(yticks = yticks, yticklabels = np.around(mu_vector[yticks]).astype(int), ylabel = 'mean (node)')
+            axs[row_ind, col_ind].set(xticks = xticks, xticklabels = np.around(sigma_vector[xticks],1), xlabel = 's.t.d (node)')
+            axs[row_ind, col_ind].set(yticks = yticks, yticklabels = np.around(mu_vector[yticks],1), ylabel = 'mean (node)')
             axs[row_ind, col_ind].set(title = f'prob. of attention {attention_choice}')
         
         return fig1, fig2, fig3
@@ -191,7 +191,7 @@ def plot_AF_episode(episode, env, agent):
     state_classes = np.array([[assign_state_class(true_state, no_signal_nodes, no_penalty_nodes)] for true_state in states.flatten()])
     # fig= env_plotter.gaussian_like_belief(agent, no_nodes, dict_action_possible, licking_action_keys, attention_action_keys, no_signal_nodes, mu_max = None)
     # figs.append(fig)
-    fig1, fig2, fig3 = env_plotter.gaussian_like_belief(agent, no_nodes, dict_action_possible, licking_action_keys, attention_action_keys, no_signal_nodes, mu_max = None)
+    fig1, fig2, fig3 = env_plotter.gaussian_like_belief(agent, no_nodes, dict_action_possible, licking_action_keys, attention_action_keys, no_signal_nodes, mu_max = 20, mu_length = 20)
     figs.append(fig1)
     figs.append(fig2)
     figs.append(fig3)
