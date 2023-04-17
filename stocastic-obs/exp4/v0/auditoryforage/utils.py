@@ -157,9 +157,7 @@ class PlotHelper():
             for attention_keys in attention_action_keys[attention_choice]:
                 attention_prob_matrix[:,attention_choice] += action_prob_matrix[:, attention_keys]
         plt.figure(figsize = self.figsize)
-        print(np.shape(sorted_beliefs))
         fig1 = plt.imshow(sorted_beliefs[:,1:151].T)
-        print(np.max(sorted_beliefs[:,:151]))
         plt.colorbar(label= 'prob.', ticks = np.round([np.min(sorted_beliefs[:,:151]), np.max(sorted_beliefs[:,:151])],2), shrink = .5)
         plt.xlabel('belief index')
         plt.ylabel('node index')
@@ -178,7 +176,17 @@ class PlotHelper():
         plt.xlabel('signal prob.')
         plt.ylabel('prob.')
         plt.title('')
-        return fig1, fig2, fig3
+        plt.figure(figsize = self.figsize)
+        fig4 = plt.plot(lick_prob_matrix, 'o-', color = 'r')
+        plt.xlabel('belief index')
+        plt.title(f'prob. of licking')
+        for attention_choice in range(len(attention_action_keys)):
+            plt.plot(attention_prob_matrix[:,attention_choice], 'o-', color = attention_color_list[attention_choice])
+        plt.legend(['lick']+[f'attention {attention_choice}' for attention_choice in range(len(attention_action_keys))], bbox_to_anchor=(1.5, 1.05), fontsize=12)
+        plt.xlabel('belief index')
+        plt.ylabel('prob.')
+        plt.title('')
+        return fig1, fig2, fig3, fig4
 
 
 #for episodic
@@ -235,10 +243,11 @@ def plot_AF_episode(episode, env, agent):
     # fig = env_plotter.make_episode_plot(plot_variable = states, label = 'True Sate', feature_color_list = ['khaki','green','limegreen','palegreen','lime','red','maroon'])
     
     state_classes = np.array([[assign_state_class(true_state, no_signal_nodes, no_penalty_nodes)] for true_state in states.flatten()])
-    fig1, fig2, fig3 = env_plotter.policy_for_sampled_beliefs(agent, env, states, probs, no_nodes, dict_action_possible, licking_action_keys, attention_action_keys, no_signal_nodes)
+    fig1, fig2, fig3, fig4 = env_plotter.policy_for_sampled_beliefs(agent, env, states, probs, licking_action_keys, attention_action_keys, no_signal_nodes)
     figs.append(fig1)
     figs.append(fig2)
     figs.append(fig3)
+    figs.append(fig4)
     # fig1, fig2, fig3 = env_plotter.policy_for_gaussian_beliefs(agent, no_nodes, dict_action_possible, licking_action_keys, attention_action_keys, no_signal_nodes, mu_max = 20, mu_length = 20)
     # figs.append(fig1)
     # figs.append(fig2)
