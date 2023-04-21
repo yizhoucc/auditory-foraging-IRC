@@ -134,7 +134,7 @@ class PlotHelper():
         
         return fig1, fig2, fig3
 
-    def policy_for_sampled_beliefs(self, agent, env, states, probs, licking_action_keys, attention_action_keys, no_signal_nodes, no_additional_episodes = 0, attention_color_list = ['blue','blueviolet','indigo','magenta','darkcyan','cyan']):
+    def policy_for_sampled_beliefs_wrt_signal_prob(self, agent, env, states, probs, licking_action_keys, attention_action_keys, no_signal_nodes, no_additional_episodes = 0, attention_color_list = ['blue','blueviolet','indigo','magenta','darkcyan','cyan']):
         no_signal_and_noise_nodes = no_signal_nodes + 1
         episodes_states = states
         episodes_beliefs = probs
@@ -157,8 +157,8 @@ class PlotHelper():
             for attention_keys in attention_action_keys[attention_choice]:
                 attention_prob_matrix[:,attention_choice] += action_prob_matrix[:, attention_keys]
         plt.figure(figsize = self.figsize)
-        fig1 = plt.imshow(sorted_beliefs[:,1:151].T)
-        plt.colorbar(label= 'prob.', ticks = np.round([np.min(sorted_beliefs[:,:151]), np.max(sorted_beliefs[:,:151])],2), shrink = .5)
+        fig1 = plt.imshow(sorted_beliefs[:,0:no_signal_and_noise_nodes].T)
+        plt.colorbar(label= 'prob.', ticks = np.round([np.min(sorted_beliefs[:,:no_signal_and_noise_nodes]), np.max(sorted_beliefs[:,:no_signal_and_noise_nodes])],2), shrink = .5)
         plt.xlabel('belief index')
         plt.ylabel('node index')
         plt.title(f'Sampled beliefs')
@@ -186,7 +186,59 @@ class PlotHelper():
         plt.xlabel('belief index')
         plt.ylabel('prob.')
         plt.title('')
-        return fig1, fig2, fig3, fig4
+        return fig1, fig2, fig3, fig4, sorted_beliefs[:,:no_signal_and_noise_nodes].T, lick_prob_matrix, attention_prob_matrix, sorted_signal_prob
+    
+    def policy_for_sampled_beliefs_wrt_time_step(self, agent, states, probs, licking_action_keys, attention_action_keys, no_signal_nodes, attention_color_list = ['blue','blueviolet','indigo','magenta','darkcyan','cyan']):
+        no_signal_and_noise_nodes = no_signal_nodes + 1
+        episodes_states = states
+        episodes_beliefs = probs
+        # chosen_time = [i for i in range(len(episodes_states)) if episodes_states[i] < no_signal_and_noise_nodes]
+        # chosen_beliefs = episodes_beliefs[chosen_time]
+        chosen_beliefs = episodes_beliefs
+        # sorted_indices = np.argsort(np.sum(chosen_beliefs[:,1:no_signal_and_noise_nodes],1))
+        # sorted_signal_prob = np.sum(chosen_beliefs[:,1:no_signal_and_noise_nodes],1)[sorted_indices]
+        # sorted_beliefs = chosen_beliefs[sorted_indices]
+        sorted_beliefs = chosen_beliefs
+
+        action_prob_matrix = np.array([agent.agent_action_distribution(np.array([sorted_beliefs[index, :]]))[0] for index in range(len(sorted_beliefs))])
+        lick_prob_matrix = np.zeros(len(sorted_beliefs))
+        attention_prob_matrix = np.zeros((len(sorted_beliefs), len(attention_action_keys)))
+        for lick_key in licking_action_keys:
+            lick_prob_matrix += action_prob_matrix[:,lick_key]
+        for attention_choice in range(len(attention_action_keys)):
+            for attention_keys in attention_action_keys[attention_choice]:
+                attention_prob_matrix[:,attention_choice] += action_prob_matrix[:, attention_keys]
+        plt.figure(figsize = self.figsize)
+        fig1 = plt.imshow(sorted_beliefs[:,1:no_signal_and_noise_nodes].T)
+        plt.colorbar(label= 'prob.', ticks = np.round([np.min(sorted_beliefs[:,:no_signal_and_noise_nodes]), np.max(sorted_beliefs[:,:no_signal_and_noise_nodes])],2), shrink = .5)
+        plt.xlabel('time')
+        plt.ylabel('node index')
+        plt.title(f'beliefs')
+        # plt.figure(figsize = self.figsize)
+        # fig2 = plt.plot(sorted_signal_prob, 'o-')
+        # plt.xlabel('belief index')
+        # plt.ylabel('signal probability')
+        plt.figure(figsize = self.figsize)
+        fig2 = plt.plot(lick_prob_matrix, 'o-', color = 'r')
+        plt.xlabel('signal belief')
+        plt.title(f'prob. of licking')
+        for attention_choice in range(len(attention_action_keys)):
+            plt.plot(attention_prob_matrix[:,attention_choice], 'o-', color = attention_color_list[attention_choice])
+        plt.legend(['lick']+[f'attention {attention_choice}' for attention_choice in range(len(attention_action_keys))], bbox_to_anchor=(1.5, 1.05), fontsize=12)
+        plt.xlabel('signal prob.')
+        plt.ylabel('prob.')
+        plt.title('')
+        # plt.figure(figsize = self.figsize)
+        # fig4 = plt.plot(lick_prob_matrix, 'o-', color = 'r')
+        # plt.xlabel('belief index')
+        # plt.title(f'prob. of licking')
+        # for attention_choice in range(len(attention_action_keys)):
+        #     plt.plot(attention_prob_matrix[:,attention_choice], 'o-', color = attention_color_list[attention_choice])
+        # plt.legend(['lick']+[f'attention {attention_choice}' for attention_choice in range(len(attention_action_keys))], bbox_to_anchor=(1.5, 1.05), fontsize=12)
+        # plt.xlabel('belief index')
+        # plt.ylabel('prob.')
+        # plt.title('')
+        return fig1, fig2, lick_prob_matrix, attention_prob_matrix, attention_action_keys
 
 
 #for episodic
@@ -243,11 +295,14 @@ def plot_AF_episode(episode, env, agent):
     # fig = env_plotter.make_episode_plot(plot_variable = states, label = 'True Sate', feature_color_list = ['khaki','green','limegreen','palegreen','lime','red','maroon'])
     
     state_classes = np.array([[assign_state_class(true_state, no_signal_nodes, no_penalty_nodes)] for true_state in states.flatten()])
-    fig1, fig2, fig3, fig4 = env_plotter.policy_for_sampled_beliefs(agent, env, states, probs, licking_action_keys, attention_action_keys, no_signal_nodes)
+    fig1, fig2, fig3, fig4, selected_sorted_beliefs, sorted_lick_prob_matrix, sorted_attention_prob_matrix, sorted_signal_prob = env_plotter.policy_for_sampled_beliefs_wrt_signal_prob(agent, env, states, probs, licking_action_keys, attention_action_keys, no_signal_nodes)
     figs.append(fig1)
     figs.append(fig2)
     figs.append(fig3)
     figs.append(fig4)
+    fig1, fig2, lick_prob_matrix, attention_prob_matrix, attention_action_keys = env_plotter.policy_for_sampled_beliefs_wrt_time_step(agent, states, probs, licking_action_keys, attention_action_keys, no_signal_nodes)
+    figs.append(fig1)
+    figs.append(fig2)
     # fig1, fig2, fig3 = env_plotter.policy_for_gaussian_beliefs(agent, no_nodes, dict_action_possible, licking_action_keys, attention_action_keys, no_signal_nodes, mu_max = 20, mu_length = 20)
     # figs.append(fig1)
     # figs.append(fig2)
@@ -260,4 +315,4 @@ def plot_AF_episode(episode, env, agent):
     figs.append(fig)
     # fig = env_plotter.make_hist_plots(offset_actions, observations, states, no_signal_nodes, no_attention_modes)
     # figs.append(fig)
-    return figs
+    return figs, (lick_prob_matrix, attention_prob_matrix, attention_action_keys), (selected_sorted_beliefs, sorted_lick_prob_matrix, sorted_attention_prob_matrix, sorted_signal_prob)
