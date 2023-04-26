@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[    204076,       4396]
-NotebookOptionsPosition[    198876,       4297]
-NotebookOutlinePosition[    199272,       4313]
-CellTagsIndexPosition[    199229,       4310]
+NotebookDataLength[    208140,       4427]
+NotebookOptionsPosition[    202762,       4324]
+NotebookOutlinePosition[    203205,       4341]
+CellTagsIndexPosition[    203162,       4338]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -81,8 +81,7 @@ Cell[BoxData[
  CellChangeTimes->{{3.8914503234309263`*^9, 3.8914504161763372`*^9}, {
   3.891450512022443*^9, 3.891450550165325*^9}, {3.891523177341668*^9, 
   3.891523190447002*^9}, {3.891525269432375*^9, 3.8915253093263693`*^9}},
- CellLabel->
-  "In[136]:=",ExpressionUUID->"1a810978-7922-49da-b617-c16309e93ad3"],
+ CellLabel->"In[3]:=",ExpressionUUID->"1a810978-7922-49da-b617-c16309e93ad3"],
 
 Cell[BoxData[
  TagBox[
@@ -128,9 +127,8 @@ $CellContext`m}, {$CellContext`m, 0, 3}, AxesLabel -> {"mean", "total cost"}],
   3.8914503497186604`*^9, {3.891450382589464*^9, 3.8914504170904703`*^9}, {
    3.8914505174407997`*^9, 3.8914505518368196`*^9}, 3.8915165638063393`*^9, {
    3.89152318513967*^9, 3.8915231908254213`*^9}, {3.891525303150169*^9, 
-   3.891525309710569*^9}},
- CellLabel->
-  "Out[136]=",ExpressionUUID->"e7e8a609-f04e-4bc2-ba4e-e29724f1f1ed"]
+   3.891525309710569*^9}, 3.891526226899534*^9, 3.8915313119092093`*^9},
+ CellLabel->"Out[3]=",ExpressionUUID->"10ca9666-c835-4d1c-a2da-72ad3b0ecaf6"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -151,7 +149,7 @@ Cell[BoxData[
   3.891516739743167*^9, {3.891517047347657*^9, 3.8915170633617992`*^9}, {
    3.891517134778356*^9, 3.891517139242951*^9}, {3.8915171753796062`*^9, 
    3.891517184252377*^9}, {3.8915172554142437`*^9, 3.891517259229652*^9}},
- CellLabel->"In[23]:=",ExpressionUUID->"180d3825-cf57-42ab-9b7c-a3ad1ae65235"],
+ CellLabel->"In[4]:=",ExpressionUUID->"180d3825-cf57-42ab-9b7c-a3ad1ae65235"],
 
 Cell[BoxData[
  RowBox[{"{", 
@@ -174,8 +172,8 @@ Cell[BoxData[
      "ConditionalExpression"]}], "}"}], "}"}]], "Output",
  CellChangeTimes->{{3.891517049052709*^9, 3.89151705366012*^9}, 
    3.891517140934457*^9, {3.891517176802142*^9, 3.8915171853289747`*^9}, 
-   3.891517260586144*^9},
- CellLabel->"Out[23]=",ExpressionUUID->"b1555024-67b6-4a5c-a38e-de46b7164920"]
+   3.891517260586144*^9, 3.891526228412176*^9, 3.891531316374859*^9},
+ CellLabel->"Out[4]=",ExpressionUUID->"b1a2e264-ebbc-4b23-8bdb-db8d9e9a0997"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -210,8 +208,7 @@ Cell[BoxData[
  CellChangeTimes->{{3.8915173044958143`*^9, 3.8915173842133503`*^9}, {
   3.891517660603846*^9, 3.891517725394205*^9}, {3.891517803316188*^9, 
   3.891517805179099*^9}, {3.891525348148656*^9, 3.891525367117996*^9}},
- CellLabel->
-  "In[138]:=",ExpressionUUID->"99fccb3e-33a9-4302-b7eb-fedb81b1c112"],
+ CellLabel->"In[5]:=",ExpressionUUID->"99fccb3e-33a9-4302-b7eb-fedb81b1c112"],
 
 Cell[BoxData[
  TagBox[
@@ -253,9 +250,8 @@ Cell[BoxData[
  CellChangeTimes->{
   3.891517344984844*^9, 3.891517385754196*^9, {3.891517661245586*^9, 
    3.8915176924857693`*^9}, 3.8915177258152122`*^9, 3.891517805646825*^9, 
-   3.8915253686081123`*^9},
- CellLabel->
-  "Out[138]=",ExpressionUUID->"ec685e73-4dc0-4f45-aefe-ce4c4d08d593"]
+   3.8915253686081123`*^9, 3.891526228554901*^9, 3.8915313167855387`*^9},
+ CellLabel->"Out[5]=",ExpressionUUID->"8fe6977f-f994-4501-9be8-9a6c68fd695c"]
 }, Open  ]]
 }, Open  ]],
 
@@ -263,8 +259,9 @@ Cell[CellGroupData[{
 
 Cell["Bernoulli", "Subsubsection",
  CellChangeTimes->{{3.891517877092245*^9, 3.891517878811895*^9}, {
-  3.891517964966353*^9, 3.891517966503098*^9}, {3.891519159887855*^9, 
-  3.891519160023629*^9}},ExpressionUUID->"585d62ac-d603-4f1c-8285-\
+   3.891517964966353*^9, 3.891517966503098*^9}, {3.891519159887855*^9, 
+   3.891519160023629*^9}, 
+   3.891531318397408*^9},ExpressionUUID->"585d62ac-d603-4f1c-8285-\
 b751f16d4962"],
 
 Cell[BoxData[
@@ -284,7 +281,7 @@ Cell[BoxData[
  CellChangeTimes->{{3.8915179778486643`*^9, 3.891517981368739*^9}, {
   3.8915180777324553`*^9, 3.891518103533019*^9}, {3.891518350794918*^9, 
   3.891518353065737*^9}, {3.891518387646452*^9, 3.89151839508671*^9}},
- CellLabel->"In[44]:=",ExpressionUUID->"af2c1e13-4265-41cc-8bbd-8f75b49d6478"],
+ CellLabel->"In[6]:=",ExpressionUUID->"af2c1e13-4265-41cc-8bbd-8f75b49d6478"],
 
 Cell[CellGroupData[{
 
@@ -319,8 +316,7 @@ Cell[BoxData[
    3.891518273864819*^9, 3.8915183343697157`*^9}, {3.8915183989369717`*^9, 
    3.891518427307055*^9}, {3.8915184697934093`*^9, 3.891518475985209*^9}, 
    3.8915231703079433`*^9, {3.891525356340873*^9, 3.8915253972731237`*^9}},
- CellLabel->
-  "In[139]:=",ExpressionUUID->"67efd367-871a-439a-8c45-4ae41175b582"],
+ CellLabel->"In[7]:=",ExpressionUUID->"67efd367-871a-439a-8c45-4ae41175b582"],
 
 Cell[BoxData[
  TagBox[
@@ -363,9 +359,8 @@ Cell[BoxData[
   Manipulate`InterpretManipulate[1]]], "Output",
  CellChangeTimes->{{3.891518310469673*^9, 3.891518335285668*^9}, {
    3.891518403281282*^9, 3.891518476604244*^9}, 3.891523194996488*^9, 
-   3.891525397670412*^9},
- CellLabel->
-  "Out[139]=",ExpressionUUID->"844e3245-27b5-4bb0-a5b1-0a828b2fd1bb"]
+   3.891525397670412*^9, 3.8915262287973146`*^9, 3.89153132647316*^9},
+ CellLabel->"Out[7]=",ExpressionUUID->"c8a844c4-b484-4abc-87c6-bd239816e090"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -383,7 +378,7 @@ Cell[BoxData[
     RowBox[{"attCoeff", ">", "0"}], " ", "&&", " ", 
     RowBox[{"attTemp", ">", "0"}]}]}], "]"}]], "Input",
  CellChangeTimes->{{3.891518512805657*^9, 3.891518527007381*^9}},
- CellLabel->"In[46]:=",ExpressionUUID->"9a216c42-59a7-4108-8fdf-70f2ad629da7"],
+ CellLabel->"In[8]:=",ExpressionUUID->"9a216c42-59a7-4108-8fdf-70f2ad629da7"],
 
 Cell[BoxData[
  RowBox[{"{", 
@@ -395,8 +390,9 @@ Cell[BoxData[
           FractionBox["attTemp", "attCoeff"], "]"}]}], 
       RowBox[{"attTemp", ">", "attCoeff"}]},
      "ConditionalExpression"]}], "}"}], "}"}]], "Output",
- CellChangeTimes->{{3.891518517744824*^9, 3.891518527434348*^9}},
- CellLabel->"Out[46]=",ExpressionUUID->"4016453d-a17f-419c-9739-eb5250c12e61"]
+ CellChangeTimes->{{3.891518517744824*^9, 3.891518527434348*^9}, 
+   3.891526229004611*^9, 3.891531327898226*^9},
+ CellLabel->"Out[8]=",ExpressionUUID->"09efa543-e449-4cee-9b55-669eaf10d3f3"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -430,8 +426,7 @@ Cell[BoxData[
  CellChangeTimes->{{3.8915185600271177`*^9, 3.891518646645636*^9}, {
    3.8915187760990343`*^9, 3.89151883428892*^9}, {3.8915189963659678`*^9, 
    3.891519027495924*^9}, 3.89152315702708*^9, 3.891525410643827*^9},
- CellLabel->
-  "In[140]:=",ExpressionUUID->"65a19c31-d4e9-40e4-9dd4-23e9c8997d82"],
+ CellLabel->"In[9]:=",ExpressionUUID->"65a19c31-d4e9-40e4-9dd4-23e9c8997d82"],
 
 Cell[BoxData[
  TagBox[
@@ -474,9 +469,9 @@ Cell[BoxData[
  CellChangeTimes->{{3.891518630716468*^9, 3.8915186474569197`*^9}, {
    3.891518785327972*^9, 3.8915187908680573`*^9}, {3.8915188284257174`*^9, 
    3.8915188346772413`*^9}, {3.8915190023723288`*^9, 3.8915190278553667`*^9}, 
-   3.8915191395463676`*^9, 3.891523157348154*^9, 3.891525412797113*^9},
- CellLabel->
-  "Out[140]=",ExpressionUUID->"6cb5d353-93ba-4cb7-8152-bed20d4f79b9"]
+   3.8915191395463676`*^9, 3.891523157348154*^9, 3.891525412797113*^9, 
+   3.891526229050514*^9, 3.8915313292179527`*^9},
+ CellLabel->"Out[9]=",ExpressionUUID->"d0545d67-b55b-48ae-9c85-29dd79466d38"]
 }, Open  ]]
 }, Open  ]],
 
@@ -488,6 +483,8 @@ Cell["Bernoulli with prior", "Subsubsection",
   3.891519160023629*^9}, {3.891521457462542*^9, 
   3.8915214588470488`*^9}},ExpressionUUID->"4346171a-0105-414e-87a9-\
 39ccc14a9e3e"],
+
+Cell[CellGroupData[{
 
 Cell[BoxData[{
  RowBox[{
@@ -519,9 +516,25 @@ Cell[BoxData[{
     RowBox[{"(", 
      RowBox[{"1", "-", "b"}], ")"}]}]}], ";"}]}], "Input",
  CellChangeTimes->{{3.891521463384521*^9, 3.8915214746890163`*^9}, {
-  3.891521657179188*^9, 
-  3.89152173108435*^9}},ExpressionUUID->"1d3e0bd3-f26d-4f07-a8c0-\
-b1e834ec8ae9"],
+  3.891521657179188*^9, 3.89152173108435*^9}},
+ CellLabel->"In[10]:=",ExpressionUUID->"1d3e0bd3-f26d-4f07-a8c0-b1e834ec8ae9"],
+
+Cell[BoxData[
+ TemplateBox[{
+  "Set", "write", 
+   "\"Tag \\!\\(\\*RowBox[{\\\"Plus\\\"}]\\) in \\!\\(\\*RowBox[{\\\"1\\\", \
+\\\"-\\\", FractionBox[RowBox[{\\\"b\\\", \\\" \\\", RowBox[{\\\"(\\\", \
+RowBox[{RowBox[{RowBox[{\\\"(\\\", RowBox[{\\\"1\\\", \\\"-\\\", \\\"a\\\"}], \
+\\\")\\\"}], \\\" \\\", RowBox[{\\\"(\\\", RowBox[{\\\"1\\\", \\\"-\\\", \
+\\\"o\\\"}], \\\")\\\"}]}], \\\"+\\\", RowBox[{\\\"a\\\", \\\" \\\", \
+\\\"o\\\"}]}], \\\")\\\"}]}], \\\"z\\\"]}]\\) is Protected.\"", 2, 11, 1, 
+   17271275130716459281, "Local"},
+  "MessageTemplate"]], "Message", "MSG",
+ CellChangeTimes->{3.89152622928461*^9, 3.891531332196809*^9},
+ CellLabel->
+  "During evaluation of \
+In[10]:=",ExpressionUUID->"977ffd37-9a3a-421b-9762-c6ae904521b0"]
+}, Open  ]],
 
 Cell[CellGroupData[{
 
@@ -568,7 +581,7 @@ Cell[BoxData[
           RowBox[{"1", "-", "b"}], ")"}]}]}], "==", "1"}], ",", "z"}], 
      "]"}]}], "//", "FullSimplify"}]}]], "Input",
  CellChangeTimes->{{3.891521758760419*^9, 3.891521838754451*^9}},
- CellLabel->"In[67]:=",ExpressionUUID->"30e0fd01-595e-4ef4-8ebb-8a65225bf84e"],
+ CellLabel->"In[12]:=",ExpressionUUID->"30e0fd01-595e-4ef4-8ebb-8a65225bf84e"],
 
 Cell[BoxData[
  RowBox[{"{", 
@@ -592,8 +605,9 @@ Cell[BoxData[
       RowBox[{
        RowBox[{"-", "1"}], "+", 
        RowBox[{"2", " ", "o"}]}], ")"}]}]}]], "}"}]], "Output",
- CellChangeTimes->{{3.8915217779523153`*^9, 3.8915218399984818`*^9}},
- CellLabel->"Out[67]=",ExpressionUUID->"35cb1bde-8589-4b80-aa6b-d0e8fc859d93"]
+ CellChangeTimes->{{3.8915217779523153`*^9, 3.8915218399984818`*^9}, 
+   3.891526229418497*^9, 3.891531333487939*^9},
+ CellLabel->"Out[12]=",ExpressionUUID->"6d35485e-9d6a-4bab-9e49-9971b6f68037"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -624,7 +638,7 @@ Cell[BoxData[
    RowBox[{"{", 
     RowBox[{"o", "->", " ", "0"}], "}"}]}], "//", "FullSimplify"}]], "Input",
  CellChangeTimes->{{3.891522138221591*^9, 3.891522150303755*^9}},
- CellLabel->"In[68]:=",ExpressionUUID->"a76049c8-5ea5-481a-be49-72c306eec6e9"],
+ CellLabel->"In[13]:=",ExpressionUUID->"a76049c8-5ea5-481a-be49-72c306eec6e9"],
 
 Cell[BoxData[
  FractionBox[
@@ -632,8 +646,8 @@ Cell[BoxData[
    RowBox[{"a", " ", "b"}]}], 
   RowBox[{"a", "+", "b", "-", 
    RowBox[{"2", " ", "a", " ", "b"}]}]]], "Output",
- CellChangeTimes->{3.89152215074756*^9},
- CellLabel->"Out[68]=",ExpressionUUID->"4625b752-eaf2-4494-a8e6-09fd87ad7cf0"]
+ CellChangeTimes->{3.89152215074756*^9, 3.891526229529598*^9},
+ CellLabel->"Out[13]=",ExpressionUUID->"4dd552d8-a06f-4568-99e9-53540598c791"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -664,7 +678,7 @@ Cell[BoxData[
    RowBox[{"{", 
     RowBox[{"o", "->", " ", "1"}], "}"}]}], "//", "FullSimplify"}]], "Input",
  CellChangeTimes->{{3.891522158584045*^9, 3.891522158623611*^9}},
- CellLabel->"In[69]:=",ExpressionUUID->"2d766f67-fe33-4f17-a631-b27aabfc0faf"],
+ CellLabel->"In[14]:=",ExpressionUUID->"2d766f67-fe33-4f17-a631-b27aabfc0faf"],
 
 Cell[BoxData[
  FractionBox[
@@ -675,8 +689,8 @@ Cell[BoxData[
      RowBox[{
       RowBox[{"-", "1"}], "+", 
       RowBox[{"2", " ", "b"}]}], ")"}]}]}]]], "Output",
- CellChangeTimes->{3.891522159029231*^9},
- CellLabel->"Out[69]=",ExpressionUUID->"70e6616a-fdef-4f21-bed2-081d0d56d91a"]
+ CellChangeTimes->{3.891522159029231*^9, 3.8915262295863934`*^9},
+ CellLabel->"Out[14]=",ExpressionUUID->"64c0bd60-1e07-42da-9b1e-ab3ec5c5d1b6"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -753,7 +767,7 @@ Cell[BoxData[
   "FullSimplify"}]], "Input",
  CellChangeTimes->{{3.891522260724152*^9, 3.891522317439253*^9}, {
   3.891522418997251*^9, 3.891522427028522*^9}},
- CellLabel->"In[72]:=",ExpressionUUID->"c4be537e-8a21-404d-ac6a-6ddc530e4d44"],
+ CellLabel->"In[15]:=",ExpressionUUID->"c4be537e-8a21-404d-ac6a-6ddc530e4d44"],
 
 Cell[BoxData[
  FractionBox[
@@ -787,8 +801,8 @@ Cell[BoxData[
         RowBox[{"-", "1"}], "+", 
         RowBox[{"2", " ", "b"}]}], ")"}]}]}], ")"}]}]]], "Output",
  CellChangeTimes->{{3.891522300253523*^9, 3.891522317799736*^9}, 
-   3.891522427750725*^9},
- CellLabel->"Out[72]=",ExpressionUUID->"06ac3c73-8791-471b-9c65-2a642bee8e4c"]
+   3.891522427750725*^9, 3.8915262296729918`*^9},
+ CellLabel->"Out[15]=",ExpressionUUID->"8a702c9c-8353-4106-a9c0-801bc0e222ac"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -828,7 +842,7 @@ Cell[BoxData[
           RowBox[{"2", " ", "b"}]}], ")"}]}]}], ")"}]}]]}], "//", 
   "FullSimplify"}]], "Input",
  CellChangeTimes->{{3.891522601436719*^9, 3.891522617725546*^9}},
- CellLabel->"In[73]:=",ExpressionUUID->"73ed54c0-037c-44ba-8889-7141ea585ec3"],
+ CellLabel->"In[16]:=",ExpressionUUID->"73ed54c0-037c-44ba-8889-7141ea585ec3"],
 
 Cell[BoxData[
  RowBox[{"-", 
@@ -847,8 +861,8 @@ Cell[BoxData[
     RowBox[{"(", 
      RowBox[{"a", "+", "b", "-", 
       RowBox[{"2", " ", "a", " ", "b"}]}], ")"}]}]]}]], "Output",
- CellChangeTimes->{3.891522618087508*^9},
- CellLabel->"Out[73]=",ExpressionUUID->"16201720-95b9-4c0c-ae5c-feb65ce5c130"]
+ CellChangeTimes->{3.891522618087508*^9, 3.891526229731709*^9},
+ CellLabel->"Out[16]=",ExpressionUUID->"f7a3ced8-0e6a-4c38-865a-2ca55b49f4e6"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -920,8 +934,7 @@ Cell[BoxData[
    3.891523123099828*^9, 3.891523132255769*^9}, 3.891523163500705*^9, {
    3.8915232205103617`*^9, 3.891523223414709*^9}, {3.8915254217580023`*^9, 
    3.891525489740913*^9}},
- CellLabel->
-  "In[142]:=",ExpressionUUID->"2d9ce8a2-6487-4896-9846-a0eb9e0e7a8b"],
+ CellLabel->"In[13]:=",ExpressionUUID->"2d9ce8a2-6487-4896-9846-a0eb9e0e7a8b"],
 
 Cell[BoxData[
  TagBox[
@@ -967,15 +980,14 @@ $CellContext`t$$)/((-$CellContext`b$$ + $CellContext`a (-1 +
   Manipulate`InterpretManipulate[1]]], "Output",
  CellChangeTimes->{{3.891523084094329*^9, 3.891523093331794*^9}, {
    3.8915231258393173`*^9, 3.891523132711619*^9}, 3.8915232240467777`*^9, {
-   3.891525457648322*^9, 3.8915254593676558`*^9}, 3.891525491732811*^9},
- CellLabel->
-  "Out[142]=",ExpressionUUID->"65f04ca8-0fa7-433c-934b-b3a71678d393"]
+   3.891525457648322*^9, 3.8915254593676558`*^9}, 3.891525491732811*^9, 
+   3.8915262298742867`*^9, 3.891531341217231*^9},
+ CellLabel->"Out[13]=",ExpressionUUID->"d7b6def6-a9a2-46ee-bc90-5728bdba3f7b"]
 }, Open  ]],
 
 Cell[BoxData[""], "Input",
- CellChangeTimes->{
-  3.891523216948503*^9},ExpressionUUID->"9ccd9fe2-00b7-4600-9edb-\
-1673bc560fd7"],
+ CellChangeTimes->{3.891523216948503*^9},
+ CellLabel->"In[18]:=",ExpressionUUID->"9ccd9fe2-00b7-4600-9edb-1673bc560fd7"],
 
 Cell[CellGroupData[{
 
@@ -1098,21 +1110,20 @@ Cell[BoxData[
   3.891523919726356*^9}, {3.8915240119906*^9, 3.891524046699971*^9}, {
   3.891524208071683*^9, 3.891524224066164*^9}, {3.89152551413663*^9, 
   3.891525546777261*^9}},
- CellLabel->
-  "In[143]:=",ExpressionUUID->"d31cb4aa-08ff-4ce8-899b-d85eb7aa9b93"],
+ CellLabel->"In[14]:=",ExpressionUUID->"d31cb4aa-08ff-4ce8-899b-d85eb7aa9b93"],
 
 Cell[BoxData[
  TagBox[
   StyleBox[
    DynamicModuleBox[{$CellContext`b$$ = 0.6, $CellContext`t$$ = 
-    0.8, $CellContext`\[Alpha]$$ = 0.1, Typeset`show$$ = True, 
+    0.8, $CellContext`\[Alpha]$$ = 0.115, Typeset`show$$ = True, 
     Typeset`bookmarkList$$ = {}, Typeset`bookmarkMode$$ = "Menu", 
     Typeset`animator$$, Typeset`animvar$$ = 1, Typeset`name$$ = 
     "\"untitled\"", Typeset`specs$$ = {{{
        Hold[$CellContext`b$$], 0.6, "prior dist."}, 0, 1}, {{
        Hold[$CellContext`t$$], 0.8, "true dist."}, 0, 1}, {{
        Hold[$CellContext`\[Alpha]$$], 0.1, "attention cost weight"}, 0, 0.5}},
-     Typeset`size$$ = {482., {97., 103.}}, Typeset`update$$ = 0, 
+     Typeset`size$$ = {482., {99., 105.}}, Typeset`update$$ = 0, 
     Typeset`initDone$$, Typeset`skipInitDone$$ = True}, 
     DynamicBox[Manipulate`ManipulateBoxes[
      1, StandardForm, 
@@ -1143,7 +1154,7 @@ $CellContext`t$$)/((-$CellContext`b$$ + $CellContext`a (-1 +
          1}, {{$CellContext`t$$, 0.8, "true dist."}, 0, 
          1}, {{$CellContext`\[Alpha]$$, 0.1, "attention cost weight"}, 0, 
          0.5}}, "Options" :> {}, "DefaultOptions" :> {}],
-     ImageSizeCache->{528., {166.1875, 171.8125}},
+     ImageSizeCache->{528., {168.1875, 173.8125}},
      SingleEvaluation->True],
     Deinitialization:>None,
     DynamicModuleValues:>{},
@@ -1159,9 +1170,8 @@ $CellContext`t$$)/((-$CellContext`b$$ + $CellContext`a (-1 +
    3.8915236248195057`*^9, {3.89152370222196*^9, 3.8915237245207863`*^9}, {
    3.8915237636240253`*^9, 3.891523788670582*^9}, 3.89152392049646*^9, 
    3.891524014676145*^9, 3.891524047681138*^9, 3.891524225640374*^9, 
-   3.8915255483699923`*^9},
- CellLabel->
-  "Out[143]=",ExpressionUUID->"698f6fbb-8933-4303-9ac3-6593d9babb28"]
+   3.8915255483699923`*^9, 3.891526230212488*^9, 3.8915313440288897`*^9},
+ CellLabel->"Out[14]=",ExpressionUUID->"6e50cacf-9c75-41f6-a053-0cfe15093e46"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -1207,8 +1217,7 @@ Cell[BoxData[
      RowBox[{"(", 
       RowBox[{"a", "-", ".5"}], ")"}]}]}], ",", "a"}], "]"}]], "Input",
  CellChangeTimes->{{3.8915241659767723`*^9, 3.89152416902468*^9}},
- CellLabel->
-  "In[102]:=",ExpressionUUID->"00e2c47a-5f5b-4fce-a421-8e06104b2f80"],
+ CellLabel->"In[20]:=",ExpressionUUID->"00e2c47a-5f5b-4fce-a421-8e06104b2f80"],
 
 Cell[BoxData[
  RowBox[{"\[Alpha]", "+", 
@@ -1359,9 +1368,8 @@ Cell[BoxData[
             RowBox[{"-", "1"}], "+", 
             RowBox[{"2", " ", "b"}]}], ")"}]}]}], ")"}]}]]}], 
     "]"}]}]}]], "Output",
- CellChangeTimes->{3.8915241694181547`*^9},
- CellLabel->
-  "Out[102]=",ExpressionUUID->"5f25dafd-c649-4b66-a69d-7288a25a8917"]
+ CellChangeTimes->{3.8915241694181547`*^9, 3.891526230464867*^9},
+ CellLabel->"Out[20]=",ExpressionUUID->"813a3257-f636-4d64-bd98-f3aeaf25f77d"]
 }, Open  ]],
 
 Cell[BoxData[
@@ -1408,8 +1416,7 @@ Cell[BoxData[
       RowBox[{"a", "-", ".5"}], ")"}]}]}]}], ";"}]], "Input",
  CellChangeTimes->{3.8915241943470078`*^9, 3.8915242836074657`*^9, 
   3.89152431969106*^9},
- CellLabel->
-  "In[105]:=",ExpressionUUID->"35d42a0b-70c7-46ee-9fe6-4e296f8c4684"],
+ CellLabel->"In[21]:=",ExpressionUUID->"35d42a0b-70c7-46ee-9fe6-4e296f8c4684"],
 
 Cell[CellGroupData[{
 
@@ -1426,13 +1433,12 @@ Cell[BoxData[
     RowBox[{"b", ">", "0"}], " ", "&&", " ", 
     RowBox[{"t", ">", "0"}]}]}], "]"}]], "Input",
  CellChangeTimes->{{3.8915242938555403`*^9, 3.8915243115775557`*^9}},
- CellLabel->
-  "In[106]:=",ExpressionUUID->"7f44395b-2074-4cb6-8c9e-3646f6ebd2ad"],
+ CellLabel->"In[22]:=",ExpressionUUID->"7f44395b-2074-4cb6-8c9e-3646f6ebd2ad"],
 
 Cell[BoxData["$Aborted"], "Output",
- CellChangeTimes->{3.8915243119814*^9, 3.891524400582283*^9},
- CellLabel->
-  "Out[106]=",ExpressionUUID->"5cb5cb77-2be4-44d0-ba13-9999e16e517f"]
+ CellChangeTimes->{3.8915243119814*^9, 3.891524400582283*^9, 
+  3.891526268583548*^9},
+ CellLabel->"Out[22]=",ExpressionUUID->"5d679e10-bedd-46eb-9c7a-c2c8bb2edec4"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -1953,88 +1959,90 @@ Cell[BoxData[
                
                And[$CellContext`b > 1, $CellContext`\[Alpha] > 
                 Root[(-6912) $CellContext`b^10 + 13824 $CellContext`b^11 - 
-                  6912 $CellContext`b^12 + 
-                  55296 $CellContext`b^9 $CellContext`t - 
-                  110592 $CellContext`b^10 $CellContext`t + 
-                  55296 $CellContext`b^11 $CellContext`t - 
-                  193536 $CellContext`b^8 $CellContext`t^2 + 
-                  387072 $CellContext`b^9 $CellContext`t^2 - 
-                  193536 $CellContext`b^10 $CellContext`t^2 + 
-                  387072 $CellContext`b^7 $CellContext`t^3 - 
-                  774144 $CellContext`b^8 $CellContext`t^3 + 
-                  387072 $CellContext`b^9 $CellContext`t^3 - 
-                  483840 $CellContext`b^6 $CellContext`t^4 + 
-                  967680 $CellContext`b^7 $CellContext`t^4 - 
-                  483840 $CellContext`b^8 $CellContext`t^4 + 
-                  387072 $CellContext`b^5 $CellContext`t^5 - 
-                  774144 $CellContext`b^6 $CellContext`t^5 + 
-                  387072 $CellContext`b^7 $CellContext`t^5 - 
-                  193536 $CellContext`b^4 $CellContext`t^6 + 
-                  387072 $CellContext`b^5 $CellContext`t^6 - 
-                  193536 $CellContext`b^6 $CellContext`t^6 + 
-                  55296 $CellContext`b^3 $CellContext`t^7 - 
-                  110592 $CellContext`b^4 $CellContext`t^7 + 
-                  55296 $CellContext`b^5 $CellContext`t^7 - 
-                  6912 $CellContext`b^2 $CellContext`t^8 + 
-                  13824 $CellContext`b^3 $CellContext`t^8 - 
-                  6912 $CellContext`b^4 $CellContext`t^8 + ((-64) \
+                  6912 $CellContext`b^12 + (
+                    55296 $CellContext`b^9) $CellContext`t - (
+                   110592 $CellContext`b^10) $CellContext`t + (
+                    55296 $CellContext`b^11) $CellContext`t - (
+                   193536 $CellContext`b^8) $CellContext`t^2 + (
+                    387072 $CellContext`b^9) $CellContext`t^2 - (
+                   193536 $CellContext`b^10) $CellContext`t^2 + (
+                    387072 $CellContext`b^7) $CellContext`t^3 - (
+                   774144 $CellContext`b^8) $CellContext`t^3 + (
+                    387072 $CellContext`b^9) $CellContext`t^3 - (
+                   483840 $CellContext`b^6) $CellContext`t^4 + (
+                    967680 $CellContext`b^7) $CellContext`t^4 - (
+                   483840 $CellContext`b^8) $CellContext`t^4 + (
+                    387072 $CellContext`b^5) $CellContext`t^5 - (
+                   774144 $CellContext`b^6) $CellContext`t^5 + (
+                    387072 $CellContext`b^7) $CellContext`t^5 - (
+                   193536 $CellContext`b^4) $CellContext`t^6 + (
+                    387072 $CellContext`b^5) $CellContext`t^6 - (
+                   193536 $CellContext`b^6) $CellContext`t^6 + (
+                    55296 $CellContext`b^3) $CellContext`t^7 - (
+                   110592 $CellContext`b^4) $CellContext`t^7 + (
+                    55296 $CellContext`b^5) $CellContext`t^7 - (
+                   6912 $CellContext`b^2) $CellContext`t^8 + (
+                    13824 $CellContext`b^3) $CellContext`t^8 - (
+                   6912 $CellContext`b^4) $CellContext`t^8 + ((-64) \
 $CellContext`b^4 + 384 $CellContext`b^5 - 480 $CellContext`b^6 - 
                     256 $CellContext`b^7 + 78048 $CellContext`b^8 - 
                     788544 $CellContext`b^9 + 3661248 $CellContext`b^10 - 
                     9907200 $CellContext`b^11 + 16876800 $CellContext`b^12 - 
                     18400000 $CellContext`b^13 + 12480000 $CellContext`b^14 - 
-                    4800000 $CellContext`b^15 + 800000 $CellContext`b^16 + 
-                    256 $CellContext`b^3 $CellContext`t - 
-                    1536 $CellContext`b^4 $CellContext`t + 
-                    1920 $CellContext`b^5 $CellContext`t + 
-                    1024 $CellContext`b^6 $CellContext`t - 
-                    312192 $CellContext`b^7 $CellContext`t + 
-                    3154176 $CellContext`b^8 $CellContext`t - 
-                    14644992 $CellContext`b^9 $CellContext`t + 
-                    39628800 $CellContext`b^10 $CellContext`t - 
-                    67507200 $CellContext`b^11 $CellContext`t + 
-                    73600000 $CellContext`b^12 $CellContext`t - 
-                    49920000 $CellContext`b^13 $CellContext`t + 
-                    19200000 $CellContext`b^14 $CellContext`t - 
-                    3200000 $CellContext`b^15 $CellContext`t - 
-                    384 $CellContext`b^2 $CellContext`t^2 + 
-                    2304 $CellContext`b^3 $CellContext`t^2 - 
-                    2880 $CellContext`b^4 $CellContext`t^2 - 
-                    1536 $CellContext`b^5 $CellContext`t^2 + 
-                    468288 $CellContext`b^6 $CellContext`t^2 - 
-                    4731264 $CellContext`b^7 $CellContext`t^2 + 
-                    21967488 $CellContext`b^8 $CellContext`t^2 - 
-                    59443200 $CellContext`b^9 $CellContext`t^2 + 
-                    101260800 $CellContext`b^10 $CellContext`t^2 - 
-                    110400000 $CellContext`b^11 $CellContext`t^2 + 
-                    74880000 $CellContext`b^12 $CellContext`t^2 - 
-                    28800000 $CellContext`b^13 $CellContext`t^2 + 
-                    4800000 $CellContext`b^14 $CellContext`t^2 + 
-                    256 $CellContext`b $CellContext`t^3 - 
-                    1536 $CellContext`b^2 $CellContext`t^3 + 
-                    1920 $CellContext`b^3 $CellContext`t^3 + 
-                    1024 $CellContext`b^4 $CellContext`t^3 - 
-                    312192 $CellContext`b^5 $CellContext`t^3 + 
-                    3154176 $CellContext`b^6 $CellContext`t^3 - 
-                    14644992 $CellContext`b^7 $CellContext`t^3 + 
-                    39628800 $CellContext`b^8 $CellContext`t^3 - 
-                    67507200 $CellContext`b^9 $CellContext`t^3 + 
-                    73600000 $CellContext`b^10 $CellContext`t^3 - 
-                    49920000 $CellContext`b^11 $CellContext`t^3 + 
-                    19200000 $CellContext`b^12 $CellContext`t^3 - 
-                    3200000 $CellContext`b^13 $CellContext`t^3 - 
-                    64 $CellContext`t^4 + 384 $CellContext`b $CellContext`t^4 - 
-                    480 $CellContext`b^2 $CellContext`t^4 - 
-                    256 $CellContext`b^3 $CellContext`t^4 + 
-                    78048 $CellContext`b^4 $CellContext`t^4 - 
-                    788544 $CellContext`b^5 $CellContext`t^4 + 
-                    3661248 $CellContext`b^6 $CellContext`t^4 - 
-                    9907200 $CellContext`b^7 $CellContext`t^4 + 
-                    16876800 $CellContext`b^8 $CellContext`t^4 - 
-                    18400000 $CellContext`b^9 $CellContext`t^4 + 
-                    12480000 $CellContext`b^10 $CellContext`t^4 - 
-                    4800000 $CellContext`b^11 $CellContext`t^4 + 
-                    800000 $CellContext`b^12 $CellContext`t^4) #^2 + (
+                    4800000 $CellContext`b^15 + 
+                    800000 $CellContext`b^16 + (
+                    256 $CellContext`b^3) $CellContext`t - (
+                    1536 $CellContext`b^4) $CellContext`t + (
+                    1920 $CellContext`b^5) $CellContext`t + (
+                    1024 $CellContext`b^6) $CellContext`t - (
+                    312192 $CellContext`b^7) $CellContext`t + (
+                    3154176 $CellContext`b^8) $CellContext`t - (
+                    14644992 $CellContext`b^9) $CellContext`t + (
+                    39628800 $CellContext`b^10) $CellContext`t - (
+                    67507200 $CellContext`b^11) $CellContext`t + (
+                    73600000 $CellContext`b^12) $CellContext`t - (
+                    49920000 $CellContext`b^13) $CellContext`t + (
+                    19200000 $CellContext`b^14) $CellContext`t - (
+                    3200000 $CellContext`b^15) $CellContext`t - (
+                    384 $CellContext`b^2) $CellContext`t^2 + (
+                    2304 $CellContext`b^3) $CellContext`t^2 - (
+                    2880 $CellContext`b^4) $CellContext`t^2 - (
+                    1536 $CellContext`b^5) $CellContext`t^2 + (
+                    468288 $CellContext`b^6) $CellContext`t^2 - (
+                    4731264 $CellContext`b^7) $CellContext`t^2 + (
+                    21967488 $CellContext`b^8) $CellContext`t^2 - (
+                    59443200 $CellContext`b^9) $CellContext`t^2 + (
+                    101260800 $CellContext`b^10) $CellContext`t^2 - (
+                    110400000 $CellContext`b^11) $CellContext`t^2 + (
+                    74880000 $CellContext`b^12) $CellContext`t^2 - (
+                    28800000 $CellContext`b^13) $CellContext`t^2 + (
+                    4800000 $CellContext`b^14) $CellContext`t^2 + (
+                    256 $CellContext`b) $CellContext`t^3 - (
+                    1536 $CellContext`b^2) $CellContext`t^3 + (
+                    1920 $CellContext`b^3) $CellContext`t^3 + (
+                    1024 $CellContext`b^4) $CellContext`t^3 - (
+                    312192 $CellContext`b^5) $CellContext`t^3 + (
+                    3154176 $CellContext`b^6) $CellContext`t^3 - (
+                    14644992 $CellContext`b^7) $CellContext`t^3 + (
+                    39628800 $CellContext`b^8) $CellContext`t^3 - (
+                    67507200 $CellContext`b^9) $CellContext`t^3 + (
+                    73600000 $CellContext`b^10) $CellContext`t^3 - (
+                    49920000 $CellContext`b^11) $CellContext`t^3 + (
+                    19200000 $CellContext`b^12) $CellContext`t^3 - (
+                    3200000 $CellContext`b^13) $CellContext`t^3 - 
+                    64 $CellContext`t^4 + (
+                    384 $CellContext`b) $CellContext`t^4 - (
+                    480 $CellContext`b^2) $CellContext`t^4 - (
+                    256 $CellContext`b^3) $CellContext`t^4 + (
+                    78048 $CellContext`b^4) $CellContext`t^4 - (
+                    788544 $CellContext`b^5) $CellContext`t^4 + (
+                    3661248 $CellContext`b^6) $CellContext`t^4 - (
+                    9907200 $CellContext`b^7) $CellContext`t^4 + (
+                    16876800 $CellContext`b^8) $CellContext`t^4 - (
+                    18400000 $CellContext`b^9) $CellContext`t^4 + (
+                    12480000 $CellContext`b^10) $CellContext`t^4 - (
+                    4800000 $CellContext`b^11) $CellContext`t^4 + (
+                    800000 $CellContext`b^12) $CellContext`t^4) #^2 + (
                     729 $CellContext`b^2 - 10206 $CellContext`b^3 + 
                     61965 $CellContext`b^4 - 212868 $CellContext`b^5 + 
                     451980 $CellContext`b^6 - 606528 $CellContext`b^7 + 
@@ -2056,87 +2064,89 @@ $CellContext`b^4 + 384 $CellContext`b^5 - 480 $CellContext`b^6 -
            Dynamic[Typeset`open]}, "IconizedObject"]], 
         And[$CellContext`b > 1, $CellContext`\[Alpha] > 
          Root[(-6912) $CellContext`b^10 + 13824 $CellContext`b^11 - 
-           6912 $CellContext`b^12 + 55296 $CellContext`b^9 $CellContext`t - 
-           110592 $CellContext`b^10 $CellContext`t + 
-           55296 $CellContext`b^11 $CellContext`t - 
-           193536 $CellContext`b^8 $CellContext`t^2 + 
-           387072 $CellContext`b^9 $CellContext`t^2 - 
-           193536 $CellContext`b^10 $CellContext`t^2 + 
-           387072 $CellContext`b^7 $CellContext`t^3 - 
-           774144 $CellContext`b^8 $CellContext`t^3 + 
-           387072 $CellContext`b^9 $CellContext`t^3 - 
-           483840 $CellContext`b^6 $CellContext`t^4 + 
-           967680 $CellContext`b^7 $CellContext`t^4 - 
-           483840 $CellContext`b^8 $CellContext`t^4 + 
-           387072 $CellContext`b^5 $CellContext`t^5 - 
-           774144 $CellContext`b^6 $CellContext`t^5 + 
-           387072 $CellContext`b^7 $CellContext`t^5 - 
-           193536 $CellContext`b^4 $CellContext`t^6 + 
-           387072 $CellContext`b^5 $CellContext`t^6 - 
-           193536 $CellContext`b^6 $CellContext`t^6 + 
-           55296 $CellContext`b^3 $CellContext`t^7 - 
-           110592 $CellContext`b^4 $CellContext`t^7 + 
-           55296 $CellContext`b^5 $CellContext`t^7 - 
-           6912 $CellContext`b^2 $CellContext`t^8 + 
-           13824 $CellContext`b^3 $CellContext`t^8 - 
-           6912 $CellContext`b^4 $CellContext`t^8 + ((-64) $CellContext`b^4 + 
+           6912 $CellContext`b^12 + (
+             55296 $CellContext`b^9) $CellContext`t - (
+            110592 $CellContext`b^10) $CellContext`t + (
+             55296 $CellContext`b^11) $CellContext`t - (
+            193536 $CellContext`b^8) $CellContext`t^2 + (
+             387072 $CellContext`b^9) $CellContext`t^2 - (
+            193536 $CellContext`b^10) $CellContext`t^2 + (
+             387072 $CellContext`b^7) $CellContext`t^3 - (
+            774144 $CellContext`b^8) $CellContext`t^3 + (
+             387072 $CellContext`b^9) $CellContext`t^3 - (
+            483840 $CellContext`b^6) $CellContext`t^4 + (
+             967680 $CellContext`b^7) $CellContext`t^4 - (
+            483840 $CellContext`b^8) $CellContext`t^4 + (
+             387072 $CellContext`b^5) $CellContext`t^5 - (
+            774144 $CellContext`b^6) $CellContext`t^5 + (
+             387072 $CellContext`b^7) $CellContext`t^5 - (
+            193536 $CellContext`b^4) $CellContext`t^6 + (
+             387072 $CellContext`b^5) $CellContext`t^6 - (
+            193536 $CellContext`b^6) $CellContext`t^6 + (
+             55296 $CellContext`b^3) $CellContext`t^7 - (
+            110592 $CellContext`b^4) $CellContext`t^7 + (
+             55296 $CellContext`b^5) $CellContext`t^7 - (
+            6912 $CellContext`b^2) $CellContext`t^8 + (
+             13824 $CellContext`b^3) $CellContext`t^8 - (
+            6912 $CellContext`b^4) $CellContext`t^8 + ((-64) $CellContext`b^4 + 
              384 $CellContext`b^5 - 480 $CellContext`b^6 - 
              256 $CellContext`b^7 + 78048 $CellContext`b^8 - 
              788544 $CellContext`b^9 + 3661248 $CellContext`b^10 - 
              9907200 $CellContext`b^11 + 16876800 $CellContext`b^12 - 
              18400000 $CellContext`b^13 + 12480000 $CellContext`b^14 - 
-             4800000 $CellContext`b^15 + 800000 $CellContext`b^16 + 
-             256 $CellContext`b^3 $CellContext`t - 
-             1536 $CellContext`b^4 $CellContext`t + 
-             1920 $CellContext`b^5 $CellContext`t + 
-             1024 $CellContext`b^6 $CellContext`t - 
-             312192 $CellContext`b^7 $CellContext`t + 
-             3154176 $CellContext`b^8 $CellContext`t - 
-             14644992 $CellContext`b^9 $CellContext`t + 
-             39628800 $CellContext`b^10 $CellContext`t - 
-             67507200 $CellContext`b^11 $CellContext`t + 
-             73600000 $CellContext`b^12 $CellContext`t - 
-             49920000 $CellContext`b^13 $CellContext`t + 
-             19200000 $CellContext`b^14 $CellContext`t - 
-             3200000 $CellContext`b^15 $CellContext`t - 
-             384 $CellContext`b^2 $CellContext`t^2 + 
-             2304 $CellContext`b^3 $CellContext`t^2 - 
-             2880 $CellContext`b^4 $CellContext`t^2 - 
-             1536 $CellContext`b^5 $CellContext`t^2 + 
-             468288 $CellContext`b^6 $CellContext`t^2 - 
-             4731264 $CellContext`b^7 $CellContext`t^2 + 
-             21967488 $CellContext`b^8 $CellContext`t^2 - 
-             59443200 $CellContext`b^9 $CellContext`t^2 + 
-             101260800 $CellContext`b^10 $CellContext`t^2 - 
-             110400000 $CellContext`b^11 $CellContext`t^2 + 
-             74880000 $CellContext`b^12 $CellContext`t^2 - 
-             28800000 $CellContext`b^13 $CellContext`t^2 + 
-             4800000 $CellContext`b^14 $CellContext`t^2 + 
-             256 $CellContext`b $CellContext`t^3 - 
-             1536 $CellContext`b^2 $CellContext`t^3 + 
-             1920 $CellContext`b^3 $CellContext`t^3 + 
-             1024 $CellContext`b^4 $CellContext`t^3 - 
-             312192 $CellContext`b^5 $CellContext`t^3 + 
-             3154176 $CellContext`b^6 $CellContext`t^3 - 
-             14644992 $CellContext`b^7 $CellContext`t^3 + 
-             39628800 $CellContext`b^8 $CellContext`t^3 - 
-             67507200 $CellContext`b^9 $CellContext`t^3 + 
-             73600000 $CellContext`b^10 $CellContext`t^3 - 
-             49920000 $CellContext`b^11 $CellContext`t^3 + 
-             19200000 $CellContext`b^12 $CellContext`t^3 - 
-             3200000 $CellContext`b^13 $CellContext`t^3 - 64 $CellContext`t^4 + 
-             384 $CellContext`b $CellContext`t^4 - 
-             480 $CellContext`b^2 $CellContext`t^4 - 
-             256 $CellContext`b^3 $CellContext`t^4 + 
-             78048 $CellContext`b^4 $CellContext`t^4 - 
-             788544 $CellContext`b^5 $CellContext`t^4 + 
-             3661248 $CellContext`b^6 $CellContext`t^4 - 
-             9907200 $CellContext`b^7 $CellContext`t^4 + 
-             16876800 $CellContext`b^8 $CellContext`t^4 - 
-             18400000 $CellContext`b^9 $CellContext`t^4 + 
-             12480000 $CellContext`b^10 $CellContext`t^4 - 
-             4800000 $CellContext`b^11 $CellContext`t^4 + 
-             800000 $CellContext`b^12 $CellContext`t^4) #^2 + (
+             4800000 $CellContext`b^15 + 
+             800000 $CellContext`b^16 + (
+               256 $CellContext`b^3) $CellContext`t - (
+              1536 $CellContext`b^4) $CellContext`t + (
+               1920 $CellContext`b^5) $CellContext`t + (
+               1024 $CellContext`b^6) $CellContext`t - (
+              312192 $CellContext`b^7) $CellContext`t + (
+               3154176 $CellContext`b^8) $CellContext`t - (
+              14644992 $CellContext`b^9) $CellContext`t + (
+               39628800 $CellContext`b^10) $CellContext`t - (
+              67507200 $CellContext`b^11) $CellContext`t + (
+               73600000 $CellContext`b^12) $CellContext`t - (
+              49920000 $CellContext`b^13) $CellContext`t + (
+               19200000 $CellContext`b^14) $CellContext`t - (
+              3200000 $CellContext`b^15) $CellContext`t - (
+              384 $CellContext`b^2) $CellContext`t^2 + (
+               2304 $CellContext`b^3) $CellContext`t^2 - (
+              2880 $CellContext`b^4) $CellContext`t^2 - (
+              1536 $CellContext`b^5) $CellContext`t^2 + (
+               468288 $CellContext`b^6) $CellContext`t^2 - (
+              4731264 $CellContext`b^7) $CellContext`t^2 + (
+               21967488 $CellContext`b^8) $CellContext`t^2 - (
+              59443200 $CellContext`b^9) $CellContext`t^2 + (
+               101260800 $CellContext`b^10) $CellContext`t^2 - (
+              110400000 $CellContext`b^11) $CellContext`t^2 + (
+               74880000 $CellContext`b^12) $CellContext`t^2 - (
+              28800000 $CellContext`b^13) $CellContext`t^2 + (
+               4800000 $CellContext`b^14) $CellContext`t^2 + (
+               256 $CellContext`b) $CellContext`t^3 - (
+              1536 $CellContext`b^2) $CellContext`t^3 + (
+               1920 $CellContext`b^3) $CellContext`t^3 + (
+               1024 $CellContext`b^4) $CellContext`t^3 - (
+              312192 $CellContext`b^5) $CellContext`t^3 + (
+               3154176 $CellContext`b^6) $CellContext`t^3 - (
+              14644992 $CellContext`b^7) $CellContext`t^3 + (
+               39628800 $CellContext`b^8) $CellContext`t^3 - (
+              67507200 $CellContext`b^9) $CellContext`t^3 + (
+               73600000 $CellContext`b^10) $CellContext`t^3 - (
+              49920000 $CellContext`b^11) $CellContext`t^3 + (
+               19200000 $CellContext`b^12) $CellContext`t^3 - (
+              3200000 $CellContext`b^13) $CellContext`t^3 - 
+             64 $CellContext`t^4 + (384 $CellContext`b) $CellContext`t^4 - (
+              480 $CellContext`b^2) $CellContext`t^4 - (
+              256 $CellContext`b^3) $CellContext`t^4 + (
+               78048 $CellContext`b^4) $CellContext`t^4 - (
+              788544 $CellContext`b^5) $CellContext`t^4 + (
+               3661248 $CellContext`b^6) $CellContext`t^4 - (
+              9907200 $CellContext`b^7) $CellContext`t^4 + (
+               16876800 $CellContext`b^8) $CellContext`t^4 - (
+              18400000 $CellContext`b^9) $CellContext`t^4 + (
+               12480000 $CellContext`b^10) $CellContext`t^4 - (
+              4800000 $CellContext`b^11) $CellContext`t^4 + (
+               800000 $CellContext`b^12) $CellContext`t^4) #^2 + (
              729 $CellContext`b^2 - 10206 $CellContext`b^3 + 
              61965 $CellContext`b^4 - 212868 $CellContext`b^5 + 
              451980 $CellContext`b^6 - 606528 $CellContext`b^7 + 
@@ -2572,88 +2582,90 @@ $CellContext`b^4 + 384 $CellContext`b^5 - 480 $CellContext`b^6 -
                 
                 And[$CellContext`b < 1, $CellContext`\[Alpha] != 
                  Root[(-6912) $CellContext`b^10 + 13824 $CellContext`b^11 - 
-                   6912 $CellContext`b^12 + 
-                   55296 $CellContext`b^9 $CellContext`t - 
-                   110592 $CellContext`b^10 $CellContext`t + 
-                   55296 $CellContext`b^11 $CellContext`t - 
-                   193536 $CellContext`b^8 $CellContext`t^2 + 
-                   387072 $CellContext`b^9 $CellContext`t^2 - 
-                   193536 $CellContext`b^10 $CellContext`t^2 + 
-                   387072 $CellContext`b^7 $CellContext`t^3 - 
-                   774144 $CellContext`b^8 $CellContext`t^3 + 
-                   387072 $CellContext`b^9 $CellContext`t^3 - 
-                   483840 $CellContext`b^6 $CellContext`t^4 + 
-                   967680 $CellContext`b^7 $CellContext`t^4 - 
-                   483840 $CellContext`b^8 $CellContext`t^4 + 
-                   387072 $CellContext`b^5 $CellContext`t^5 - 
-                   774144 $CellContext`b^6 $CellContext`t^5 + 
-                   387072 $CellContext`b^7 $CellContext`t^5 - 
-                   193536 $CellContext`b^4 $CellContext`t^6 + 
-                   387072 $CellContext`b^5 $CellContext`t^6 - 
-                   193536 $CellContext`b^6 $CellContext`t^6 + 
-                   55296 $CellContext`b^3 $CellContext`t^7 - 
-                   110592 $CellContext`b^4 $CellContext`t^7 + 
-                   55296 $CellContext`b^5 $CellContext`t^7 - 
-                   6912 $CellContext`b^2 $CellContext`t^8 + 
-                   13824 $CellContext`b^3 $CellContext`t^8 - 
-                   6912 $CellContext`b^4 $CellContext`t^8 + ((-64) \
+                   6912 $CellContext`b^12 + (
+                    55296 $CellContext`b^9) $CellContext`t - (
+                    110592 $CellContext`b^10) $CellContext`t + (
+                    55296 $CellContext`b^11) $CellContext`t - (
+                    193536 $CellContext`b^8) $CellContext`t^2 + (
+                    387072 $CellContext`b^9) $CellContext`t^2 - (
+                    193536 $CellContext`b^10) $CellContext`t^2 + (
+                    387072 $CellContext`b^7) $CellContext`t^3 - (
+                    774144 $CellContext`b^8) $CellContext`t^3 + (
+                    387072 $CellContext`b^9) $CellContext`t^3 - (
+                    483840 $CellContext`b^6) $CellContext`t^4 + (
+                    967680 $CellContext`b^7) $CellContext`t^4 - (
+                    483840 $CellContext`b^8) $CellContext`t^4 + (
+                    387072 $CellContext`b^5) $CellContext`t^5 - (
+                    774144 $CellContext`b^6) $CellContext`t^5 + (
+                    387072 $CellContext`b^7) $CellContext`t^5 - (
+                    193536 $CellContext`b^4) $CellContext`t^6 + (
+                    387072 $CellContext`b^5) $CellContext`t^6 - (
+                    193536 $CellContext`b^6) $CellContext`t^6 + (
+                    55296 $CellContext`b^3) $CellContext`t^7 - (
+                    110592 $CellContext`b^4) $CellContext`t^7 + (
+                    55296 $CellContext`b^5) $CellContext`t^7 - (
+                    6912 $CellContext`b^2) $CellContext`t^8 + (
+                    13824 $CellContext`b^3) $CellContext`t^8 - (
+                    6912 $CellContext`b^4) $CellContext`t^8 + ((-64) \
 $CellContext`b^4 + 384 $CellContext`b^5 - 480 $CellContext`b^6 - 
                     256 $CellContext`b^7 + 78048 $CellContext`b^8 - 
                     788544 $CellContext`b^9 + 3661248 $CellContext`b^10 - 
                     9907200 $CellContext`b^11 + 16876800 $CellContext`b^12 - 
                     18400000 $CellContext`b^13 + 12480000 $CellContext`b^14 - 
-                    4800000 $CellContext`b^15 + 800000 $CellContext`b^16 + 
-                    256 $CellContext`b^3 $CellContext`t - 
-                    1536 $CellContext`b^4 $CellContext`t + 
-                    1920 $CellContext`b^5 $CellContext`t + 
-                    1024 $CellContext`b^6 $CellContext`t - 
-                    312192 $CellContext`b^7 $CellContext`t + 
-                    3154176 $CellContext`b^8 $CellContext`t - 
-                    14644992 $CellContext`b^9 $CellContext`t + 
-                    39628800 $CellContext`b^10 $CellContext`t - 
-                    67507200 $CellContext`b^11 $CellContext`t + 
-                    73600000 $CellContext`b^12 $CellContext`t - 
-                    49920000 $CellContext`b^13 $CellContext`t + 
-                    19200000 $CellContext`b^14 $CellContext`t - 
-                    3200000 $CellContext`b^15 $CellContext`t - 
-                    384 $CellContext`b^2 $CellContext`t^2 + 
-                    2304 $CellContext`b^3 $CellContext`t^2 - 
-                    2880 $CellContext`b^4 $CellContext`t^2 - 
-                    1536 $CellContext`b^5 $CellContext`t^2 + 
-                    468288 $CellContext`b^6 $CellContext`t^2 - 
-                    4731264 $CellContext`b^7 $CellContext`t^2 + 
-                    21967488 $CellContext`b^8 $CellContext`t^2 - 
-                    59443200 $CellContext`b^9 $CellContext`t^2 + 
-                    101260800 $CellContext`b^10 $CellContext`t^2 - 
-                    110400000 $CellContext`b^11 $CellContext`t^2 + 
-                    74880000 $CellContext`b^12 $CellContext`t^2 - 
-                    28800000 $CellContext`b^13 $CellContext`t^2 + 
-                    4800000 $CellContext`b^14 $CellContext`t^2 + 
-                    256 $CellContext`b $CellContext`t^3 - 
-                    1536 $CellContext`b^2 $CellContext`t^3 + 
-                    1920 $CellContext`b^3 $CellContext`t^3 + 
-                    1024 $CellContext`b^4 $CellContext`t^3 - 
-                    312192 $CellContext`b^5 $CellContext`t^3 + 
-                    3154176 $CellContext`b^6 $CellContext`t^3 - 
-                    14644992 $CellContext`b^7 $CellContext`t^3 + 
-                    39628800 $CellContext`b^8 $CellContext`t^3 - 
-                    67507200 $CellContext`b^9 $CellContext`t^3 + 
-                    73600000 $CellContext`b^10 $CellContext`t^3 - 
-                    49920000 $CellContext`b^11 $CellContext`t^3 + 
-                    19200000 $CellContext`b^12 $CellContext`t^3 - 
-                    3200000 $CellContext`b^13 $CellContext`t^3 - 
-                    64 $CellContext`t^4 + 384 $CellContext`b $CellContext`t^4 - 
-                    480 $CellContext`b^2 $CellContext`t^4 - 
-                    256 $CellContext`b^3 $CellContext`t^4 + 
-                    78048 $CellContext`b^4 $CellContext`t^4 - 
-                    788544 $CellContext`b^5 $CellContext`t^4 + 
-                    3661248 $CellContext`b^6 $CellContext`t^4 - 
-                    9907200 $CellContext`b^7 $CellContext`t^4 + 
-                    16876800 $CellContext`b^8 $CellContext`t^4 - 
-                    18400000 $CellContext`b^9 $CellContext`t^4 + 
-                    12480000 $CellContext`b^10 $CellContext`t^4 - 
-                    4800000 $CellContext`b^11 $CellContext`t^4 + 
-                    800000 $CellContext`b^12 $CellContext`t^4) #^2 + (
+                    4800000 $CellContext`b^15 + 
+                    800000 $CellContext`b^16 + (
+                    256 $CellContext`b^3) $CellContext`t - (
+                    1536 $CellContext`b^4) $CellContext`t + (
+                    1920 $CellContext`b^5) $CellContext`t + (
+                    1024 $CellContext`b^6) $CellContext`t - (
+                    312192 $CellContext`b^7) $CellContext`t + (
+                    3154176 $CellContext`b^8) $CellContext`t - (
+                    14644992 $CellContext`b^9) $CellContext`t + (
+                    39628800 $CellContext`b^10) $CellContext`t - (
+                    67507200 $CellContext`b^11) $CellContext`t + (
+                    73600000 $CellContext`b^12) $CellContext`t - (
+                    49920000 $CellContext`b^13) $CellContext`t + (
+                    19200000 $CellContext`b^14) $CellContext`t - (
+                    3200000 $CellContext`b^15) $CellContext`t - (
+                    384 $CellContext`b^2) $CellContext`t^2 + (
+                    2304 $CellContext`b^3) $CellContext`t^2 - (
+                    2880 $CellContext`b^4) $CellContext`t^2 - (
+                    1536 $CellContext`b^5) $CellContext`t^2 + (
+                    468288 $CellContext`b^6) $CellContext`t^2 - (
+                    4731264 $CellContext`b^7) $CellContext`t^2 + (
+                    21967488 $CellContext`b^8) $CellContext`t^2 - (
+                    59443200 $CellContext`b^9) $CellContext`t^2 + (
+                    101260800 $CellContext`b^10) $CellContext`t^2 - (
+                    110400000 $CellContext`b^11) $CellContext`t^2 + (
+                    74880000 $CellContext`b^12) $CellContext`t^2 - (
+                    28800000 $CellContext`b^13) $CellContext`t^2 + (
+                    4800000 $CellContext`b^14) $CellContext`t^2 + (
+                    256 $CellContext`b) $CellContext`t^3 - (
+                    1536 $CellContext`b^2) $CellContext`t^3 + (
+                    1920 $CellContext`b^3) $CellContext`t^3 + (
+                    1024 $CellContext`b^4) $CellContext`t^3 - (
+                    312192 $CellContext`b^5) $CellContext`t^3 + (
+                    3154176 $CellContext`b^6) $CellContext`t^3 - (
+                    14644992 $CellContext`b^7) $CellContext`t^3 + (
+                    39628800 $CellContext`b^8) $CellContext`t^3 - (
+                    67507200 $CellContext`b^9) $CellContext`t^3 + (
+                    73600000 $CellContext`b^10) $CellContext`t^3 - (
+                    49920000 $CellContext`b^11) $CellContext`t^3 + (
+                    19200000 $CellContext`b^12) $CellContext`t^3 - (
+                    3200000 $CellContext`b^13) $CellContext`t^3 - 
+                    64 $CellContext`t^4 + (
+                    384 $CellContext`b) $CellContext`t^4 - (
+                    480 $CellContext`b^2) $CellContext`t^4 - (
+                    256 $CellContext`b^3) $CellContext`t^4 + (
+                    78048 $CellContext`b^4) $CellContext`t^4 - (
+                    788544 $CellContext`b^5) $CellContext`t^4 + (
+                    3661248 $CellContext`b^6) $CellContext`t^4 - (
+                    9907200 $CellContext`b^7) $CellContext`t^4 + (
+                    16876800 $CellContext`b^8) $CellContext`t^4 - (
+                    18400000 $CellContext`b^9) $CellContext`t^4 + (
+                    12480000 $CellContext`b^10) $CellContext`t^4 - (
+                    4800000 $CellContext`b^11) $CellContext`t^4 + (
+                    800000 $CellContext`b^12) $CellContext`t^4) #^2 + (
                     729 $CellContext`b^2 - 10206 $CellContext`b^3 + 
                     61965 $CellContext`b^4 - 212868 $CellContext`b^5 + 
                     451980 $CellContext`b^6 - 606528 $CellContext`b^7 + 
@@ -2662,88 +2674,90 @@ $CellContext`b^4 + 384 $CellContext`b^5 - 480 $CellContext`b^6 -
                 
                 And[$CellContext`b > 1, $CellContext`\[Alpha] > 
                  Root[(-6912) $CellContext`b^10 + 13824 $CellContext`b^11 - 
-                   6912 $CellContext`b^12 + 
-                   55296 $CellContext`b^9 $CellContext`t - 
-                   110592 $CellContext`b^10 $CellContext`t + 
-                   55296 $CellContext`b^11 $CellContext`t - 
-                   193536 $CellContext`b^8 $CellContext`t^2 + 
-                   387072 $CellContext`b^9 $CellContext`t^2 - 
-                   193536 $CellContext`b^10 $CellContext`t^2 + 
-                   387072 $CellContext`b^7 $CellContext`t^3 - 
-                   774144 $CellContext`b^8 $CellContext`t^3 + 
-                   387072 $CellContext`b^9 $CellContext`t^3 - 
-                   483840 $CellContext`b^6 $CellContext`t^4 + 
-                   967680 $CellContext`b^7 $CellContext`t^4 - 
-                   483840 $CellContext`b^8 $CellContext`t^4 + 
-                   387072 $CellContext`b^5 $CellContext`t^5 - 
-                   774144 $CellContext`b^6 $CellContext`t^5 + 
-                   387072 $CellContext`b^7 $CellContext`t^5 - 
-                   193536 $CellContext`b^4 $CellContext`t^6 + 
-                   387072 $CellContext`b^5 $CellContext`t^6 - 
-                   193536 $CellContext`b^6 $CellContext`t^6 + 
-                   55296 $CellContext`b^3 $CellContext`t^7 - 
-                   110592 $CellContext`b^4 $CellContext`t^7 + 
-                   55296 $CellContext`b^5 $CellContext`t^7 - 
-                   6912 $CellContext`b^2 $CellContext`t^8 + 
-                   13824 $CellContext`b^3 $CellContext`t^8 - 
-                   6912 $CellContext`b^4 $CellContext`t^8 + ((-64) \
+                   6912 $CellContext`b^12 + (
+                    55296 $CellContext`b^9) $CellContext`t - (
+                    110592 $CellContext`b^10) $CellContext`t + (
+                    55296 $CellContext`b^11) $CellContext`t - (
+                    193536 $CellContext`b^8) $CellContext`t^2 + (
+                    387072 $CellContext`b^9) $CellContext`t^2 - (
+                    193536 $CellContext`b^10) $CellContext`t^2 + (
+                    387072 $CellContext`b^7) $CellContext`t^3 - (
+                    774144 $CellContext`b^8) $CellContext`t^3 + (
+                    387072 $CellContext`b^9) $CellContext`t^3 - (
+                    483840 $CellContext`b^6) $CellContext`t^4 + (
+                    967680 $CellContext`b^7) $CellContext`t^4 - (
+                    483840 $CellContext`b^8) $CellContext`t^4 + (
+                    387072 $CellContext`b^5) $CellContext`t^5 - (
+                    774144 $CellContext`b^6) $CellContext`t^5 + (
+                    387072 $CellContext`b^7) $CellContext`t^5 - (
+                    193536 $CellContext`b^4) $CellContext`t^6 + (
+                    387072 $CellContext`b^5) $CellContext`t^6 - (
+                    193536 $CellContext`b^6) $CellContext`t^6 + (
+                    55296 $CellContext`b^3) $CellContext`t^7 - (
+                    110592 $CellContext`b^4) $CellContext`t^7 + (
+                    55296 $CellContext`b^5) $CellContext`t^7 - (
+                    6912 $CellContext`b^2) $CellContext`t^8 + (
+                    13824 $CellContext`b^3) $CellContext`t^8 - (
+                    6912 $CellContext`b^4) $CellContext`t^8 + ((-64) \
 $CellContext`b^4 + 384 $CellContext`b^5 - 480 $CellContext`b^6 - 
                     256 $CellContext`b^7 + 78048 $CellContext`b^8 - 
                     788544 $CellContext`b^9 + 3661248 $CellContext`b^10 - 
                     9907200 $CellContext`b^11 + 16876800 $CellContext`b^12 - 
                     18400000 $CellContext`b^13 + 12480000 $CellContext`b^14 - 
-                    4800000 $CellContext`b^15 + 800000 $CellContext`b^16 + 
-                    256 $CellContext`b^3 $CellContext`t - 
-                    1536 $CellContext`b^4 $CellContext`t + 
-                    1920 $CellContext`b^5 $CellContext`t + 
-                    1024 $CellContext`b^6 $CellContext`t - 
-                    312192 $CellContext`b^7 $CellContext`t + 
-                    3154176 $CellContext`b^8 $CellContext`t - 
-                    14644992 $CellContext`b^9 $CellContext`t + 
-                    39628800 $CellContext`b^10 $CellContext`t - 
-                    67507200 $CellContext`b^11 $CellContext`t + 
-                    73600000 $CellContext`b^12 $CellContext`t - 
-                    49920000 $CellContext`b^13 $CellContext`t + 
-                    19200000 $CellContext`b^14 $CellContext`t - 
-                    3200000 $CellContext`b^15 $CellContext`t - 
-                    384 $CellContext`b^2 $CellContext`t^2 + 
-                    2304 $CellContext`b^3 $CellContext`t^2 - 
-                    2880 $CellContext`b^4 $CellContext`t^2 - 
-                    1536 $CellContext`b^5 $CellContext`t^2 + 
-                    468288 $CellContext`b^6 $CellContext`t^2 - 
-                    4731264 $CellContext`b^7 $CellContext`t^2 + 
-                    21967488 $CellContext`b^8 $CellContext`t^2 - 
-                    59443200 $CellContext`b^9 $CellContext`t^2 + 
-                    101260800 $CellContext`b^10 $CellContext`t^2 - 
-                    110400000 $CellContext`b^11 $CellContext`t^2 + 
-                    74880000 $CellContext`b^12 $CellContext`t^2 - 
-                    28800000 $CellContext`b^13 $CellContext`t^2 + 
-                    4800000 $CellContext`b^14 $CellContext`t^2 + 
-                    256 $CellContext`b $CellContext`t^3 - 
-                    1536 $CellContext`b^2 $CellContext`t^3 + 
-                    1920 $CellContext`b^3 $CellContext`t^3 + 
-                    1024 $CellContext`b^4 $CellContext`t^3 - 
-                    312192 $CellContext`b^5 $CellContext`t^3 + 
-                    3154176 $CellContext`b^6 $CellContext`t^3 - 
-                    14644992 $CellContext`b^7 $CellContext`t^3 + 
-                    39628800 $CellContext`b^8 $CellContext`t^3 - 
-                    67507200 $CellContext`b^9 $CellContext`t^3 + 
-                    73600000 $CellContext`b^10 $CellContext`t^3 - 
-                    49920000 $CellContext`b^11 $CellContext`t^3 + 
-                    19200000 $CellContext`b^12 $CellContext`t^3 - 
-                    3200000 $CellContext`b^13 $CellContext`t^3 - 
-                    64 $CellContext`t^4 + 384 $CellContext`b $CellContext`t^4 - 
-                    480 $CellContext`b^2 $CellContext`t^4 - 
-                    256 $CellContext`b^3 $CellContext`t^4 + 
-                    78048 $CellContext`b^4 $CellContext`t^4 - 
-                    788544 $CellContext`b^5 $CellContext`t^4 + 
-                    3661248 $CellContext`b^6 $CellContext`t^4 - 
-                    9907200 $CellContext`b^7 $CellContext`t^4 + 
-                    16876800 $CellContext`b^8 $CellContext`t^4 - 
-                    18400000 $CellContext`b^9 $CellContext`t^4 + 
-                    12480000 $CellContext`b^10 $CellContext`t^4 - 
-                    4800000 $CellContext`b^11 $CellContext`t^4 + 
-                    800000 $CellContext`b^12 $CellContext`t^4) #^2 + (
+                    4800000 $CellContext`b^15 + 
+                    800000 $CellContext`b^16 + (
+                    256 $CellContext`b^3) $CellContext`t - (
+                    1536 $CellContext`b^4) $CellContext`t + (
+                    1920 $CellContext`b^5) $CellContext`t + (
+                    1024 $CellContext`b^6) $CellContext`t - (
+                    312192 $CellContext`b^7) $CellContext`t + (
+                    3154176 $CellContext`b^8) $CellContext`t - (
+                    14644992 $CellContext`b^9) $CellContext`t + (
+                    39628800 $CellContext`b^10) $CellContext`t - (
+                    67507200 $CellContext`b^11) $CellContext`t + (
+                    73600000 $CellContext`b^12) $CellContext`t - (
+                    49920000 $CellContext`b^13) $CellContext`t + (
+                    19200000 $CellContext`b^14) $CellContext`t - (
+                    3200000 $CellContext`b^15) $CellContext`t - (
+                    384 $CellContext`b^2) $CellContext`t^2 + (
+                    2304 $CellContext`b^3) $CellContext`t^2 - (
+                    2880 $CellContext`b^4) $CellContext`t^2 - (
+                    1536 $CellContext`b^5) $CellContext`t^2 + (
+                    468288 $CellContext`b^6) $CellContext`t^2 - (
+                    4731264 $CellContext`b^7) $CellContext`t^2 + (
+                    21967488 $CellContext`b^8) $CellContext`t^2 - (
+                    59443200 $CellContext`b^9) $CellContext`t^2 + (
+                    101260800 $CellContext`b^10) $CellContext`t^2 - (
+                    110400000 $CellContext`b^11) $CellContext`t^2 + (
+                    74880000 $CellContext`b^12) $CellContext`t^2 - (
+                    28800000 $CellContext`b^13) $CellContext`t^2 + (
+                    4800000 $CellContext`b^14) $CellContext`t^2 + (
+                    256 $CellContext`b) $CellContext`t^3 - (
+                    1536 $CellContext`b^2) $CellContext`t^3 + (
+                    1920 $CellContext`b^3) $CellContext`t^3 + (
+                    1024 $CellContext`b^4) $CellContext`t^3 - (
+                    312192 $CellContext`b^5) $CellContext`t^3 + (
+                    3154176 $CellContext`b^6) $CellContext`t^3 - (
+                    14644992 $CellContext`b^7) $CellContext`t^3 + (
+                    39628800 $CellContext`b^8) $CellContext`t^3 - (
+                    67507200 $CellContext`b^9) $CellContext`t^3 + (
+                    73600000 $CellContext`b^10) $CellContext`t^3 - (
+                    49920000 $CellContext`b^11) $CellContext`t^3 + (
+                    19200000 $CellContext`b^12) $CellContext`t^3 - (
+                    3200000 $CellContext`b^13) $CellContext`t^3 - 
+                    64 $CellContext`t^4 + (
+                    384 $CellContext`b) $CellContext`t^4 - (
+                    480 $CellContext`b^2) $CellContext`t^4 - (
+                    256 $CellContext`b^3) $CellContext`t^4 + (
+                    78048 $CellContext`b^4) $CellContext`t^4 - (
+                    788544 $CellContext`b^5) $CellContext`t^4 + (
+                    3661248 $CellContext`b^6) $CellContext`t^4 - (
+                    9907200 $CellContext`b^7) $CellContext`t^4 + (
+                    16876800 $CellContext`b^8) $CellContext`t^4 - (
+                    18400000 $CellContext`b^9) $CellContext`t^4 + (
+                    12480000 $CellContext`b^10) $CellContext`t^4 - (
+                    4800000 $CellContext`b^11) $CellContext`t^4 + (
+                    800000 $CellContext`b^12) $CellContext`t^4) #^2 + (
                     729 $CellContext`b^2 - 10206 $CellContext`b^3 + 
                     61965 $CellContext`b^4 - 212868 $CellContext`b^5 + 
                     451980 $CellContext`b^6 - 606528 $CellContext`b^7 + 
@@ -2766,87 +2780,89 @@ $CellContext`b^4 + 384 $CellContext`b^5 - 480 $CellContext`b^6 -
         Or[
          And[$CellContext`b < 1, $CellContext`\[Alpha] != 
           Root[(-6912) $CellContext`b^10 + 13824 $CellContext`b^11 - 
-            6912 $CellContext`b^12 + 55296 $CellContext`b^9 $CellContext`t - 
-            110592 $CellContext`b^10 $CellContext`t + 
-            55296 $CellContext`b^11 $CellContext`t - 
-            193536 $CellContext`b^8 $CellContext`t^2 + 
-            387072 $CellContext`b^9 $CellContext`t^2 - 
-            193536 $CellContext`b^10 $CellContext`t^2 + 
-            387072 $CellContext`b^7 $CellContext`t^3 - 
-            774144 $CellContext`b^8 $CellContext`t^3 + 
-            387072 $CellContext`b^9 $CellContext`t^3 - 
-            483840 $CellContext`b^6 $CellContext`t^4 + 
-            967680 $CellContext`b^7 $CellContext`t^4 - 
-            483840 $CellContext`b^8 $CellContext`t^4 + 
-            387072 $CellContext`b^5 $CellContext`t^5 - 
-            774144 $CellContext`b^6 $CellContext`t^5 + 
-            387072 $CellContext`b^7 $CellContext`t^5 - 
-            193536 $CellContext`b^4 $CellContext`t^6 + 
-            387072 $CellContext`b^5 $CellContext`t^6 - 
-            193536 $CellContext`b^6 $CellContext`t^6 + 
-            55296 $CellContext`b^3 $CellContext`t^7 - 
-            110592 $CellContext`b^4 $CellContext`t^7 + 
-            55296 $CellContext`b^5 $CellContext`t^7 - 
-            6912 $CellContext`b^2 $CellContext`t^8 + 
-            13824 $CellContext`b^3 $CellContext`t^8 - 
-            6912 $CellContext`b^4 $CellContext`t^8 + ((-64) $CellContext`b^4 + 
-              384 $CellContext`b^5 - 480 $CellContext`b^6 - 
+            6912 $CellContext`b^12 + (
+              55296 $CellContext`b^9) $CellContext`t - (
+             110592 $CellContext`b^10) $CellContext`t + (
+              55296 $CellContext`b^11) $CellContext`t - (
+             193536 $CellContext`b^8) $CellContext`t^2 + (
+              387072 $CellContext`b^9) $CellContext`t^2 - (
+             193536 $CellContext`b^10) $CellContext`t^2 + (
+              387072 $CellContext`b^7) $CellContext`t^3 - (
+             774144 $CellContext`b^8) $CellContext`t^3 + (
+              387072 $CellContext`b^9) $CellContext`t^3 - (
+             483840 $CellContext`b^6) $CellContext`t^4 + (
+              967680 $CellContext`b^7) $CellContext`t^4 - (
+             483840 $CellContext`b^8) $CellContext`t^4 + (
+              387072 $CellContext`b^5) $CellContext`t^5 - (
+             774144 $CellContext`b^6) $CellContext`t^5 + (
+              387072 $CellContext`b^7) $CellContext`t^5 - (
+             193536 $CellContext`b^4) $CellContext`t^6 + (
+              387072 $CellContext`b^5) $CellContext`t^6 - (
+             193536 $CellContext`b^6) $CellContext`t^6 + (
+              55296 $CellContext`b^3) $CellContext`t^7 - (
+             110592 $CellContext`b^4) $CellContext`t^7 + (
+              55296 $CellContext`b^5) $CellContext`t^7 - (
+             6912 $CellContext`b^2) $CellContext`t^8 + (
+              13824 $CellContext`b^3) $CellContext`t^8 - (
+             6912 $CellContext`b^4) $CellContext`t^8 + ((-64) \
+$CellContext`b^4 + 384 $CellContext`b^5 - 480 $CellContext`b^6 - 
               256 $CellContext`b^7 + 78048 $CellContext`b^8 - 
               788544 $CellContext`b^9 + 3661248 $CellContext`b^10 - 
               9907200 $CellContext`b^11 + 16876800 $CellContext`b^12 - 
               18400000 $CellContext`b^13 + 12480000 $CellContext`b^14 - 
-              4800000 $CellContext`b^15 + 800000 $CellContext`b^16 + 
-              256 $CellContext`b^3 $CellContext`t - 
-              1536 $CellContext`b^4 $CellContext`t + 
-              1920 $CellContext`b^5 $CellContext`t + 
-              1024 $CellContext`b^6 $CellContext`t - 
-              312192 $CellContext`b^7 $CellContext`t + 
-              3154176 $CellContext`b^8 $CellContext`t - 
-              14644992 $CellContext`b^9 $CellContext`t + 
-              39628800 $CellContext`b^10 $CellContext`t - 
-              67507200 $CellContext`b^11 $CellContext`t + 
-              73600000 $CellContext`b^12 $CellContext`t - 
-              49920000 $CellContext`b^13 $CellContext`t + 
-              19200000 $CellContext`b^14 $CellContext`t - 
-              3200000 $CellContext`b^15 $CellContext`t - 
-              384 $CellContext`b^2 $CellContext`t^2 + 
-              2304 $CellContext`b^3 $CellContext`t^2 - 
-              2880 $CellContext`b^4 $CellContext`t^2 - 
-              1536 $CellContext`b^5 $CellContext`t^2 + 
-              468288 $CellContext`b^6 $CellContext`t^2 - 
-              4731264 $CellContext`b^7 $CellContext`t^2 + 
-              21967488 $CellContext`b^8 $CellContext`t^2 - 
-              59443200 $CellContext`b^9 $CellContext`t^2 + 
-              101260800 $CellContext`b^10 $CellContext`t^2 - 
-              110400000 $CellContext`b^11 $CellContext`t^2 + 
-              74880000 $CellContext`b^12 $CellContext`t^2 - 
-              28800000 $CellContext`b^13 $CellContext`t^2 + 
-              4800000 $CellContext`b^14 $CellContext`t^2 + 
-              256 $CellContext`b $CellContext`t^3 - 
-              1536 $CellContext`b^2 $CellContext`t^3 + 
-              1920 $CellContext`b^3 $CellContext`t^3 + 
-              1024 $CellContext`b^4 $CellContext`t^3 - 
-              312192 $CellContext`b^5 $CellContext`t^3 + 
-              3154176 $CellContext`b^6 $CellContext`t^3 - 
-              14644992 $CellContext`b^7 $CellContext`t^3 + 
-              39628800 $CellContext`b^8 $CellContext`t^3 - 
-              67507200 $CellContext`b^9 $CellContext`t^3 + 
-              73600000 $CellContext`b^10 $CellContext`t^3 - 
-              49920000 $CellContext`b^11 $CellContext`t^3 + 
-              19200000 $CellContext`b^12 $CellContext`t^3 - 
-              3200000 $CellContext`b^13 $CellContext`t^3 - 
-              64 $CellContext`t^4 + 384 $CellContext`b $CellContext`t^4 - 
-              480 $CellContext`b^2 $CellContext`t^4 - 
-              256 $CellContext`b^3 $CellContext`t^4 + 
-              78048 $CellContext`b^4 $CellContext`t^4 - 
-              788544 $CellContext`b^5 $CellContext`t^4 + 
-              3661248 $CellContext`b^6 $CellContext`t^4 - 
-              9907200 $CellContext`b^7 $CellContext`t^4 + 
-              16876800 $CellContext`b^8 $CellContext`t^4 - 
-              18400000 $CellContext`b^9 $CellContext`t^4 + 
-              12480000 $CellContext`b^10 $CellContext`t^4 - 
-              4800000 $CellContext`b^11 $CellContext`t^4 + 
-              800000 $CellContext`b^12 $CellContext`t^4) #^2 + (
+              4800000 $CellContext`b^15 + 
+              800000 $CellContext`b^16 + (
+                256 $CellContext`b^3) $CellContext`t - (
+               1536 $CellContext`b^4) $CellContext`t + (
+                1920 $CellContext`b^5) $CellContext`t + (
+                1024 $CellContext`b^6) $CellContext`t - (
+               312192 $CellContext`b^7) $CellContext`t + (
+                3154176 $CellContext`b^8) $CellContext`t - (
+               14644992 $CellContext`b^9) $CellContext`t + (
+                39628800 $CellContext`b^10) $CellContext`t - (
+               67507200 $CellContext`b^11) $CellContext`t + (
+                73600000 $CellContext`b^12) $CellContext`t - (
+               49920000 $CellContext`b^13) $CellContext`t + (
+                19200000 $CellContext`b^14) $CellContext`t - (
+               3200000 $CellContext`b^15) $CellContext`t - (
+               384 $CellContext`b^2) $CellContext`t^2 + (
+                2304 $CellContext`b^3) $CellContext`t^2 - (
+               2880 $CellContext`b^4) $CellContext`t^2 - (
+               1536 $CellContext`b^5) $CellContext`t^2 + (
+                468288 $CellContext`b^6) $CellContext`t^2 - (
+               4731264 $CellContext`b^7) $CellContext`t^2 + (
+                21967488 $CellContext`b^8) $CellContext`t^2 - (
+               59443200 $CellContext`b^9) $CellContext`t^2 + (
+                101260800 $CellContext`b^10) $CellContext`t^2 - (
+               110400000 $CellContext`b^11) $CellContext`t^2 + (
+                74880000 $CellContext`b^12) $CellContext`t^2 - (
+               28800000 $CellContext`b^13) $CellContext`t^2 + (
+                4800000 $CellContext`b^14) $CellContext`t^2 + (
+                256 $CellContext`b) $CellContext`t^3 - (
+               1536 $CellContext`b^2) $CellContext`t^3 + (
+                1920 $CellContext`b^3) $CellContext`t^3 + (
+                1024 $CellContext`b^4) $CellContext`t^3 - (
+               312192 $CellContext`b^5) $CellContext`t^3 + (
+                3154176 $CellContext`b^6) $CellContext`t^3 - (
+               14644992 $CellContext`b^7) $CellContext`t^3 + (
+                39628800 $CellContext`b^8) $CellContext`t^3 - (
+               67507200 $CellContext`b^9) $CellContext`t^3 + (
+                73600000 $CellContext`b^10) $CellContext`t^3 - (
+               49920000 $CellContext`b^11) $CellContext`t^3 + (
+                19200000 $CellContext`b^12) $CellContext`t^3 - (
+               3200000 $CellContext`b^13) $CellContext`t^3 - 
+              64 $CellContext`t^4 + (384 $CellContext`b) $CellContext`t^4 - (
+               480 $CellContext`b^2) $CellContext`t^4 - (
+               256 $CellContext`b^3) $CellContext`t^4 + (
+                78048 $CellContext`b^4) $CellContext`t^4 - (
+               788544 $CellContext`b^5) $CellContext`t^4 + (
+                3661248 $CellContext`b^6) $CellContext`t^4 - (
+               9907200 $CellContext`b^7) $CellContext`t^4 + (
+                16876800 $CellContext`b^8) $CellContext`t^4 - (
+               18400000 $CellContext`b^9) $CellContext`t^4 + (
+                12480000 $CellContext`b^10) $CellContext`t^4 - (
+               4800000 $CellContext`b^11) $CellContext`t^4 + (
+                800000 $CellContext`b^12) $CellContext`t^4) #^2 + (
               729 $CellContext`b^2 - 10206 $CellContext`b^3 + 
               61965 $CellContext`b^4 - 212868 $CellContext`b^5 + 
               451980 $CellContext`b^6 - 606528 $CellContext`b^7 + 
@@ -2854,87 +2870,89 @@ $CellContext`b^4 + 384 $CellContext`b^5 - 480 $CellContext`b^6 -
               46656 $CellContext`b^10) #^4& , 2]], 
          And[$CellContext`b > 1, $CellContext`\[Alpha] > 
           Root[(-6912) $CellContext`b^10 + 13824 $CellContext`b^11 - 
-            6912 $CellContext`b^12 + 55296 $CellContext`b^9 $CellContext`t - 
-            110592 $CellContext`b^10 $CellContext`t + 
-            55296 $CellContext`b^11 $CellContext`t - 
-            193536 $CellContext`b^8 $CellContext`t^2 + 
-            387072 $CellContext`b^9 $CellContext`t^2 - 
-            193536 $CellContext`b^10 $CellContext`t^2 + 
-            387072 $CellContext`b^7 $CellContext`t^3 - 
-            774144 $CellContext`b^8 $CellContext`t^3 + 
-            387072 $CellContext`b^9 $CellContext`t^3 - 
-            483840 $CellContext`b^6 $CellContext`t^4 + 
-            967680 $CellContext`b^7 $CellContext`t^4 - 
-            483840 $CellContext`b^8 $CellContext`t^4 + 
-            387072 $CellContext`b^5 $CellContext`t^5 - 
-            774144 $CellContext`b^6 $CellContext`t^5 + 
-            387072 $CellContext`b^7 $CellContext`t^5 - 
-            193536 $CellContext`b^4 $CellContext`t^6 + 
-            387072 $CellContext`b^5 $CellContext`t^6 - 
-            193536 $CellContext`b^6 $CellContext`t^6 + 
-            55296 $CellContext`b^3 $CellContext`t^7 - 
-            110592 $CellContext`b^4 $CellContext`t^7 + 
-            55296 $CellContext`b^5 $CellContext`t^7 - 
-            6912 $CellContext`b^2 $CellContext`t^8 + 
-            13824 $CellContext`b^3 $CellContext`t^8 - 
-            6912 $CellContext`b^4 $CellContext`t^8 + ((-64) $CellContext`b^4 + 
-              384 $CellContext`b^5 - 480 $CellContext`b^6 - 
+            6912 $CellContext`b^12 + (
+              55296 $CellContext`b^9) $CellContext`t - (
+             110592 $CellContext`b^10) $CellContext`t + (
+              55296 $CellContext`b^11) $CellContext`t - (
+             193536 $CellContext`b^8) $CellContext`t^2 + (
+              387072 $CellContext`b^9) $CellContext`t^2 - (
+             193536 $CellContext`b^10) $CellContext`t^2 + (
+              387072 $CellContext`b^7) $CellContext`t^3 - (
+             774144 $CellContext`b^8) $CellContext`t^3 + (
+              387072 $CellContext`b^9) $CellContext`t^3 - (
+             483840 $CellContext`b^6) $CellContext`t^4 + (
+              967680 $CellContext`b^7) $CellContext`t^4 - (
+             483840 $CellContext`b^8) $CellContext`t^4 + (
+              387072 $CellContext`b^5) $CellContext`t^5 - (
+             774144 $CellContext`b^6) $CellContext`t^5 + (
+              387072 $CellContext`b^7) $CellContext`t^5 - (
+             193536 $CellContext`b^4) $CellContext`t^6 + (
+              387072 $CellContext`b^5) $CellContext`t^6 - (
+             193536 $CellContext`b^6) $CellContext`t^6 + (
+              55296 $CellContext`b^3) $CellContext`t^7 - (
+             110592 $CellContext`b^4) $CellContext`t^7 + (
+              55296 $CellContext`b^5) $CellContext`t^7 - (
+             6912 $CellContext`b^2) $CellContext`t^8 + (
+              13824 $CellContext`b^3) $CellContext`t^8 - (
+             6912 $CellContext`b^4) $CellContext`t^8 + ((-64) \
+$CellContext`b^4 + 384 $CellContext`b^5 - 480 $CellContext`b^6 - 
               256 $CellContext`b^7 + 78048 $CellContext`b^8 - 
               788544 $CellContext`b^9 + 3661248 $CellContext`b^10 - 
               9907200 $CellContext`b^11 + 16876800 $CellContext`b^12 - 
               18400000 $CellContext`b^13 + 12480000 $CellContext`b^14 - 
-              4800000 $CellContext`b^15 + 800000 $CellContext`b^16 + 
-              256 $CellContext`b^3 $CellContext`t - 
-              1536 $CellContext`b^4 $CellContext`t + 
-              1920 $CellContext`b^5 $CellContext`t + 
-              1024 $CellContext`b^6 $CellContext`t - 
-              312192 $CellContext`b^7 $CellContext`t + 
-              3154176 $CellContext`b^8 $CellContext`t - 
-              14644992 $CellContext`b^9 $CellContext`t + 
-              39628800 $CellContext`b^10 $CellContext`t - 
-              67507200 $CellContext`b^11 $CellContext`t + 
-              73600000 $CellContext`b^12 $CellContext`t - 
-              49920000 $CellContext`b^13 $CellContext`t + 
-              19200000 $CellContext`b^14 $CellContext`t - 
-              3200000 $CellContext`b^15 $CellContext`t - 
-              384 $CellContext`b^2 $CellContext`t^2 + 
-              2304 $CellContext`b^3 $CellContext`t^2 - 
-              2880 $CellContext`b^4 $CellContext`t^2 - 
-              1536 $CellContext`b^5 $CellContext`t^2 + 
-              468288 $CellContext`b^6 $CellContext`t^2 - 
-              4731264 $CellContext`b^7 $CellContext`t^2 + 
-              21967488 $CellContext`b^8 $CellContext`t^2 - 
-              59443200 $CellContext`b^9 $CellContext`t^2 + 
-              101260800 $CellContext`b^10 $CellContext`t^2 - 
-              110400000 $CellContext`b^11 $CellContext`t^2 + 
-              74880000 $CellContext`b^12 $CellContext`t^2 - 
-              28800000 $CellContext`b^13 $CellContext`t^2 + 
-              4800000 $CellContext`b^14 $CellContext`t^2 + 
-              256 $CellContext`b $CellContext`t^3 - 
-              1536 $CellContext`b^2 $CellContext`t^3 + 
-              1920 $CellContext`b^3 $CellContext`t^3 + 
-              1024 $CellContext`b^4 $CellContext`t^3 - 
-              312192 $CellContext`b^5 $CellContext`t^3 + 
-              3154176 $CellContext`b^6 $CellContext`t^3 - 
-              14644992 $CellContext`b^7 $CellContext`t^3 + 
-              39628800 $CellContext`b^8 $CellContext`t^3 - 
-              67507200 $CellContext`b^9 $CellContext`t^3 + 
-              73600000 $CellContext`b^10 $CellContext`t^3 - 
-              49920000 $CellContext`b^11 $CellContext`t^3 + 
-              19200000 $CellContext`b^12 $CellContext`t^3 - 
-              3200000 $CellContext`b^13 $CellContext`t^3 - 
-              64 $CellContext`t^4 + 384 $CellContext`b $CellContext`t^4 - 
-              480 $CellContext`b^2 $CellContext`t^4 - 
-              256 $CellContext`b^3 $CellContext`t^4 + 
-              78048 $CellContext`b^4 $CellContext`t^4 - 
-              788544 $CellContext`b^5 $CellContext`t^4 + 
-              3661248 $CellContext`b^6 $CellContext`t^4 - 
-              9907200 $CellContext`b^7 $CellContext`t^4 + 
-              16876800 $CellContext`b^8 $CellContext`t^4 - 
-              18400000 $CellContext`b^9 $CellContext`t^4 + 
-              12480000 $CellContext`b^10 $CellContext`t^4 - 
-              4800000 $CellContext`b^11 $CellContext`t^4 + 
-              800000 $CellContext`b^12 $CellContext`t^4) #^2 + (
+              4800000 $CellContext`b^15 + 
+              800000 $CellContext`b^16 + (
+                256 $CellContext`b^3) $CellContext`t - (
+               1536 $CellContext`b^4) $CellContext`t + (
+                1920 $CellContext`b^5) $CellContext`t + (
+                1024 $CellContext`b^6) $CellContext`t - (
+               312192 $CellContext`b^7) $CellContext`t + (
+                3154176 $CellContext`b^8) $CellContext`t - (
+               14644992 $CellContext`b^9) $CellContext`t + (
+                39628800 $CellContext`b^10) $CellContext`t - (
+               67507200 $CellContext`b^11) $CellContext`t + (
+                73600000 $CellContext`b^12) $CellContext`t - (
+               49920000 $CellContext`b^13) $CellContext`t + (
+                19200000 $CellContext`b^14) $CellContext`t - (
+               3200000 $CellContext`b^15) $CellContext`t - (
+               384 $CellContext`b^2) $CellContext`t^2 + (
+                2304 $CellContext`b^3) $CellContext`t^2 - (
+               2880 $CellContext`b^4) $CellContext`t^2 - (
+               1536 $CellContext`b^5) $CellContext`t^2 + (
+                468288 $CellContext`b^6) $CellContext`t^2 - (
+               4731264 $CellContext`b^7) $CellContext`t^2 + (
+                21967488 $CellContext`b^8) $CellContext`t^2 - (
+               59443200 $CellContext`b^9) $CellContext`t^2 + (
+                101260800 $CellContext`b^10) $CellContext`t^2 - (
+               110400000 $CellContext`b^11) $CellContext`t^2 + (
+                74880000 $CellContext`b^12) $CellContext`t^2 - (
+               28800000 $CellContext`b^13) $CellContext`t^2 + (
+                4800000 $CellContext`b^14) $CellContext`t^2 + (
+                256 $CellContext`b) $CellContext`t^3 - (
+               1536 $CellContext`b^2) $CellContext`t^3 + (
+                1920 $CellContext`b^3) $CellContext`t^3 + (
+                1024 $CellContext`b^4) $CellContext`t^3 - (
+               312192 $CellContext`b^5) $CellContext`t^3 + (
+                3154176 $CellContext`b^6) $CellContext`t^3 - (
+               14644992 $CellContext`b^7) $CellContext`t^3 + (
+                39628800 $CellContext`b^8) $CellContext`t^3 - (
+               67507200 $CellContext`b^9) $CellContext`t^3 + (
+                73600000 $CellContext`b^10) $CellContext`t^3 - (
+               49920000 $CellContext`b^11) $CellContext`t^3 + (
+                19200000 $CellContext`b^12) $CellContext`t^3 - (
+               3200000 $CellContext`b^13) $CellContext`t^3 - 
+              64 $CellContext`t^4 + (384 $CellContext`b) $CellContext`t^4 - (
+               480 $CellContext`b^2) $CellContext`t^4 - (
+               256 $CellContext`b^3) $CellContext`t^4 + (
+                78048 $CellContext`b^4) $CellContext`t^4 - (
+               788544 $CellContext`b^5) $CellContext`t^4 + (
+                3661248 $CellContext`b^6) $CellContext`t^4 - (
+               9907200 $CellContext`b^7) $CellContext`t^4 + (
+                16876800 $CellContext`b^8) $CellContext`t^4 - (
+               18400000 $CellContext`b^9) $CellContext`t^4 + (
+                12480000 $CellContext`b^10) $CellContext`t^4 - (
+               4800000 $CellContext`b^11) $CellContext`t^4 + (
+                800000 $CellContext`b^12) $CellContext`t^4) #^2 + (
               729 $CellContext`b^2 - 10206 $CellContext`b^3 + 
               61965 $CellContext`b^4 - 212868 $CellContext`b^5 + 
               451980 $CellContext`b^6 - 606528 $CellContext`b^7 + 
@@ -3357,88 +3375,90 @@ $CellContext`b^4 + 384 $CellContext`b^5 - 480 $CellContext`b^6 -
                
                And[$CellContext`b != 1, $CellContext`\[Alpha] < 
                 Root[(-6912) $CellContext`b^10 + 13824 $CellContext`b^11 - 
-                  6912 $CellContext`b^12 + 
-                  55296 $CellContext`b^9 $CellContext`t - 
-                  110592 $CellContext`b^10 $CellContext`t + 
-                  55296 $CellContext`b^11 $CellContext`t - 
-                  193536 $CellContext`b^8 $CellContext`t^2 + 
-                  387072 $CellContext`b^9 $CellContext`t^2 - 
-                  193536 $CellContext`b^10 $CellContext`t^2 + 
-                  387072 $CellContext`b^7 $CellContext`t^3 - 
-                  774144 $CellContext`b^8 $CellContext`t^3 + 
-                  387072 $CellContext`b^9 $CellContext`t^3 - 
-                  483840 $CellContext`b^6 $CellContext`t^4 + 
-                  967680 $CellContext`b^7 $CellContext`t^4 - 
-                  483840 $CellContext`b^8 $CellContext`t^4 + 
-                  387072 $CellContext`b^5 $CellContext`t^5 - 
-                  774144 $CellContext`b^6 $CellContext`t^5 + 
-                  387072 $CellContext`b^7 $CellContext`t^5 - 
-                  193536 $CellContext`b^4 $CellContext`t^6 + 
-                  387072 $CellContext`b^5 $CellContext`t^6 - 
-                  193536 $CellContext`b^6 $CellContext`t^6 + 
-                  55296 $CellContext`b^3 $CellContext`t^7 - 
-                  110592 $CellContext`b^4 $CellContext`t^7 + 
-                  55296 $CellContext`b^5 $CellContext`t^7 - 
-                  6912 $CellContext`b^2 $CellContext`t^8 + 
-                  13824 $CellContext`b^3 $CellContext`t^8 - 
-                  6912 $CellContext`b^4 $CellContext`t^8 + ((-64) \
+                  6912 $CellContext`b^12 + (
+                    55296 $CellContext`b^9) $CellContext`t - (
+                   110592 $CellContext`b^10) $CellContext`t + (
+                    55296 $CellContext`b^11) $CellContext`t - (
+                   193536 $CellContext`b^8) $CellContext`t^2 + (
+                    387072 $CellContext`b^9) $CellContext`t^2 - (
+                   193536 $CellContext`b^10) $CellContext`t^2 + (
+                    387072 $CellContext`b^7) $CellContext`t^3 - (
+                   774144 $CellContext`b^8) $CellContext`t^3 + (
+                    387072 $CellContext`b^9) $CellContext`t^3 - (
+                   483840 $CellContext`b^6) $CellContext`t^4 + (
+                    967680 $CellContext`b^7) $CellContext`t^4 - (
+                   483840 $CellContext`b^8) $CellContext`t^4 + (
+                    387072 $CellContext`b^5) $CellContext`t^5 - (
+                   774144 $CellContext`b^6) $CellContext`t^5 + (
+                    387072 $CellContext`b^7) $CellContext`t^5 - (
+                   193536 $CellContext`b^4) $CellContext`t^6 + (
+                    387072 $CellContext`b^5) $CellContext`t^6 - (
+                   193536 $CellContext`b^6) $CellContext`t^6 + (
+                    55296 $CellContext`b^3) $CellContext`t^7 - (
+                   110592 $CellContext`b^4) $CellContext`t^7 + (
+                    55296 $CellContext`b^5) $CellContext`t^7 - (
+                   6912 $CellContext`b^2) $CellContext`t^8 + (
+                    13824 $CellContext`b^3) $CellContext`t^8 - (
+                   6912 $CellContext`b^4) $CellContext`t^8 + ((-64) \
 $CellContext`b^4 + 384 $CellContext`b^5 - 480 $CellContext`b^6 - 
                     256 $CellContext`b^7 + 78048 $CellContext`b^8 - 
                     788544 $CellContext`b^9 + 3661248 $CellContext`b^10 - 
                     9907200 $CellContext`b^11 + 16876800 $CellContext`b^12 - 
                     18400000 $CellContext`b^13 + 12480000 $CellContext`b^14 - 
-                    4800000 $CellContext`b^15 + 800000 $CellContext`b^16 + 
-                    256 $CellContext`b^3 $CellContext`t - 
-                    1536 $CellContext`b^4 $CellContext`t + 
-                    1920 $CellContext`b^5 $CellContext`t + 
-                    1024 $CellContext`b^6 $CellContext`t - 
-                    312192 $CellContext`b^7 $CellContext`t + 
-                    3154176 $CellContext`b^8 $CellContext`t - 
-                    14644992 $CellContext`b^9 $CellContext`t + 
-                    39628800 $CellContext`b^10 $CellContext`t - 
-                    67507200 $CellContext`b^11 $CellContext`t + 
-                    73600000 $CellContext`b^12 $CellContext`t - 
-                    49920000 $CellContext`b^13 $CellContext`t + 
-                    19200000 $CellContext`b^14 $CellContext`t - 
-                    3200000 $CellContext`b^15 $CellContext`t - 
-                    384 $CellContext`b^2 $CellContext`t^2 + 
-                    2304 $CellContext`b^3 $CellContext`t^2 - 
-                    2880 $CellContext`b^4 $CellContext`t^2 - 
-                    1536 $CellContext`b^5 $CellContext`t^2 + 
-                    468288 $CellContext`b^6 $CellContext`t^2 - 
-                    4731264 $CellContext`b^7 $CellContext`t^2 + 
-                    21967488 $CellContext`b^8 $CellContext`t^2 - 
-                    59443200 $CellContext`b^9 $CellContext`t^2 + 
-                    101260800 $CellContext`b^10 $CellContext`t^2 - 
-                    110400000 $CellContext`b^11 $CellContext`t^2 + 
-                    74880000 $CellContext`b^12 $CellContext`t^2 - 
-                    28800000 $CellContext`b^13 $CellContext`t^2 + 
-                    4800000 $CellContext`b^14 $CellContext`t^2 + 
-                    256 $CellContext`b $CellContext`t^3 - 
-                    1536 $CellContext`b^2 $CellContext`t^3 + 
-                    1920 $CellContext`b^3 $CellContext`t^3 + 
-                    1024 $CellContext`b^4 $CellContext`t^3 - 
-                    312192 $CellContext`b^5 $CellContext`t^3 + 
-                    3154176 $CellContext`b^6 $CellContext`t^3 - 
-                    14644992 $CellContext`b^7 $CellContext`t^3 + 
-                    39628800 $CellContext`b^8 $CellContext`t^3 - 
-                    67507200 $CellContext`b^9 $CellContext`t^3 + 
-                    73600000 $CellContext`b^10 $CellContext`t^3 - 
-                    49920000 $CellContext`b^11 $CellContext`t^3 + 
-                    19200000 $CellContext`b^12 $CellContext`t^3 - 
-                    3200000 $CellContext`b^13 $CellContext`t^3 - 
-                    64 $CellContext`t^4 + 384 $CellContext`b $CellContext`t^4 - 
-                    480 $CellContext`b^2 $CellContext`t^4 - 
-                    256 $CellContext`b^3 $CellContext`t^4 + 
-                    78048 $CellContext`b^4 $CellContext`t^4 - 
-                    788544 $CellContext`b^5 $CellContext`t^4 + 
-                    3661248 $CellContext`b^6 $CellContext`t^4 - 
-                    9907200 $CellContext`b^7 $CellContext`t^4 + 
-                    16876800 $CellContext`b^8 $CellContext`t^4 - 
-                    18400000 $CellContext`b^9 $CellContext`t^4 + 
-                    12480000 $CellContext`b^10 $CellContext`t^4 - 
-                    4800000 $CellContext`b^11 $CellContext`t^4 + 
-                    800000 $CellContext`b^12 $CellContext`t^4) #^2 + (
+                    4800000 $CellContext`b^15 + 
+                    800000 $CellContext`b^16 + (
+                    256 $CellContext`b^3) $CellContext`t - (
+                    1536 $CellContext`b^4) $CellContext`t + (
+                    1920 $CellContext`b^5) $CellContext`t + (
+                    1024 $CellContext`b^6) $CellContext`t - (
+                    312192 $CellContext`b^7) $CellContext`t + (
+                    3154176 $CellContext`b^8) $CellContext`t - (
+                    14644992 $CellContext`b^9) $CellContext`t + (
+                    39628800 $CellContext`b^10) $CellContext`t - (
+                    67507200 $CellContext`b^11) $CellContext`t + (
+                    73600000 $CellContext`b^12) $CellContext`t - (
+                    49920000 $CellContext`b^13) $CellContext`t + (
+                    19200000 $CellContext`b^14) $CellContext`t - (
+                    3200000 $CellContext`b^15) $CellContext`t - (
+                    384 $CellContext`b^2) $CellContext`t^2 + (
+                    2304 $CellContext`b^3) $CellContext`t^2 - (
+                    2880 $CellContext`b^4) $CellContext`t^2 - (
+                    1536 $CellContext`b^5) $CellContext`t^2 + (
+                    468288 $CellContext`b^6) $CellContext`t^2 - (
+                    4731264 $CellContext`b^7) $CellContext`t^2 + (
+                    21967488 $CellContext`b^8) $CellContext`t^2 - (
+                    59443200 $CellContext`b^9) $CellContext`t^2 + (
+                    101260800 $CellContext`b^10) $CellContext`t^2 - (
+                    110400000 $CellContext`b^11) $CellContext`t^2 + (
+                    74880000 $CellContext`b^12) $CellContext`t^2 - (
+                    28800000 $CellContext`b^13) $CellContext`t^2 + (
+                    4800000 $CellContext`b^14) $CellContext`t^2 + (
+                    256 $CellContext`b) $CellContext`t^3 - (
+                    1536 $CellContext`b^2) $CellContext`t^3 + (
+                    1920 $CellContext`b^3) $CellContext`t^3 + (
+                    1024 $CellContext`b^4) $CellContext`t^3 - (
+                    312192 $CellContext`b^5) $CellContext`t^3 + (
+                    3154176 $CellContext`b^6) $CellContext`t^3 - (
+                    14644992 $CellContext`b^7) $CellContext`t^3 + (
+                    39628800 $CellContext`b^8) $CellContext`t^3 - (
+                    67507200 $CellContext`b^9) $CellContext`t^3 + (
+                    73600000 $CellContext`b^10) $CellContext`t^3 - (
+                    49920000 $CellContext`b^11) $CellContext`t^3 + (
+                    19200000 $CellContext`b^12) $CellContext`t^3 - (
+                    3200000 $CellContext`b^13) $CellContext`t^3 - 
+                    64 $CellContext`t^4 + (
+                    384 $CellContext`b) $CellContext`t^4 - (
+                    480 $CellContext`b^2) $CellContext`t^4 - (
+                    256 $CellContext`b^3) $CellContext`t^4 + (
+                    78048 $CellContext`b^4) $CellContext`t^4 - (
+                    788544 $CellContext`b^5) $CellContext`t^4 + (
+                    3661248 $CellContext`b^6) $CellContext`t^4 - (
+                    9907200 $CellContext`b^7) $CellContext`t^4 + (
+                    16876800 $CellContext`b^8) $CellContext`t^4 - (
+                    18400000 $CellContext`b^9) $CellContext`t^4 + (
+                    12480000 $CellContext`b^10) $CellContext`t^4 - (
+                    4800000 $CellContext`b^11) $CellContext`t^4 + (
+                    800000 $CellContext`b^12) $CellContext`t^4) #^2 + (
                     729 $CellContext`b^2 - 10206 $CellContext`b^3 + 
                     61965 $CellContext`b^4 - 212868 $CellContext`b^5 + 
                     451980 $CellContext`b^6 - 606528 $CellContext`b^7 + 
@@ -3460,87 +3480,89 @@ $CellContext`b^4 + 384 $CellContext`b^5 - 480 $CellContext`b^6 -
            Dynamic[Typeset`open]}, "IconizedObject"]], 
         And[$CellContext`b != 1, $CellContext`\[Alpha] < 
          Root[(-6912) $CellContext`b^10 + 13824 $CellContext`b^11 - 
-           6912 $CellContext`b^12 + 55296 $CellContext`b^9 $CellContext`t - 
-           110592 $CellContext`b^10 $CellContext`t + 
-           55296 $CellContext`b^11 $CellContext`t - 
-           193536 $CellContext`b^8 $CellContext`t^2 + 
-           387072 $CellContext`b^9 $CellContext`t^2 - 
-           193536 $CellContext`b^10 $CellContext`t^2 + 
-           387072 $CellContext`b^7 $CellContext`t^3 - 
-           774144 $CellContext`b^8 $CellContext`t^3 + 
-           387072 $CellContext`b^9 $CellContext`t^3 - 
-           483840 $CellContext`b^6 $CellContext`t^4 + 
-           967680 $CellContext`b^7 $CellContext`t^4 - 
-           483840 $CellContext`b^8 $CellContext`t^4 + 
-           387072 $CellContext`b^5 $CellContext`t^5 - 
-           774144 $CellContext`b^6 $CellContext`t^5 + 
-           387072 $CellContext`b^7 $CellContext`t^5 - 
-           193536 $CellContext`b^4 $CellContext`t^6 + 
-           387072 $CellContext`b^5 $CellContext`t^6 - 
-           193536 $CellContext`b^6 $CellContext`t^6 + 
-           55296 $CellContext`b^3 $CellContext`t^7 - 
-           110592 $CellContext`b^4 $CellContext`t^7 + 
-           55296 $CellContext`b^5 $CellContext`t^7 - 
-           6912 $CellContext`b^2 $CellContext`t^8 + 
-           13824 $CellContext`b^3 $CellContext`t^8 - 
-           6912 $CellContext`b^4 $CellContext`t^8 + ((-64) $CellContext`b^4 + 
+           6912 $CellContext`b^12 + (
+             55296 $CellContext`b^9) $CellContext`t - (
+            110592 $CellContext`b^10) $CellContext`t + (
+             55296 $CellContext`b^11) $CellContext`t - (
+            193536 $CellContext`b^8) $CellContext`t^2 + (
+             387072 $CellContext`b^9) $CellContext`t^2 - (
+            193536 $CellContext`b^10) $CellContext`t^2 + (
+             387072 $CellContext`b^7) $CellContext`t^3 - (
+            774144 $CellContext`b^8) $CellContext`t^3 + (
+             387072 $CellContext`b^9) $CellContext`t^3 - (
+            483840 $CellContext`b^6) $CellContext`t^4 + (
+             967680 $CellContext`b^7) $CellContext`t^4 - (
+            483840 $CellContext`b^8) $CellContext`t^4 + (
+             387072 $CellContext`b^5) $CellContext`t^5 - (
+            774144 $CellContext`b^6) $CellContext`t^5 + (
+             387072 $CellContext`b^7) $CellContext`t^5 - (
+            193536 $CellContext`b^4) $CellContext`t^6 + (
+             387072 $CellContext`b^5) $CellContext`t^6 - (
+            193536 $CellContext`b^6) $CellContext`t^6 + (
+             55296 $CellContext`b^3) $CellContext`t^7 - (
+            110592 $CellContext`b^4) $CellContext`t^7 + (
+             55296 $CellContext`b^5) $CellContext`t^7 - (
+            6912 $CellContext`b^2) $CellContext`t^8 + (
+             13824 $CellContext`b^3) $CellContext`t^8 - (
+            6912 $CellContext`b^4) $CellContext`t^8 + ((-64) $CellContext`b^4 + 
              384 $CellContext`b^5 - 480 $CellContext`b^6 - 
              256 $CellContext`b^7 + 78048 $CellContext`b^8 - 
              788544 $CellContext`b^9 + 3661248 $CellContext`b^10 - 
              9907200 $CellContext`b^11 + 16876800 $CellContext`b^12 - 
              18400000 $CellContext`b^13 + 12480000 $CellContext`b^14 - 
-             4800000 $CellContext`b^15 + 800000 $CellContext`b^16 + 
-             256 $CellContext`b^3 $CellContext`t - 
-             1536 $CellContext`b^4 $CellContext`t + 
-             1920 $CellContext`b^5 $CellContext`t + 
-             1024 $CellContext`b^6 $CellContext`t - 
-             312192 $CellContext`b^7 $CellContext`t + 
-             3154176 $CellContext`b^8 $CellContext`t - 
-             14644992 $CellContext`b^9 $CellContext`t + 
-             39628800 $CellContext`b^10 $CellContext`t - 
-             67507200 $CellContext`b^11 $CellContext`t + 
-             73600000 $CellContext`b^12 $CellContext`t - 
-             49920000 $CellContext`b^13 $CellContext`t + 
-             19200000 $CellContext`b^14 $CellContext`t - 
-             3200000 $CellContext`b^15 $CellContext`t - 
-             384 $CellContext`b^2 $CellContext`t^2 + 
-             2304 $CellContext`b^3 $CellContext`t^2 - 
-             2880 $CellContext`b^4 $CellContext`t^2 - 
-             1536 $CellContext`b^5 $CellContext`t^2 + 
-             468288 $CellContext`b^6 $CellContext`t^2 - 
-             4731264 $CellContext`b^7 $CellContext`t^2 + 
-             21967488 $CellContext`b^8 $CellContext`t^2 - 
-             59443200 $CellContext`b^9 $CellContext`t^2 + 
-             101260800 $CellContext`b^10 $CellContext`t^2 - 
-             110400000 $CellContext`b^11 $CellContext`t^2 + 
-             74880000 $CellContext`b^12 $CellContext`t^2 - 
-             28800000 $CellContext`b^13 $CellContext`t^2 + 
-             4800000 $CellContext`b^14 $CellContext`t^2 + 
-             256 $CellContext`b $CellContext`t^3 - 
-             1536 $CellContext`b^2 $CellContext`t^3 + 
-             1920 $CellContext`b^3 $CellContext`t^3 + 
-             1024 $CellContext`b^4 $CellContext`t^3 - 
-             312192 $CellContext`b^5 $CellContext`t^3 + 
-             3154176 $CellContext`b^6 $CellContext`t^3 - 
-             14644992 $CellContext`b^7 $CellContext`t^3 + 
-             39628800 $CellContext`b^8 $CellContext`t^3 - 
-             67507200 $CellContext`b^9 $CellContext`t^3 + 
-             73600000 $CellContext`b^10 $CellContext`t^3 - 
-             49920000 $CellContext`b^11 $CellContext`t^3 + 
-             19200000 $CellContext`b^12 $CellContext`t^3 - 
-             3200000 $CellContext`b^13 $CellContext`t^3 - 64 $CellContext`t^4 + 
-             384 $CellContext`b $CellContext`t^4 - 
-             480 $CellContext`b^2 $CellContext`t^4 - 
-             256 $CellContext`b^3 $CellContext`t^4 + 
-             78048 $CellContext`b^4 $CellContext`t^4 - 
-             788544 $CellContext`b^5 $CellContext`t^4 + 
-             3661248 $CellContext`b^6 $CellContext`t^4 - 
-             9907200 $CellContext`b^7 $CellContext`t^4 + 
-             16876800 $CellContext`b^8 $CellContext`t^4 - 
-             18400000 $CellContext`b^9 $CellContext`t^4 + 
-             12480000 $CellContext`b^10 $CellContext`t^4 - 
-             4800000 $CellContext`b^11 $CellContext`t^4 + 
-             800000 $CellContext`b^12 $CellContext`t^4) #^2 + (
+             4800000 $CellContext`b^15 + 
+             800000 $CellContext`b^16 + (
+               256 $CellContext`b^3) $CellContext`t - (
+              1536 $CellContext`b^4) $CellContext`t + (
+               1920 $CellContext`b^5) $CellContext`t + (
+               1024 $CellContext`b^6) $CellContext`t - (
+              312192 $CellContext`b^7) $CellContext`t + (
+               3154176 $CellContext`b^8) $CellContext`t - (
+              14644992 $CellContext`b^9) $CellContext`t + (
+               39628800 $CellContext`b^10) $CellContext`t - (
+              67507200 $CellContext`b^11) $CellContext`t + (
+               73600000 $CellContext`b^12) $CellContext`t - (
+              49920000 $CellContext`b^13) $CellContext`t + (
+               19200000 $CellContext`b^14) $CellContext`t - (
+              3200000 $CellContext`b^15) $CellContext`t - (
+              384 $CellContext`b^2) $CellContext`t^2 + (
+               2304 $CellContext`b^3) $CellContext`t^2 - (
+              2880 $CellContext`b^4) $CellContext`t^2 - (
+              1536 $CellContext`b^5) $CellContext`t^2 + (
+               468288 $CellContext`b^6) $CellContext`t^2 - (
+              4731264 $CellContext`b^7) $CellContext`t^2 + (
+               21967488 $CellContext`b^8) $CellContext`t^2 - (
+              59443200 $CellContext`b^9) $CellContext`t^2 + (
+               101260800 $CellContext`b^10) $CellContext`t^2 - (
+              110400000 $CellContext`b^11) $CellContext`t^2 + (
+               74880000 $CellContext`b^12) $CellContext`t^2 - (
+              28800000 $CellContext`b^13) $CellContext`t^2 + (
+               4800000 $CellContext`b^14) $CellContext`t^2 + (
+               256 $CellContext`b) $CellContext`t^3 - (
+              1536 $CellContext`b^2) $CellContext`t^3 + (
+               1920 $CellContext`b^3) $CellContext`t^3 + (
+               1024 $CellContext`b^4) $CellContext`t^3 - (
+              312192 $CellContext`b^5) $CellContext`t^3 + (
+               3154176 $CellContext`b^6) $CellContext`t^3 - (
+              14644992 $CellContext`b^7) $CellContext`t^3 + (
+               39628800 $CellContext`b^8) $CellContext`t^3 - (
+              67507200 $CellContext`b^9) $CellContext`t^3 + (
+               73600000 $CellContext`b^10) $CellContext`t^3 - (
+              49920000 $CellContext`b^11) $CellContext`t^3 + (
+               19200000 $CellContext`b^12) $CellContext`t^3 - (
+              3200000 $CellContext`b^13) $CellContext`t^3 - 
+             64 $CellContext`t^4 + (384 $CellContext`b) $CellContext`t^4 - (
+              480 $CellContext`b^2) $CellContext`t^4 - (
+              256 $CellContext`b^3) $CellContext`t^4 + (
+               78048 $CellContext`b^4) $CellContext`t^4 - (
+              788544 $CellContext`b^5) $CellContext`t^4 + (
+               3661248 $CellContext`b^6) $CellContext`t^4 - (
+              9907200 $CellContext`b^7) $CellContext`t^4 + (
+               16876800 $CellContext`b^8) $CellContext`t^4 - (
+              18400000 $CellContext`b^9) $CellContext`t^4 + (
+               12480000 $CellContext`b^10) $CellContext`t^4 - (
+              4800000 $CellContext`b^11) $CellContext`t^4 + (
+               800000 $CellContext`b^12) $CellContext`t^4) #^2 + (
              729 $CellContext`b^2 - 10206 $CellContext`b^3 + 
              61965 $CellContext`b^4 - 212868 $CellContext`b^5 + 
              451980 $CellContext`b^6 - 606528 $CellContext`b^7 + 
@@ -3963,88 +3985,90 @@ $CellContext`b^4 + 384 $CellContext`b^5 - 480 $CellContext`b^6 -
                
                And[$CellContext`b != 1, $CellContext`\[Alpha] < 
                 Root[(-6912) $CellContext`b^10 + 13824 $CellContext`b^11 - 
-                  6912 $CellContext`b^12 + 
-                  55296 $CellContext`b^9 $CellContext`t - 
-                  110592 $CellContext`b^10 $CellContext`t + 
-                  55296 $CellContext`b^11 $CellContext`t - 
-                  193536 $CellContext`b^8 $CellContext`t^2 + 
-                  387072 $CellContext`b^9 $CellContext`t^2 - 
-                  193536 $CellContext`b^10 $CellContext`t^2 + 
-                  387072 $CellContext`b^7 $CellContext`t^3 - 
-                  774144 $CellContext`b^8 $CellContext`t^3 + 
-                  387072 $CellContext`b^9 $CellContext`t^3 - 
-                  483840 $CellContext`b^6 $CellContext`t^4 + 
-                  967680 $CellContext`b^7 $CellContext`t^4 - 
-                  483840 $CellContext`b^8 $CellContext`t^4 + 
-                  387072 $CellContext`b^5 $CellContext`t^5 - 
-                  774144 $CellContext`b^6 $CellContext`t^5 + 
-                  387072 $CellContext`b^7 $CellContext`t^5 - 
-                  193536 $CellContext`b^4 $CellContext`t^6 + 
-                  387072 $CellContext`b^5 $CellContext`t^6 - 
-                  193536 $CellContext`b^6 $CellContext`t^6 + 
-                  55296 $CellContext`b^3 $CellContext`t^7 - 
-                  110592 $CellContext`b^4 $CellContext`t^7 + 
-                  55296 $CellContext`b^5 $CellContext`t^7 - 
-                  6912 $CellContext`b^2 $CellContext`t^8 + 
-                  13824 $CellContext`b^3 $CellContext`t^8 - 
-                  6912 $CellContext`b^4 $CellContext`t^8 + ((-64) \
+                  6912 $CellContext`b^12 + (
+                    55296 $CellContext`b^9) $CellContext`t - (
+                   110592 $CellContext`b^10) $CellContext`t + (
+                    55296 $CellContext`b^11) $CellContext`t - (
+                   193536 $CellContext`b^8) $CellContext`t^2 + (
+                    387072 $CellContext`b^9) $CellContext`t^2 - (
+                   193536 $CellContext`b^10) $CellContext`t^2 + (
+                    387072 $CellContext`b^7) $CellContext`t^3 - (
+                   774144 $CellContext`b^8) $CellContext`t^3 + (
+                    387072 $CellContext`b^9) $CellContext`t^3 - (
+                   483840 $CellContext`b^6) $CellContext`t^4 + (
+                    967680 $CellContext`b^7) $CellContext`t^4 - (
+                   483840 $CellContext`b^8) $CellContext`t^4 + (
+                    387072 $CellContext`b^5) $CellContext`t^5 - (
+                   774144 $CellContext`b^6) $CellContext`t^5 + (
+                    387072 $CellContext`b^7) $CellContext`t^5 - (
+                   193536 $CellContext`b^4) $CellContext`t^6 + (
+                    387072 $CellContext`b^5) $CellContext`t^6 - (
+                   193536 $CellContext`b^6) $CellContext`t^6 + (
+                    55296 $CellContext`b^3) $CellContext`t^7 - (
+                   110592 $CellContext`b^4) $CellContext`t^7 + (
+                    55296 $CellContext`b^5) $CellContext`t^7 - (
+                   6912 $CellContext`b^2) $CellContext`t^8 + (
+                    13824 $CellContext`b^3) $CellContext`t^8 - (
+                   6912 $CellContext`b^4) $CellContext`t^8 + ((-64) \
 $CellContext`b^4 + 384 $CellContext`b^5 - 480 $CellContext`b^6 - 
                     256 $CellContext`b^7 + 78048 $CellContext`b^8 - 
                     788544 $CellContext`b^9 + 3661248 $CellContext`b^10 - 
                     9907200 $CellContext`b^11 + 16876800 $CellContext`b^12 - 
                     18400000 $CellContext`b^13 + 12480000 $CellContext`b^14 - 
-                    4800000 $CellContext`b^15 + 800000 $CellContext`b^16 + 
-                    256 $CellContext`b^3 $CellContext`t - 
-                    1536 $CellContext`b^4 $CellContext`t + 
-                    1920 $CellContext`b^5 $CellContext`t + 
-                    1024 $CellContext`b^6 $CellContext`t - 
-                    312192 $CellContext`b^7 $CellContext`t + 
-                    3154176 $CellContext`b^8 $CellContext`t - 
-                    14644992 $CellContext`b^9 $CellContext`t + 
-                    39628800 $CellContext`b^10 $CellContext`t - 
-                    67507200 $CellContext`b^11 $CellContext`t + 
-                    73600000 $CellContext`b^12 $CellContext`t - 
-                    49920000 $CellContext`b^13 $CellContext`t + 
-                    19200000 $CellContext`b^14 $CellContext`t - 
-                    3200000 $CellContext`b^15 $CellContext`t - 
-                    384 $CellContext`b^2 $CellContext`t^2 + 
-                    2304 $CellContext`b^3 $CellContext`t^2 - 
-                    2880 $CellContext`b^4 $CellContext`t^2 - 
-                    1536 $CellContext`b^5 $CellContext`t^2 + 
-                    468288 $CellContext`b^6 $CellContext`t^2 - 
-                    4731264 $CellContext`b^7 $CellContext`t^2 + 
-                    21967488 $CellContext`b^8 $CellContext`t^2 - 
-                    59443200 $CellContext`b^9 $CellContext`t^2 + 
-                    101260800 $CellContext`b^10 $CellContext`t^2 - 
-                    110400000 $CellContext`b^11 $CellContext`t^2 + 
-                    74880000 $CellContext`b^12 $CellContext`t^2 - 
-                    28800000 $CellContext`b^13 $CellContext`t^2 + 
-                    4800000 $CellContext`b^14 $CellContext`t^2 + 
-                    256 $CellContext`b $CellContext`t^3 - 
-                    1536 $CellContext`b^2 $CellContext`t^3 + 
-                    1920 $CellContext`b^3 $CellContext`t^3 + 
-                    1024 $CellContext`b^4 $CellContext`t^3 - 
-                    312192 $CellContext`b^5 $CellContext`t^3 + 
-                    3154176 $CellContext`b^6 $CellContext`t^3 - 
-                    14644992 $CellContext`b^7 $CellContext`t^3 + 
-                    39628800 $CellContext`b^8 $CellContext`t^3 - 
-                    67507200 $CellContext`b^9 $CellContext`t^3 + 
-                    73600000 $CellContext`b^10 $CellContext`t^3 - 
-                    49920000 $CellContext`b^11 $CellContext`t^3 + 
-                    19200000 $CellContext`b^12 $CellContext`t^3 - 
-                    3200000 $CellContext`b^13 $CellContext`t^3 - 
-                    64 $CellContext`t^4 + 384 $CellContext`b $CellContext`t^4 - 
-                    480 $CellContext`b^2 $CellContext`t^4 - 
-                    256 $CellContext`b^3 $CellContext`t^4 + 
-                    78048 $CellContext`b^4 $CellContext`t^4 - 
-                    788544 $CellContext`b^5 $CellContext`t^4 + 
-                    3661248 $CellContext`b^6 $CellContext`t^4 - 
-                    9907200 $CellContext`b^7 $CellContext`t^4 + 
-                    16876800 $CellContext`b^8 $CellContext`t^4 - 
-                    18400000 $CellContext`b^9 $CellContext`t^4 + 
-                    12480000 $CellContext`b^10 $CellContext`t^4 - 
-                    4800000 $CellContext`b^11 $CellContext`t^4 + 
-                    800000 $CellContext`b^12 $CellContext`t^4) #^2 + (
+                    4800000 $CellContext`b^15 + 
+                    800000 $CellContext`b^16 + (
+                    256 $CellContext`b^3) $CellContext`t - (
+                    1536 $CellContext`b^4) $CellContext`t + (
+                    1920 $CellContext`b^5) $CellContext`t + (
+                    1024 $CellContext`b^6) $CellContext`t - (
+                    312192 $CellContext`b^7) $CellContext`t + (
+                    3154176 $CellContext`b^8) $CellContext`t - (
+                    14644992 $CellContext`b^9) $CellContext`t + (
+                    39628800 $CellContext`b^10) $CellContext`t - (
+                    67507200 $CellContext`b^11) $CellContext`t + (
+                    73600000 $CellContext`b^12) $CellContext`t - (
+                    49920000 $CellContext`b^13) $CellContext`t + (
+                    19200000 $CellContext`b^14) $CellContext`t - (
+                    3200000 $CellContext`b^15) $CellContext`t - (
+                    384 $CellContext`b^2) $CellContext`t^2 + (
+                    2304 $CellContext`b^3) $CellContext`t^2 - (
+                    2880 $CellContext`b^4) $CellContext`t^2 - (
+                    1536 $CellContext`b^5) $CellContext`t^2 + (
+                    468288 $CellContext`b^6) $CellContext`t^2 - (
+                    4731264 $CellContext`b^7) $CellContext`t^2 + (
+                    21967488 $CellContext`b^8) $CellContext`t^2 - (
+                    59443200 $CellContext`b^9) $CellContext`t^2 + (
+                    101260800 $CellContext`b^10) $CellContext`t^2 - (
+                    110400000 $CellContext`b^11) $CellContext`t^2 + (
+                    74880000 $CellContext`b^12) $CellContext`t^2 - (
+                    28800000 $CellContext`b^13) $CellContext`t^2 + (
+                    4800000 $CellContext`b^14) $CellContext`t^2 + (
+                    256 $CellContext`b) $CellContext`t^3 - (
+                    1536 $CellContext`b^2) $CellContext`t^3 + (
+                    1920 $CellContext`b^3) $CellContext`t^3 + (
+                    1024 $CellContext`b^4) $CellContext`t^3 - (
+                    312192 $CellContext`b^5) $CellContext`t^3 + (
+                    3154176 $CellContext`b^6) $CellContext`t^3 - (
+                    14644992 $CellContext`b^7) $CellContext`t^3 + (
+                    39628800 $CellContext`b^8) $CellContext`t^3 - (
+                    67507200 $CellContext`b^9) $CellContext`t^3 + (
+                    73600000 $CellContext`b^10) $CellContext`t^3 - (
+                    49920000 $CellContext`b^11) $CellContext`t^3 + (
+                    19200000 $CellContext`b^12) $CellContext`t^3 - (
+                    3200000 $CellContext`b^13) $CellContext`t^3 - 
+                    64 $CellContext`t^4 + (
+                    384 $CellContext`b) $CellContext`t^4 - (
+                    480 $CellContext`b^2) $CellContext`t^4 - (
+                    256 $CellContext`b^3) $CellContext`t^4 + (
+                    78048 $CellContext`b^4) $CellContext`t^4 - (
+                    788544 $CellContext`b^5) $CellContext`t^4 + (
+                    3661248 $CellContext`b^6) $CellContext`t^4 - (
+                    9907200 $CellContext`b^7) $CellContext`t^4 + (
+                    16876800 $CellContext`b^8) $CellContext`t^4 - (
+                    18400000 $CellContext`b^9) $CellContext`t^4 + (
+                    12480000 $CellContext`b^10) $CellContext`t^4 - (
+                    4800000 $CellContext`b^11) $CellContext`t^4 + (
+                    800000 $CellContext`b^12) $CellContext`t^4) #^2 + (
                     729 $CellContext`b^2 - 10206 $CellContext`b^3 + 
                     61965 $CellContext`b^4 - 212868 $CellContext`b^5 + 
                     451980 $CellContext`b^6 - 606528 $CellContext`b^7 + 
@@ -4066,87 +4090,89 @@ $CellContext`b^4 + 384 $CellContext`b^5 - 480 $CellContext`b^6 -
            Dynamic[Typeset`open]}, "IconizedObject"]], 
         And[$CellContext`b != 1, $CellContext`\[Alpha] < 
          Root[(-6912) $CellContext`b^10 + 13824 $CellContext`b^11 - 
-           6912 $CellContext`b^12 + 55296 $CellContext`b^9 $CellContext`t - 
-           110592 $CellContext`b^10 $CellContext`t + 
-           55296 $CellContext`b^11 $CellContext`t - 
-           193536 $CellContext`b^8 $CellContext`t^2 + 
-           387072 $CellContext`b^9 $CellContext`t^2 - 
-           193536 $CellContext`b^10 $CellContext`t^2 + 
-           387072 $CellContext`b^7 $CellContext`t^3 - 
-           774144 $CellContext`b^8 $CellContext`t^3 + 
-           387072 $CellContext`b^9 $CellContext`t^3 - 
-           483840 $CellContext`b^6 $CellContext`t^4 + 
-           967680 $CellContext`b^7 $CellContext`t^4 - 
-           483840 $CellContext`b^8 $CellContext`t^4 + 
-           387072 $CellContext`b^5 $CellContext`t^5 - 
-           774144 $CellContext`b^6 $CellContext`t^5 + 
-           387072 $CellContext`b^7 $CellContext`t^5 - 
-           193536 $CellContext`b^4 $CellContext`t^6 + 
-           387072 $CellContext`b^5 $CellContext`t^6 - 
-           193536 $CellContext`b^6 $CellContext`t^6 + 
-           55296 $CellContext`b^3 $CellContext`t^7 - 
-           110592 $CellContext`b^4 $CellContext`t^7 + 
-           55296 $CellContext`b^5 $CellContext`t^7 - 
-           6912 $CellContext`b^2 $CellContext`t^8 + 
-           13824 $CellContext`b^3 $CellContext`t^8 - 
-           6912 $CellContext`b^4 $CellContext`t^8 + ((-64) $CellContext`b^4 + 
+           6912 $CellContext`b^12 + (
+             55296 $CellContext`b^9) $CellContext`t - (
+            110592 $CellContext`b^10) $CellContext`t + (
+             55296 $CellContext`b^11) $CellContext`t - (
+            193536 $CellContext`b^8) $CellContext`t^2 + (
+             387072 $CellContext`b^9) $CellContext`t^2 - (
+            193536 $CellContext`b^10) $CellContext`t^2 + (
+             387072 $CellContext`b^7) $CellContext`t^3 - (
+            774144 $CellContext`b^8) $CellContext`t^3 + (
+             387072 $CellContext`b^9) $CellContext`t^3 - (
+            483840 $CellContext`b^6) $CellContext`t^4 + (
+             967680 $CellContext`b^7) $CellContext`t^4 - (
+            483840 $CellContext`b^8) $CellContext`t^4 + (
+             387072 $CellContext`b^5) $CellContext`t^5 - (
+            774144 $CellContext`b^6) $CellContext`t^5 + (
+             387072 $CellContext`b^7) $CellContext`t^5 - (
+            193536 $CellContext`b^4) $CellContext`t^6 + (
+             387072 $CellContext`b^5) $CellContext`t^6 - (
+            193536 $CellContext`b^6) $CellContext`t^6 + (
+             55296 $CellContext`b^3) $CellContext`t^7 - (
+            110592 $CellContext`b^4) $CellContext`t^7 + (
+             55296 $CellContext`b^5) $CellContext`t^7 - (
+            6912 $CellContext`b^2) $CellContext`t^8 + (
+             13824 $CellContext`b^3) $CellContext`t^8 - (
+            6912 $CellContext`b^4) $CellContext`t^8 + ((-64) $CellContext`b^4 + 
              384 $CellContext`b^5 - 480 $CellContext`b^6 - 
              256 $CellContext`b^7 + 78048 $CellContext`b^8 - 
              788544 $CellContext`b^9 + 3661248 $CellContext`b^10 - 
              9907200 $CellContext`b^11 + 16876800 $CellContext`b^12 - 
              18400000 $CellContext`b^13 + 12480000 $CellContext`b^14 - 
-             4800000 $CellContext`b^15 + 800000 $CellContext`b^16 + 
-             256 $CellContext`b^3 $CellContext`t - 
-             1536 $CellContext`b^4 $CellContext`t + 
-             1920 $CellContext`b^5 $CellContext`t + 
-             1024 $CellContext`b^6 $CellContext`t - 
-             312192 $CellContext`b^7 $CellContext`t + 
-             3154176 $CellContext`b^8 $CellContext`t - 
-             14644992 $CellContext`b^9 $CellContext`t + 
-             39628800 $CellContext`b^10 $CellContext`t - 
-             67507200 $CellContext`b^11 $CellContext`t + 
-             73600000 $CellContext`b^12 $CellContext`t - 
-             49920000 $CellContext`b^13 $CellContext`t + 
-             19200000 $CellContext`b^14 $CellContext`t - 
-             3200000 $CellContext`b^15 $CellContext`t - 
-             384 $CellContext`b^2 $CellContext`t^2 + 
-             2304 $CellContext`b^3 $CellContext`t^2 - 
-             2880 $CellContext`b^4 $CellContext`t^2 - 
-             1536 $CellContext`b^5 $CellContext`t^2 + 
-             468288 $CellContext`b^6 $CellContext`t^2 - 
-             4731264 $CellContext`b^7 $CellContext`t^2 + 
-             21967488 $CellContext`b^8 $CellContext`t^2 - 
-             59443200 $CellContext`b^9 $CellContext`t^2 + 
-             101260800 $CellContext`b^10 $CellContext`t^2 - 
-             110400000 $CellContext`b^11 $CellContext`t^2 + 
-             74880000 $CellContext`b^12 $CellContext`t^2 - 
-             28800000 $CellContext`b^13 $CellContext`t^2 + 
-             4800000 $CellContext`b^14 $CellContext`t^2 + 
-             256 $CellContext`b $CellContext`t^3 - 
-             1536 $CellContext`b^2 $CellContext`t^3 + 
-             1920 $CellContext`b^3 $CellContext`t^3 + 
-             1024 $CellContext`b^4 $CellContext`t^3 - 
-             312192 $CellContext`b^5 $CellContext`t^3 + 
-             3154176 $CellContext`b^6 $CellContext`t^3 - 
-             14644992 $CellContext`b^7 $CellContext`t^3 + 
-             39628800 $CellContext`b^8 $CellContext`t^3 - 
-             67507200 $CellContext`b^9 $CellContext`t^3 + 
-             73600000 $CellContext`b^10 $CellContext`t^3 - 
-             49920000 $CellContext`b^11 $CellContext`t^3 + 
-             19200000 $CellContext`b^12 $CellContext`t^3 - 
-             3200000 $CellContext`b^13 $CellContext`t^3 - 64 $CellContext`t^4 + 
-             384 $CellContext`b $CellContext`t^4 - 
-             480 $CellContext`b^2 $CellContext`t^4 - 
-             256 $CellContext`b^3 $CellContext`t^4 + 
-             78048 $CellContext`b^4 $CellContext`t^4 - 
-             788544 $CellContext`b^5 $CellContext`t^4 + 
-             3661248 $CellContext`b^6 $CellContext`t^4 - 
-             9907200 $CellContext`b^7 $CellContext`t^4 + 
-             16876800 $CellContext`b^8 $CellContext`t^4 - 
-             18400000 $CellContext`b^9 $CellContext`t^4 + 
-             12480000 $CellContext`b^10 $CellContext`t^4 - 
-             4800000 $CellContext`b^11 $CellContext`t^4 + 
-             800000 $CellContext`b^12 $CellContext`t^4) #^2 + (
+             4800000 $CellContext`b^15 + 
+             800000 $CellContext`b^16 + (
+               256 $CellContext`b^3) $CellContext`t - (
+              1536 $CellContext`b^4) $CellContext`t + (
+               1920 $CellContext`b^5) $CellContext`t + (
+               1024 $CellContext`b^6) $CellContext`t - (
+              312192 $CellContext`b^7) $CellContext`t + (
+               3154176 $CellContext`b^8) $CellContext`t - (
+              14644992 $CellContext`b^9) $CellContext`t + (
+               39628800 $CellContext`b^10) $CellContext`t - (
+              67507200 $CellContext`b^11) $CellContext`t + (
+               73600000 $CellContext`b^12) $CellContext`t - (
+              49920000 $CellContext`b^13) $CellContext`t + (
+               19200000 $CellContext`b^14) $CellContext`t - (
+              3200000 $CellContext`b^15) $CellContext`t - (
+              384 $CellContext`b^2) $CellContext`t^2 + (
+               2304 $CellContext`b^3) $CellContext`t^2 - (
+              2880 $CellContext`b^4) $CellContext`t^2 - (
+              1536 $CellContext`b^5) $CellContext`t^2 + (
+               468288 $CellContext`b^6) $CellContext`t^2 - (
+              4731264 $CellContext`b^7) $CellContext`t^2 + (
+               21967488 $CellContext`b^8) $CellContext`t^2 - (
+              59443200 $CellContext`b^9) $CellContext`t^2 + (
+               101260800 $CellContext`b^10) $CellContext`t^2 - (
+              110400000 $CellContext`b^11) $CellContext`t^2 + (
+               74880000 $CellContext`b^12) $CellContext`t^2 - (
+              28800000 $CellContext`b^13) $CellContext`t^2 + (
+               4800000 $CellContext`b^14) $CellContext`t^2 + (
+               256 $CellContext`b) $CellContext`t^3 - (
+              1536 $CellContext`b^2) $CellContext`t^3 + (
+               1920 $CellContext`b^3) $CellContext`t^3 + (
+               1024 $CellContext`b^4) $CellContext`t^3 - (
+              312192 $CellContext`b^5) $CellContext`t^3 + (
+               3154176 $CellContext`b^6) $CellContext`t^3 - (
+              14644992 $CellContext`b^7) $CellContext`t^3 + (
+               39628800 $CellContext`b^8) $CellContext`t^3 - (
+              67507200 $CellContext`b^9) $CellContext`t^3 + (
+               73600000 $CellContext`b^10) $CellContext`t^3 - (
+              49920000 $CellContext`b^11) $CellContext`t^3 + (
+               19200000 $CellContext`b^12) $CellContext`t^3 - (
+              3200000 $CellContext`b^13) $CellContext`t^3 - 
+             64 $CellContext`t^4 + (384 $CellContext`b) $CellContext`t^4 - (
+              480 $CellContext`b^2) $CellContext`t^4 - (
+              256 $CellContext`b^3) $CellContext`t^4 + (
+               78048 $CellContext`b^4) $CellContext`t^4 - (
+              788544 $CellContext`b^5) $CellContext`t^4 + (
+               3661248 $CellContext`b^6) $CellContext`t^4 - (
+              9907200 $CellContext`b^7) $CellContext`t^4 + (
+               16876800 $CellContext`b^8) $CellContext`t^4 - (
+              18400000 $CellContext`b^9) $CellContext`t^4 + (
+               12480000 $CellContext`b^10) $CellContext`t^4 - (
+              4800000 $CellContext`b^11) $CellContext`t^4 + (
+               800000 $CellContext`b^12) $CellContext`t^4) #^2 + (
              729 $CellContext`b^2 - 10206 $CellContext`b^3 + 
              61965 $CellContext`b^4 - 212868 $CellContext`b^5 + 
              451980 $CellContext`b^6 - 606528 $CellContext`b^7 + 
@@ -4262,9 +4288,10 @@ Cell[BoxData[
          ReplaceAll[$CellContext`a, 
           Part[
            
-           NMinimize[(((-1 + $CellContext`a) $CellContext`a $CellContext`b$$ + \
-(1 - 2 $CellContext`a)^2 (-1 + $CellContext`b$$) $CellContext`b$$ \
-$CellContext`t$$)/((-$CellContext`b$$ + $CellContext`a (-1 + 
+           NMinimize[((((-1 + $CellContext`a) $CellContext`a) \
+$CellContext`b$$ + (((1 - 
+                    2 $CellContext`a)^2 (-1 + $CellContext`b$$)) \
+$CellContext`b$$) $CellContext`t$$)/((-$CellContext`b$$ + $CellContext`a (-1 + 
                   2 $CellContext`b$$)) (
                 1 - $CellContext`b$$ + $CellContext`a (-1 + 
                   2 $CellContext`b$$))) - $CellContext`t$$)^2 + $CellContext`\
@@ -4295,8 +4322,9 @@ $CellContext`t$$)/((-$CellContext`b$$ + $CellContext`a (-1 +
 }, Open  ]]
 }, Open  ]]
 },
-WindowSize->{1864.5, 1032.},
-WindowMargins->{{Automatic, 0}, {0, Automatic}},
+WindowSize->{1920., 1052.25},
+WindowMargins->{{-1920, Automatic}, {Automatic, 0}},
+TaggingRules-><|"TryRealOnly" -> False|>,
 FrontEndVersion->"13.2 for Linux x86 (64-bit) (January 31, 2023)",
 StyleDefinitions->"Default.nb",
 ExpressionUUID->"901af2a9-2168-449f-ba90-7abcc726af50"
@@ -4316,86 +4344,89 @@ Cell[CellGroupData[{
 Cell[580, 22, 210, 4, 45, "Subsubsection",ExpressionUUID->"3e3bdc6c-39b5-493c-a994-628e069321f0"],
 Cell[793, 28, 703, 19, 73, "Input",ExpressionUUID->"9af83549-1329-482b-9b80-c91a983c5975"],
 Cell[CellGroupData[{
-Cell[1521, 51, 1235, 33, 55, "Input",ExpressionUUID->"1a810978-7922-49da-b617-c16309e93ad3"],
-Cell[2759, 86, 2322, 46, 352, "Output",ExpressionUUID->"e7e8a609-f04e-4bc2-ba4e-e29724f1f1ed"]
+Cell[1521, 51, 1230, 32, 55, "Input",ExpressionUUID->"1a810978-7922-49da-b617-c16309e93ad3"],
+Cell[2754, 85, 2363, 45, 352, "Output",ExpressionUUID->"10ca9666-c835-4d1c-a2da-72ad3b0ecaf6"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[5118, 137, 710, 16, 33, "Input",ExpressionUUID->"180d3825-cf57-42ab-9b7c-a3ad1ae65235"],
-Cell[5831, 155, 855, 22, 66, "Output",ExpressionUUID->"b1555024-67b6-4a5c-a38e-de46b7164920"]
+Cell[5154, 135, 709, 16, 33, "Input",ExpressionUUID->"180d3825-cf57-42ab-9b7c-a3ad1ae65235"],
+Cell[5866, 153, 898, 22, 66, "Output",ExpressionUUID->"b1a2e264-ebbc-4b23-8bdb-db8d9e9a0997"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[6723, 182, 1196, 31, 39, "Input",ExpressionUUID->"99fccb3e-33a9-4302-b7eb-fedb81b1c112"],
-Cell[7922, 215, 2059, 42, 284, "Output",ExpressionUUID->"ec685e73-4dc0-4f45-aefe-ce4c4d08d593"]
+Cell[6801, 180, 1191, 30, 39, "Input",ExpressionUUID->"99fccb3e-33a9-4302-b7eb-fedb81b1c112"],
+Cell[7995, 212, 2100, 41, 284, "Output",ExpressionUUID->"8fe6977f-f994-4501-9be8-9a6c68fd695c"]
 }, Open  ]]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[10030, 263, 255, 4, 45, "Subsubsection",ExpressionUUID->"585d62ac-d603-4f1c-8285-b751f16d4962"],
-Cell[10288, 269, 724, 17, 48, "Input",ExpressionUUID->"af2c1e13-4265-41cc-8bbd-8f75b49d6478"],
+Cell[10144, 259, 283, 5, 45, "Subsubsection",ExpressionUUID->"585d62ac-d603-4f1c-8285-b751f16d4962"],
+Cell[10430, 266, 723, 17, 48, "Input",ExpressionUUID->"af2c1e13-4265-41cc-8bbd-8f75b49d6478"],
 Cell[CellGroupData[{
-Cell[11037, 290, 1277, 32, 46, "Input",ExpressionUUID->"67efd367-871a-439a-8c45-4ae41175b582"],
-Cell[12317, 324, 2220, 43, 343, "Output",ExpressionUUID->"844e3245-27b5-4bb0-a5b1-0a828b2fd1bb"]
+Cell[11178, 287, 1272, 31, 46, "Input",ExpressionUUID->"67efd367-871a-439a-8c45-4ae41175b582"],
+Cell[12453, 320, 2260, 42, 343, "Output",ExpressionUUID->"c8a844c4-b484-4abc-87c6-bd239816e090"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[14574, 372, 532, 13, 33, "Input",ExpressionUUID->"9a216c42-59a7-4108-8fdf-70f2ad629da7"],
-Cell[15109, 387, 454, 11, 59, "Output",ExpressionUUID->"4016453d-a17f-419c-9739-eb5250c12e61"]
+Cell[14750, 367, 531, 13, 33, "Input",ExpressionUUID->"9a216c42-59a7-4108-8fdf-70f2ad629da7"],
+Cell[15284, 382, 501, 12, 59, "Output",ExpressionUUID->"09efa543-e449-4cee-9b55-669eaf10d3f3"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[15600, 403, 1157, 30, 46, "Input",ExpressionUUID->"65a19c31-d4e9-40e4-9dd4-23e9c8997d82"],
-Cell[16760, 435, 2179, 43, 280, "Output",ExpressionUUID->"6cb5d353-93ba-4cb7-8152-bed20d4f79b9"]
+Cell[15822, 399, 1152, 29, 46, "Input",ExpressionUUID->"65a19c31-d4e9-40e4-9dd4-23e9c8997d82"],
+Cell[16977, 430, 2224, 43, 280, "Output",ExpressionUUID->"d0545d67-b55b-48ae-9c85-29dd79466d38"]
 }, Open  ]]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[18988, 484, 317, 5, 45, "Subsubsection",ExpressionUUID->"4346171a-0105-414e-87a9-39ccc14a9e3e"],
-Cell[19308, 491, 973, 32, 80, "Input",ExpressionUUID->"1d3e0bd3-f26d-4f07-a8c0-b1e834ec8ae9"],
+Cell[19250, 479, 317, 5, 45, "Subsubsection",ExpressionUUID->"4346171a-0105-414e-87a9-39ccc14a9e3e"],
 Cell[CellGroupData[{
-Cell[20306, 527, 1435, 43, 44, "Input",ExpressionUUID->"30e0fd01-595e-4ef4-8ebb-8a65225bf84e"],
-Cell[21744, 572, 766, 23, 62, "Output",ExpressionUUID->"35cb1bde-8589-4b80-aa6b-d0e8fc859d93"]
+Cell[19592, 488, 992, 31, 80, "Input",ExpressionUUID->"1d3e0bd3-f26d-4f07-a8c0-b1e834ec8ae9"],
+Cell[20587, 521, 744, 14, 41, "Message",ExpressionUUID->"977ffd37-9a3a-421b-9762-c6ae904521b0"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[22547, 600, 872, 26, 59, "Input",ExpressionUUID->"a76049c8-5ea5-481a-be49-72c306eec6e9"],
-Cell[23422, 628, 282, 7, 60, "Output",ExpressionUUID->"4625b752-eaf2-4494-a8e6-09fd87ad7cf0"]
+Cell[21368, 540, 1435, 43, 44, "Input",ExpressionUUID->"30e0fd01-595e-4ef4-8ebb-8a65225bf84e"],
+Cell[22806, 585, 814, 24, 62, "Output",ExpressionUUID->"6d35485e-9d6a-4bab-9e49-9971b6f68037"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[23741, 640, 872, 26, 59, "Input",ExpressionUUID->"2d766f67-fe33-4f17-a631-b27aabfc0faf"],
-Cell[24616, 668, 349, 10, 61, "Output",ExpressionUUID->"70e6616a-fdef-4f21-bed2-081d0d56d91a"]
+Cell[23657, 614, 872, 26, 59, "Input",ExpressionUUID->"a76049c8-5ea5-481a-be49-72c306eec6e9"],
+Cell[24532, 642, 304, 7, 60, "Output",ExpressionUUID->"4dd552d8-a06f-4568-99e9-53540598c791"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[25002, 683, 2292, 72, 59, "Input",ExpressionUUID->"c4be537e-8a21-404d-ac6a-6ddc530e4d44"],
-Cell[27297, 757, 993, 33, 62, "Output",ExpressionUUID->"06ac3c73-8791-471b-9c65-2a642bee8e4c"]
+Cell[24873, 654, 872, 26, 59, "Input",ExpressionUUID->"2d766f67-fe33-4f17-a631-b27aabfc0faf"],
+Cell[25748, 682, 373, 10, 61, "Output",ExpressionUUID->"64c0bd60-1e07-42da-9b1e-ab3ec5c5d1b6"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[28327, 795, 1096, 35, 59, "Input",ExpressionUUID->"73ed54c0-037c-44ba-8889-7141ea585ec3"],
-Cell[29426, 832, 597, 18, 61, "Output",ExpressionUUID->"16201720-95b9-4c0c-ae5c-feb65ce5c130"]
+Cell[26158, 697, 2292, 72, 59, "Input",ExpressionUUID->"c4be537e-8a21-404d-ac6a-6ddc530e4d44"],
+Cell[28453, 771, 1017, 33, 62, "Output",ExpressionUUID->"8a702c9c-8353-4106-a9c0-801bc0e222ac"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[30060, 855, 2415, 68, 89, "Input",ExpressionUUID->"2d9ce8a2-6487-4896-9846-a0eb9e0e7a8b"],
-Cell[32478, 925, 2450, 46, 336, "Output",ExpressionUUID->"65f04ca8-0fa7-433c-934b-b3a71678d393"]
-}, Open  ]],
-Cell[34943, 974, 128, 3, 29, "Input",ExpressionUUID->"9ccd9fe2-00b7-4600-9edb-1673bc560fd7"],
-Cell[CellGroupData[{
-Cell[35096, 981, 4290, 120, 89, "Input",ExpressionUUID->"d31cb4aa-08ff-4ce8-899b-d85eb7aa9b93"],
-Cell[39389, 1103, 3286, 60, 380, "Output",ExpressionUUID->"698f6fbb-8933-4303-9ac3-6593d9babb28"]
+Cell[29507, 809, 1096, 35, 59, "Input",ExpressionUUID->"73ed54c0-037c-44ba-8889-7141ea585ec3"],
+Cell[30606, 846, 619, 18, 61, "Output",ExpressionUUID->"f7a3ced8-0e6a-4c38-865a-2ca55b49f4e6"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[42712, 1168, 1350, 42, 59, "Input",ExpressionUUID->"00e2c47a-5f5b-4fce-a421-8e06104b2f80"],
-Cell[44065, 1212, 4569, 151, 62, "Output",ExpressionUUID->"5f25dafd-c649-4b66-a69d-7288a25a8917"]
+Cell[31262, 869, 2411, 67, 59, "Input",ExpressionUUID->"2d9ce8a2-6487-4896-9846-a0eb9e0e7a8b"],
+Cell[33676, 938, 2496, 46, 336, "Output",ExpressionUUID->"d7b6def6-a9a2-46ee-bc90-5728bdba3f7b"]
 }, Open  ]],
-Cell[48649, 1366, 1425, 45, 59, "Input",ExpressionUUID->"35d42a0b-70c7-46ee-9fe6-4e296f8c4684"],
+Cell[36187, 987, 147, 2, 29, "Input",ExpressionUUID->"9ccd9fe2-00b7-4600-9edb-1673bc560fd7"],
 Cell[CellGroupData[{
-Cell[50099, 1415, 527, 14, 33, "Input",ExpressionUUID->"7f44395b-2074-4cb6-8c9e-3646f6ebd2ad"],
-Cell[50629, 1431, 180, 3, 33, "Output",ExpressionUUID->"5cb5cb77-2be4-44d0-ba13-9999e16e517f"]
-}, Open  ]],
-Cell[CellGroupData[{
-Cell[50846, 1439, 269, 6, 33, "Input",ExpressionUUID->"fc51efe1-e56c-4c3d-8851-136cc087941b"],
-Cell[51118, 1447, 1107, 36, 62, "Output",ExpressionUUID->"1f9a9ac4-b01e-4dd2-bf0c-01ccd65c6158"]
+Cell[36359, 993, 4286, 119, 89, "Input",ExpressionUUID->"d31cb4aa-08ff-4ce8-899b-d85eb7aa9b93"],
+Cell[40648, 1114, 3330, 59, 384, "Output",ExpressionUUID->"6e50cacf-9c75-41f6-a053-0cfe15093e46"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[52262, 1488, 1624, 47, 33, "Input",ExpressionUUID->"6894e958-b8c3-4e03-b0d2-39698612ad7f"],
-Cell[53889, 1537, 139637, 2622, 375, "Output",ExpressionUUID->"00151cf7-53e1-4f25-bfd6-63fbc8305a39"]
+Cell[44015, 1178, 1346, 41, 59, "Input",ExpressionUUID->"00e2c47a-5f5b-4fce-a421-8e06104b2f80"],
+Cell[45364, 1221, 4587, 150, 62, "Output",ExpressionUUID->"813a3257-f636-4d64-bd98-f3aeaf25f77d"]
+}, Open  ]],
+Cell[49966, 1374, 1421, 44, 59, "Input",ExpressionUUID->"35d42a0b-70c7-46ee-9fe6-4e296f8c4684"],
+Cell[CellGroupData[{
+Cell[51412, 1422, 523, 13, 33, "Input",ExpressionUUID->"7f44395b-2074-4cb6-8c9e-3646f6ebd2ad"],
+Cell[51938, 1437, 201, 3, 33, "Output",ExpressionUUID->"5d679e10-bedd-46eb-9c7a-c2c8bb2edec4"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[193563, 4164, 2733, 75, 59, "Input",ExpressionUUID->"ff1a9b11-8e41-40e2-a829-96dc3f49d72b"],
-Cell[196299, 4241, 2549, 52, 303, "Output",ExpressionUUID->"9dab11f4-1bfa-4c32-b22f-efb458afd6ca"]
+Cell[52176, 1445, 269, 6, 33, "Input",ExpressionUUID->"fc51efe1-e56c-4c3d-8851-136cc087941b"],
+Cell[52448, 1453, 1107, 36, 62, "Output",ExpressionUUID->"1f9a9ac4-b01e-4dd2-bf0c-01ccd65c6158"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[53592, 1494, 1624, 47, 33, "Input",ExpressionUUID->"6894e958-b8c3-4e03-b0d2-39698612ad7f"],
+Cell[55219, 1543, 142166, 2642, 375, "Output",ExpressionUUID->"00151cf7-53e1-4f25-bfd6-63fbc8305a39"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[197422, 4190, 2733, 75, 59, "Input",ExpressionUUID->"ff1a9b11-8e41-40e2-a829-96dc3f49d72b"],
+Cell[200158, 4267, 2576, 53, 303, "Output",ExpressionUUID->"9dab11f4-1bfa-4c32-b22f-efb458afd6ca"]
 }, Open  ]]
 }, Open  ]]
 }
