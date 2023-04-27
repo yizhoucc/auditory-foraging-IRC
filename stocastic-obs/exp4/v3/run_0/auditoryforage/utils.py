@@ -189,6 +189,18 @@ class PlotHelper():
         # return fig1, fig2, fig3, fig4
         return fig3
 
+    def count_success_streak(self, agent, env, states, no_signal_nodes, no_additional_episodes = 10):
+        no_signal_and_noise_nodes = no_signal_nodes + 1
+        episodes_states = states
+        success_streak_list = [len([i for i in range(len(episodes_states)) if episodes_states[i] < no_signal_and_noise_nodes and episodes_states[i-1] >= no_signal_and_noise_nodes])]
+        for _ in range(no_additional_episodes):
+            episode = agent.run_one_episode(env=env, num_steps=10000, q_states = [[i] for i in range(env.no_nodes)])
+            episodes_states = episode['states']
+            episodes_beliefs = episode['q_probs']
+            success_streak_list.append(len([i for i in range(len(episodes_states)) if episodes_states[i] < no_signal_and_noise_nodes and episodes_states[i-1] >= no_signal_and_noise_nodes]))
+            average_success_streak = sum(success_streak_list)/(no_additional_episodes+1)
+        return average_success_streak, success_streak_list
+    
     def policy_for_signal_noise_durations(self, agent, states, observations, probs, licking_action_keys, attention_action_keys, no_signal_nodes, nodes_from_zero, time_steps_before_lick, attention_color_list = ['blue','blueviolet','indigo','magenta','darkcyan','cyan']):
         no_signal_and_noise_nodes = no_signal_nodes + 1
         episodes_states = states
@@ -299,6 +311,14 @@ def plot_AF_episode(episode, env, agent, nodes_from_zero = 20, time_steps_before
     
     fig = env_plotter.policy_for_signal_noise_durations(agent, states, observations, probs, licking_action_keys, attention_action_keys, no_signal_nodes, nodes_from_zero = nodes_from_zero, time_steps_before_lick = time_steps_before_lick)
     figs.append(fig)
+
+    average_success_streak, success_streak_list = env_plotter.count_success_streak(agent, env, states, no_signal_nodes, no_additional_episodes = 20)
+    print(f'average success streak is {average_success_streak}')
+    plt.figure()
+    plt.stem(1 + np.arange(0,len(success_streak_list)),success_streak_list)
+    plt.xlabel('episode no.')
+    plt.ylabel('success streak')
+    plt.show()
 
     # fig1, fig2, fig3 = env_plotter.policy_for_gaussian_beliefs(agent, no_nodes, dict_action_possible, licking_action_keys, attention_action_keys, no_signal_nodes, mu_max = 20, mu_length = 20)
     # figs.append(fig1)
