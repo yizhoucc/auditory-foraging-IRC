@@ -1,6 +1,7 @@
 # Got rid of data points where mice did 'correct reject'.
 # Note ToneCloudDurSec and LickwrtTrialStart is in seconds, need to convert to units of 20 milliseconds
 # Minimum start_trial is 0. For first block, end_trial will be 59
+# Have to offset observations, actions, rewards like in the original toy version.
 
 import csv
 import numpy as np
@@ -8,9 +9,11 @@ import numpy as np
 class DataToEpisode():
     def __init__(self, filename, env = None, start_trial = 0, end_trial = None, one_second_in_preferred_units = 50) -> None:
         self.filename = filename
-        self.no_signal_nodes = env.no_signal_nodes if env != None else None
-        self.no_penalty_nodes = env.no_penalty_nodes if env != None else None
+        self.no_signal_nodes = env.no_signal_nodes
+        self.no_penalty_nodes = env.no_penalty_nodes
         self.no_ITI_nodes =  env.no_ITI_nodes
+        self.no_ITI_nodes =  env.no_ITI_nodes
+        self.no_attention_modes = env.no_attention_modes
         self.start_trial = start_trial
         self.end_trial = end_trial
         self.one_second_in_preferred_units = one_second_in_preferred_units
@@ -36,25 +39,34 @@ class DataToEpisode():
         #fake
         self.ITI_duration = [round(self.one_second_in_preferred_units * 2.5) for _ in self.noise_duration_data]
 
+    
+    # Whole thing is wrong, node 0 should correspond to noise!!!
     def lists_to_episode(self):
         self.data_as_lists()
         self.episode = {}
         self.episode['states'] = []
+        self.lick_choice_list = []
         for ind in range(len(self.ITI_duration)):
-            self.episode['states'] += [i for i in range(self.ITI_duration[ind])]
+            self.episode['states'] += [1+self.no_signal_nodes+i for i in range(self.ITI_duration[ind])]
+            self.lick_choice_list += len([1+self.no_signal_nodes+i for i in range(self.ITI_duration[ind])]) * [0]
             if self.animal_response_data[ind] == 3:
                 raise NotImplementedError("Didn't implement for the case of Correct Rejection.")
             elif np.isnan(self.lick_wrt_trial_start_data[ind]):
-                self.episode['states'] += [self.no_ITI_nodes for _ in range(self.noise_duration_data[ind])]
-                self.episode['states'] += [self.no_ITI_nodes+1+i for i in range(self.no_signal_nodes)]
+                self.episode['states'] += [0 for _ in range(self.noise_duration_data[ind])]
+                self.episode['states'] += [1+i for i in range(self.no_signal_nodes)]                
+                self.lick_choice_list += len(self.noise_duration_data[ind]+self.no_signal_nodes) * [0]
             elif self.lick_wrt_trial_start_data[ind] <= self.noise_duration_data[ind]:
-                self.episode['states'] += [self.no_ITI_nodes for _ in range(self.lick_wrt_trial_start_data[ind])]
-                self.episode['states'] += [self.no_ITI_nodes+1+self.no_signal_nodes+i for i in range(self.no_penalty_nodes)]
+                self.episode['states'] += [0 for _ in range(self.lick_wrt_trial_start_data[ind])]
+                self.episode['states'] += [1+self.no_signal_nodes+self.no_ITI_nodes+i for i in range(self.no_penalty_nodes)]
+                self.lick_choice_list += (self.lick_wrt_trial_start_data[ind]-1) * [0] + [1] + self.no_penalty_nodes * [0]
             else:
-                self.episode['states'] += [self.no_ITI_nodes for _ in range(self.noise_duration_data[ind])]
-                self.episode['states'] += [self.no_ITI_nodes+1+i for i in range(self.lick_wrt_trial_start_data[ind]-self.noise_duration_data[ind])]
+                self.episode['states'] += [0 for _ in range(self.noise_duration_data[ind])]
+                self.episode['states'] += [1+i for i in range(self.lick_wrt_trial_start_data[ind]-self.noise_duration_data[ind])]
+                self.lick_choice_list += (self.noise_duration_data[ind] + self.lick_wrt_trial_start_data[ind]-self.noise_duration_data[ind]-1) * [0] + [1]
 
-
+        #fake
+        self.pupil_data = np.random.uniform(low=0.0, high=1.0, size=len(self.episode['states']))
+        self.attention_choice_list = np.digitize(self.pupil_data, np.linspace(np.min(self.pupil_data), np.max(self.pupil_data), num=self.no_attention_modes+1))-1
 
 if __name__ == "__main__":
     filename = 'W3333_29.csv'
