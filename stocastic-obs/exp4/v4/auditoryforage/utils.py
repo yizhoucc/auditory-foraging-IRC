@@ -286,8 +286,10 @@ def plot_AF_episode(episode, env, agent, nodes_from_zero = 20, time_steps_before
     attention_color_list = ['blue','blueviolet','indigo','magenta','darkcyan','cyan']
 
     #Modeling assumption - Based on current observation, you choose whether to lick at the current state, and whether to attend at next state. 
-    offset_actions = np.insert(actions, -1, 0, axis=0) #offset actions to match time steps, as it looks like the action at last time step is not taken.
-    offset_rewards = np.insert(rewards, -1, 0, axis=0) #offset actions to match time steps, as it looks like the rewards at last time step is not computed.
+    # offset_actions = np.insert(actions, -1, 0, axis=0) #offset actions to match time steps, as it looks like the action at last time step is not taken.
+    # offset_rewards = np.insert(rewards, -1, 0, axis=0) #offset actions to match time steps, as it looks like the rewards at last time step is not computed.
+    offset_actions = np.append(actions, 0) #offset actions to match time steps, as it looks like the action at last time step is not taken.
+    offset_rewards = np.append(rewards, 0) #offset actions to match time steps, as it looks like the rewards at last time step is not computed.
     correct_lick_choice_idxs = list(map(lambda action_choice: True if action_choice in licking_action_keys else False, offset_actions))&(offset_rewards>=0)
     wrong_lick_choice_idxs = list(map(lambda action_choice: True if action_choice in licking_action_keys else False, offset_actions))&(offset_rewards<0)
     attention_choice_idxs = []

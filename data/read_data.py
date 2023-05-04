@@ -40,7 +40,10 @@ class DataToEpisode():
         self.ITI_duration = [round(self.one_second_in_preferred_units * 2.5) for _ in self.noise_duration_data]
 
     
-    # Whole thing is wrong, node 0 should correspond to noise!!!
+    # Wrong, this is the case where penalty is set to 1, which is worng. Should I do episodic? Think more!
+    # Make sure you get rid of the last time step for appropriate keys like in the actual dictionary.
+    # Also after finishing everything, double check if things make sense.
+    # Make multiple instances of the observations and run IRC on them.
     def lists_to_episode(self):
         self.data_as_lists()
         self.episode = {}
@@ -54,7 +57,7 @@ class DataToEpisode():
             elif np.isnan(self.lick_wrt_trial_start_data[ind]):
                 self.episode['states'] += [0 for _ in range(self.noise_duration_data[ind])]
                 self.episode['states'] += [1+i for i in range(self.no_signal_nodes)]                
-                self.lick_choice_list += len(self.noise_duration_data[ind]+self.no_signal_nodes) * [0]
+                self.lick_choice_list += (self.noise_duration_data[ind]+self.no_signal_nodes) * [0]
             elif self.lick_wrt_trial_start_data[ind] <= self.noise_duration_data[ind]:
                 self.episode['states'] += [0 for _ in range(self.lick_wrt_trial_start_data[ind])]
                 self.episode['states'] += [1+self.no_signal_nodes+self.no_ITI_nodes+i for i in range(self.no_penalty_nodes)]
@@ -66,7 +69,7 @@ class DataToEpisode():
 
         #fake
         self.pupil_data = np.random.uniform(low=0.0, high=1.0, size=len(self.episode['states']))
-        self.attention_choice_list = np.digitize(self.pupil_data, np.linspace(np.min(self.pupil_data), np.max(self.pupil_data), num=self.no_attention_modes+1))-1
+        self.attention_choice_list = np.digitize(self.pupil_data, np.linspace(np.min(self.pupil_data), np.max(self.pupil_data)+1e-10, num=self.no_attention_modes+1))-1
 
 if __name__ == "__main__":
     filename = 'W3333_29.csv'
