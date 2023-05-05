@@ -12,11 +12,15 @@ class DataToEpisode():
         self.no_signal_nodes = env.no_signal_nodes
         self.no_penalty_nodes = env.no_penalty_nodes
         self.no_ITI_nodes =  env.no_ITI_nodes
-        self.no_ITI_nodes =  env.no_ITI_nodes
         self.no_attention_modes = env.no_attention_modes
+        self.dict_action_possible = env.dict_action_possible
+        self.observation_possible = env.observation_possible
         self.start_trial = start_trial
         self.end_trial = end_trial
         self.one_second_in_preferred_units = one_second_in_preferred_units
+        self.dict_action_meaning = {}
+        for key in self.dict_action_possible.keys():
+            self.dict_action_meaning[self.dict_action_possible[key]] = key
 
     def read_and_filter_csv(self):
         with open(self.filename) as csvfile:
@@ -40,10 +44,14 @@ class DataToEpisode():
         self.ITI_duration = [round(self.one_second_in_preferred_units * 2.5) for _ in self.noise_duration_data]
 
     
+    # It should be noise, signal, penalty, and ITI
+    # ITI value should be assigned in a way it ends in 301!
     # Wrong, this is the case where penalty is set to 1, which is worng. Should I do episodic? Think more!
     # Make sure you get rid of the last time step for appropriate keys like in the actual dictionary.
     # Also after finishing everything, double check if things make sense.
     # Make multiple instances of the observations and run IRC on them.
+    
+    # continuing case, not episodic.
     def lists_to_episode(self):
         self.data_as_lists()
         self.episode = {}
@@ -70,6 +78,16 @@ class DataToEpisode():
         #fake
         self.pupil_data = np.random.uniform(low=0.0, high=1.0, size=len(self.episode['states']))
         self.attention_choice_list = np.digitize(self.pupil_data, np.linspace(np.min(self.pupil_data), np.max(self.pupil_data)+1e-10, num=self.no_attention_modes+1))-1
+
+        self.episode['actions'] = [self.dict_action_meaning[(self.lick_choice_list[ind],self.attention_choice_list[ind])] for ind in range(len(self.lick_choice_list))]
+        self.episode['observations'] = []
+        for ind in range(len(self.episode['actions'])):
+            if self.episode['states'] >= 1 + self.no_signal_nodes and self.episode['states'] < 1 + self.no_signal_nodes + self.no_ITI_nodes:
+                self.episode['observations'].append(self.observation_possible[-2])
+            elif self.episode['states'] >= 1 + self.no_signal_nodes + self.no_ITI_nodes:
+                self.episode['observations'].append(self.observation_possible[-1])
+        
+        
 
 if __name__ == "__main__":
     filename = 'W3333_29.csv'

@@ -35,6 +35,12 @@ class PlotHelper():
             ax.set_yticklabels([f'{i}' for i in range(self.num_states)])
         else:
             h = ax.imshow(plot_variable.T, aspect=aspect, extent=[-0.5, self.num_steps+0.5, -0.5, 0.5], vmin=np.min(plot_variable) - 0.5, vmax=np.max(plot_variable) + 0.5, origin='lower', cmap=feature_colors)
+
+            print('problem somwhere here')
+            print(plot_variable)
+            print(np.where(plot_variable == 2))
+
+
             cbar = plt.colorbar(h, label=label)
             cbar.set_ticks(np.arange(np.min(plot_variable), np.max(plot_variable)+1))
             ax.set_yticks([])
@@ -301,26 +307,26 @@ def plot_AF_episode(episode, env, agent, nodes_from_zero = 20, time_steps_before
     #for episodic
     ## fig = env_plotter.make_episode_plot(plot_variable = states, label = 'True Sate', feature_color_list = ['khaki','green','limegreen','palegreen','lime','red','maroon'])
     state_classes = np.array([[assign_state_class(true_state, no_signal_nodes, no_penalty_nodes)] for true_state in states.flatten()])
-    fig = env_plotter.make_episode_plot(plot_variable = state_classes, label = 'Sate class', feature_color_list = ['khaki','green','red','maroon'], attention_color_list = attention_color_list)
+    fig = env_plotter.make_episode_plot(plot_variable = state_classes, label = 'State class', feature_color_list = ['khaki','green','red','maroon'], attention_color_list = attention_color_list)
     figs.append(fig)
     fig = env_plotter.make_episode_plot(plot_variable = observations, label = 'Observation', feature_color_list = ['black','white','red','maroon'], attention_color_list = attention_color_list)
     figs.append(fig)
     fig = env_plotter.make_episode_plot(plot_variable = probs, label = 'Belief', for_belief = True, attention_color_list = attention_color_list)    
     figs.append(fig)
 
-    fig = env_plotter.policy_for_all_signal_noise_durations(agent, env, states, probs, licking_action_keys, attention_action_keys, no_signal_nodes)
-    figs.append(fig)
+    # fig = env_plotter.policy_for_all_signal_noise_durations(agent, env, states, probs, licking_action_keys, attention_action_keys, no_signal_nodes)
+    # figs.append(fig)
     
-    fig = env_plotter.policy_for_signal_noise_durations(agent, states, observations, probs, licking_action_keys, attention_action_keys, no_signal_nodes, nodes_from_zero = nodes_from_zero, time_steps_before_lick = time_steps_before_lick)
-    figs.append(fig)
+    # fig = env_plotter.policy_for_signal_noise_durations(agent, states, observations, probs, licking_action_keys, attention_action_keys, no_signal_nodes, nodes_from_zero = nodes_from_zero, time_steps_before_lick = time_steps_before_lick)
+    # figs.append(fig)
 
-    average_success_streak, success_streak_list = env_plotter.count_success_streak(agent, env, states, no_signal_nodes, no_additional_episodes = 20)
-    print(f'average success streak is {average_success_streak}')
-    plt.figure()
-    plt.stem(1 + np.arange(0,len(success_streak_list)),success_streak_list)
-    plt.xlabel('episode no.')
-    plt.ylabel('success streak')
-    plt.show()
+    # average_success_streak, success_streak_list = env_plotter.count_success_streak(agent, env, states, no_signal_nodes, no_additional_episodes = 20)
+    # print(f'average success streak is {average_success_streak}')
+    # plt.figure()
+    # plt.stem(1 + np.arange(0,len(success_streak_list)),success_streak_list)
+    # plt.xlabel('episode no.')
+    # plt.ylabel('success streak')
+    # plt.show()
 
     # fig1, fig2, fig3 = env_plotter.policy_for_gaussian_beliefs(agent, no_nodes, dict_action_possible, licking_action_keys, attention_action_keys, no_signal_nodes, mu_max = 20, mu_length = 20)
     # figs.append(fig1)
