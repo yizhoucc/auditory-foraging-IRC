@@ -44,12 +44,14 @@ class DataToEpisode():
         self.ITI_duration = [round(self.one_second_in_preferred_units * 2.5) for _ in self.noise_duration_data]
 
     
+    # Utils visualization has some bug (showing red color where it shouldn't and not ending in green).
     # It should be noise, signal, penalty, and ITI
     # ITI value should be assigned in a way it ends in 301!
     # Wrong, this is the case where penalty is set to 1, which is worng. Should I do episodic? Think more!
     # Make sure you get rid of the last time step for appropriate keys like in the actual dictionary.
     # Also after finishing everything, double check if things make sense.
     # Make multiple instances of the observations and run IRC on them.
+    # Let below one be for continuing case, write similar one for the episodic case.
     
     # continuing case, not episodic.
     def lists_to_episode(self):
