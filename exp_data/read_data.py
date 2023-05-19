@@ -35,8 +35,8 @@ class DataToEpisode():
         data_dict = self.read_and_filter_csv()
         self.reward_data = data_dict['RewardSize']
         self.animal_response_data = data_dict['AnimalResponse']
-        self.pupil_data = data_dict['Pupil']
-        self.run_speed_data = data_dict['runSpeed']
+        # self.pupil_data = data_dict['Pupil']
+        # self.run_speed_data = data_dict['runSpeed']
         self.lick_wrt_trial_start_data = [round(self.one_second_in_preferred_units * time) if not np.isnan(time) else time for time in data_dict['LickwrtTrialStart']]
         self.noise_duration_data = [round(self.one_second_in_preferred_units * time) for time in data_dict['ToneCloudDurSec']]
         
