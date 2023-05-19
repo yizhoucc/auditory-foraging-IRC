@@ -1,5 +1,5 @@
 # Got rid of data points where mice did 'correct reject'.
-# Got rid of data points where ITI is more than  (can be worked around if needed, ignored for simplicity now).
+# Got rid of data points where ITI is more than 3 (can be worked around if needed, ignored for simplicity now).
 # Note ToneCloudDurSec and LickwrtTrialStart is in seconds, need to convert to units of 20 milliseconds
 # Minimum start_trial is 0. For first block, end_trial will be 59
 # Have to offset observations, actions, rewards like in the original toy version.
