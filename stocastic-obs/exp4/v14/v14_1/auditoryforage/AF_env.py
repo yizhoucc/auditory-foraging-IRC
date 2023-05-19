@@ -233,7 +233,7 @@ class AuditoryForaging(Env):
             # else:
             #     obs = list(self.observation_possible).index(0)
 
-        if self.state>=1 and self.state<=self.no_signal_nodes:
+        if self.state in range(1, self.no_signal_nodes + 1):
             obs = list(self.observation_possible).index(np.random.binomial(size=1, n=1, p= self.obs_certainity_possible[attention_choice])[0])
             # if attention_choice == 0:
             #     obs = list(self.observation_possible).index(0.5)
@@ -243,10 +243,10 @@ class AuditoryForaging(Env):
         #for episodic
         # if self.state>=1 + self.no_signal_nodes and self.state<self.no_nodes:
         #     obs = list(self.observation_possible).index(self.state)
-        if self.state == 1 + self.no_signal_nodes:
-            obs  = 2
-        if self.state > 1 + self.no_signal_nodes:
-            obs = 3
+        if self.state in range(self.no_signal_nodes + 1, self.no_signal_nodes + self.no_penalty_nodes + 1):
+            obs  = self.observation_possible[-2]
+        if self.state in range(self.no_signal_nodes + self.no_penalty_nodes + 1, self.no_nodes):
+            obs = self.observation_possible[-1]    
 
         obs = (obs,)
         return obs
@@ -418,9 +418,9 @@ class AuditoryForaging(Env):
             
             #for episodic
             # belief[observation[0]+self.no_signal_nodes-1] = 1
-            if observation[0] == 2:
+            if observation[0] == self.observation_possible[-2]:
                 belief[self.no_signal_nodes+1:self.no_signal_nodes+1+self.no_penalty_nodes] = 1/self.no_penalty_nodes
-            elif observation[0] == 3:
+            elif observation[0] == self.observation_possible[-1]:
                 belief[self.no_signal_nodes+1+self.no_penalty_nodes:self.no_nodes] = 1/self.no_ITI_nodes
 
 
