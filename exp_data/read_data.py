@@ -26,9 +26,6 @@ class DataToEpisode():
             self.dict_action_meaning[self.dict_action_possible[key]] = key
 
     def consider_if_true(self, data_list, ind):
-        # print(ind)
-        # print(float(data_list[ind][data_list[0].index('AnimalResponse')]))
-        # print(float(data_list[ind][data_list[0].index('ITIinseconds')]))
         return ((float(data_list[ind][data_list[0].index('AnimalResponse')]) != 3) and (float(data_list[ind][data_list[0].index('ITIinseconds')]) <= 3))
             
     
@@ -37,12 +34,6 @@ class DataToEpisode():
             data_list = list(csv.reader(csvfile))
         data_dict = {} 
         self.end_trial = len(data_list)-2 if self.end_trial is None else self.end_trial
-
-        print('here')
-        print(len(data_list))
-        print('there')
-        print(data_list[-1])
-
         for col_ind in range(len(data_list[0])):
             data_dict[data_list[0][col_ind]] = [float(data_list[ind][col_ind]) for ind in range(self.start_trial+1,self.end_trial+2) if self.consider_if_true(data_list, ind)]
         return data_dict
@@ -58,6 +49,7 @@ class DataToEpisode():
         self.noise_duration_data = [round(self.one_second_in_preferred_units * time) for time in data_dict['ToneCloudDurSec']]
 
     
+    # Add rewards.
     # Add actual pupil values.
     # Utils visualization has some bug (showing red color where it shouldn't and not ending in green).
     # Wrong, this is the case where penalty is set to 1, which is worng. Should I do episodic? Think more!
