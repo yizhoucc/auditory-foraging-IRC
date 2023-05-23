@@ -56,6 +56,7 @@ class DataToEpisode():
     # Make sure you get rid of the last time step for appropriate keys like in the actual dictionary.
     # Make sure you make it list of lists wherever appropriate.
     # Also after finishing everything, double check if things make sense.
+    # Maybe use the same visualization as before to see (pending fixing some bug in visualization).
     # Make multiple instances of the observations and run IRC on them.
     # Let below one be for continuing case, write similar one for the episodic case.
 
@@ -67,24 +68,42 @@ class DataToEpisode():
         self.data_as_lists()
         self.episode = {}
         self.episode['states'] = []
+        self.episode['received_food'] = []
         self.lick_choice_list = []
+        self.block_log_list = []
         for ind in range(len(self.ITI_duration)):
+            if len(self.block_log_list) == 0:
+                temp_dict = {}
+                temp_dict['reward'] = self.reward_data[0]
+                temp_dict['start'] = 0
+                self.block_log_list.append(temp_dict)
+            if self.block_log_list[-1]['reward'] != self.reward_data[ind]:
+                self.block_log_list[-1]['stop'] = len(self.episode['states']) - 1
+                temp_dict = {}
+                temp_dict['reward'] = self.reward_data[ind]
+                temp_dict['start'] = len(self.episode['states'])
+                self.block_log_list.append(temp_dict)
             self.episode['states'] += [self.no_nodes - 1 - (self.ITI_duration[ind] - 1 - i) for i in range(self.ITI_duration[ind])]
             self.lick_choice_list += len([self.no_nodes - 1 - (self.ITI_duration[ind] - 1 - i) for i in range(self.ITI_duration[ind])]) * [0]
+            self.episode['received_food'] += len([self.no_nodes - 1 - (self.ITI_duration[ind] - 1 - i) for i in range(self.ITI_duration[ind])]) * [0]
             if self.animal_response_data[ind] == 3:
                 raise NotImplementedError("Didn't implement for the case of Correct Rejection.")
             elif np.isnan(self.lick_wrt_trial_start_data[ind]):
                 self.episode['states'] += [0 for _ in range(self.noise_duration_data[ind])]
                 self.episode['states'] += [1+i for i in range(self.no_signal_nodes)]                
                 self.lick_choice_list += (self.noise_duration_data[ind]+self.no_signal_nodes) * [0]
+                self.episode['received_food'] += (self.noise_duration_data[ind]+self.no_signal_nodes) * [0]
             elif self.lick_wrt_trial_start_data[ind] <= self.noise_duration_data[ind]:
                 self.episode['states'] += [0 for _ in range(self.lick_wrt_trial_start_data[ind])]
                 self.episode['states'] += [1+self.no_signal_nodes+i for i in range(self.no_penalty_nodes)] 
                 self.lick_choice_list += (self.lick_wrt_trial_start_data[ind]-1) * [0] + [1] + self.no_penalty_nodes * [0]  # need to change this to episodic case, maybe implement both.
+                self.episode['received_food'] += (self.lick_wrt_trial_start_data[ind] + self.no_penalty_nodes) * [0]
             else:
                 self.episode['states'] += [0 for _ in range(self.noise_duration_data[ind])]
                 self.episode['states'] += [1+i for i in range(self.lick_wrt_trial_start_data[ind]-self.noise_duration_data[ind])]
                 self.lick_choice_list += (self.lick_wrt_trial_start_data[ind]-1) * [0] + [1]
+                self.episode['received_food'] += (self.lick_wrt_trial_start_data[ind]-1) * [0] + [self.reward_data[ind]] #recieved food reward at the same time step of lick
+        self.block_log_list[-1]['stop'] = len(self.episode['states'])
 
         #fake
         self.pupil_data = np.random.uniform(low=0.0, high=1.0, size=len(self.episode['states']))
@@ -101,3 +120,45 @@ class DataToEpisode():
                 self.episode['observations'].append(self.observation_possible[-2])
             elif self.episode['states'][ind] in range(self.no_signal_nodes + self.no_penalty_nodes + 1, self.no_nodes):
                 self.episode['observations'].append(self.observation_possible[-1])
+    
+    def edit_episode_to_IRC_format(self, unformatted_episode):
+        formatted_episode = {}
+        formatted_episode['actions'] = unformatted_episode['actions'][:-1]
+        formatted_episode['received_food'] = unformatted_episode['received_food'][:-1]
+        formatted_episode['states'] = [[state] for state in unformatted_episode['states']]
+        formatted_episode['observations'] = [[obs] for obs in unformatted_episode['observations']]
+        return formatted_episode
+
+    def chop_episode(self, start, stop):
+        chopped_episode = {}
+        chopped_episode['actions'] = self.episode['actions'][start:stop+1]
+        chopped_episode['received_food'] = self.episode['received_food'][start:stop+1]
+        chopped_episode['states'] = self.episode['states'][start:stop+1]
+        chopped_episode['observations'] = self.episode['observations'][start:stop+1]
+        return chopped_episode
+
+    def data_for_IRC(self, is_continuing = False):
+        if is_continuing:
+            low_reward_blocks = {}
+            low_reward_blocks['episodes'] = []
+            low_reward_blocks['block_indices'] = []
+            high_reward_blocks = {}
+            high_reward_blocks['episodes'] = []
+            high_reward_blocks['block_indices'] = []
+            data_IRC = {}
+            block_ind = 0
+            for block_log in range(len(self.block_log_list)):
+                formatted_chopped_episode = self.edit_episode_to_IRC_format(self.chop_episode(block_log['start'], block_log['stop']))
+                if block_log['reward'] == 1:
+                    low_reward_blocks['episodes'].append(formatted_chopped_episode)
+                    low_reward_blocks['block_indices'].append(block_ind)
+                elif block_log['reward'] == 2:
+                    high_reward_blocks['episodes'].append(formatted_chopped_episode)
+                    high_reward_blocks['block_indices'].append(block_ind)
+                else:
+                    raise NotImplementedError("Reward size can only be 1 or 2.")
+                block_ind += 1
+            data_IRC['low_reward_blocks'] = low_reward_blocks
+            data_IRC['high_reward_blocks'] = high_reward_blocks
+            return data_IRC
+
