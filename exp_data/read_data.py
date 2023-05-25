@@ -102,7 +102,7 @@ class DataToEpisode():
                 self.episode['states'] += [0 for _ in range(self.noise_duration_data[ind])]
                 self.episode['states'] += [1+i for i in range(self.lick_wrt_trial_start_data[ind]-self.noise_duration_data[ind])]
                 self.lick_choice_list += (self.lick_wrt_trial_start_data[ind]-1) * [0] + [1]
-                self.episode['received_food'] += (self.lick_wrt_trial_start_data[ind]-1) * [0] + [self.reward_data[ind]] #recieved food reward at the same time step of lick
+                self.episode['received_food'] += (self.lick_wrt_trial_start_data[ind]-1) * [0] + [self.reward_data[ind]] # recieved food reward at the same time step of lick
         self.block_log_list[-1]['stop'] = len(self.episode['states'])
 
         #fake
@@ -129,26 +129,37 @@ class DataToEpisode():
         formatted_episode['observations'] = [[obs] for obs in unformatted_episode['observations']]
         return formatted_episode
 
-    def chop_episode(self, start, stop):
+    def chop_episode(self, episode, start, stop):
         chopped_episode = {}
-        chopped_episode['actions'] = self.episode['actions'][start:stop+1]
-        chopped_episode['received_food'] = self.episode['received_food'][start:stop+1]
-        chopped_episode['states'] = self.episode['states'][start:stop+1]
-        chopped_episode['observations'] = self.episode['observations'][start:stop+1]
+        chopped_episode['actions'] = episode['actions'][start:stop+1]
+        chopped_episode['received_food'] = episode['received_food'][start:stop+1]
+        chopped_episode['states'] = episode['states'][start:stop+1]
+        chopped_episode['observations'] = episode['observations'][start:stop+1]
         return chopped_episode
 
+    def find_episodic_start_stop_time_points(self, continuing_episode):
+        states = continuing_episode['states']
+        episodic_start_list = [0] + [ind for ind in range(1,len(states)) if (states[ind-1] == self.no_nodes - 1 and states[ind] ==  0)]
+        episodic_stop_list = [ind for ind in range(1,len(states)) if states[ind] ==  1 + self.no_signal_nodes]
+        if len(episodic_stop_list) == len(episodic_start_list) - 1:
+            episodic_stop_list.append(len(states))
+        elif len(episodic_stop_list) != len(episodic_start_list):
+            raise Exception("There is an error in the method find_episodic_start_stop_time_points")
+        return episodic_start_list, episodic_stop_list
+
+    
     def data_for_IRC(self, is_continuing = False):
+        low_reward_blocks = {}
+        low_reward_blocks['episodes'] = []
+        low_reward_blocks['block_indices'] = []
+        high_reward_blocks = {}
+        high_reward_blocks['episodes'] = []
+        high_reward_blocks['block_indices'] = []
+        data_IRC = {}
+        block_ind = 0
         if is_continuing:
-            low_reward_blocks = {}
-            low_reward_blocks['episodes'] = []
-            low_reward_blocks['block_indices'] = []
-            high_reward_blocks = {}
-            high_reward_blocks['episodes'] = []
-            high_reward_blocks['block_indices'] = []
-            data_IRC = {}
-            block_ind = 0
             for block_log in range(len(self.block_log_list)):
-                formatted_chopped_episode = self.edit_episode_to_IRC_format(self.chop_episode(block_log['start'], block_log['stop']))
+                formatted_chopped_episode = self.edit_episode_to_IRC_format(self.chop_episode(self.episode, block_log['start'], block_log['stop']))
                 if block_log['reward'] == 1:
                     low_reward_blocks['episodes'].append(formatted_chopped_episode)
                     low_reward_blocks['block_indices'].append(block_ind)
@@ -158,7 +169,23 @@ class DataToEpisode():
                 else:
                     raise NotImplementedError("Reward size can only be 1 or 2.")
                 block_ind += 1
-            data_IRC['low_reward_blocks'] = low_reward_blocks
-            data_IRC['high_reward_blocks'] = high_reward_blocks
-            return data_IRC
+        else:
+            for block_log in range(len(self.block_log_list)):
+                chopped_continuing_episode = self.chop_episode(block_log['start'], block_log['stop'])
+                episodic_start_list, episodic_stop_list = self.find_episodic_start_stop_time_points(chopped_continuing_episode)
+                temp_list = []
+                for ind in range(len(episodic_start_list)):
+                    temp_list.append(self.edit_episode_to_IRC_format(self.chop_episode(chopped_continuing_episode, episodic_start_list[ind], episodic_stop_list[ind])))
+                    if block_log['reward'] == 1:
+                        low_reward_blocks['episodes'].append(temp_list)
+                        low_reward_blocks['block_indices'].append(block_ind)
+                    elif block_log['reward'] == 2:
+                        high_reward_blocks['episodes'].append(temp_list)
+                        high_reward_blocks['block_indices'].append(block_ind)
+                    else:
+                        raise NotImplementedError("Reward size can only be 1 or 2.")
+                block_ind += 1
+        data_IRC['low_reward_blocks'] = low_reward_blocks
+        data_IRC['high_reward_blocks'] = high_reward_blocks
+        return data_IRC
 
