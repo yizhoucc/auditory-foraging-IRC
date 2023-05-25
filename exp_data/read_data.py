@@ -4,7 +4,7 @@
 # Minimum start_trial is 0. For first block, end_trial will be 59
 # Have to offset observations, actions, rewards like in the original toy version.
 
-import csv
+import csv, copy
 import numpy as np
 
 class DataToEpisode():
@@ -139,16 +139,19 @@ class DataToEpisode():
 
     def find_episodic_start_stop_time_points(self, continuing_episode):
         states = continuing_episode['states']
-        episodic_start_list = [0] + [ind for ind in range(1,len(states)) if (states[ind-1] == self.no_nodes - 1 and states[ind] ==  0)]
         episodic_stop_list = [ind for ind in range(1,len(states)) if states[ind] ==  1 + self.no_signal_nodes]
-        if len(episodic_stop_list) == len(episodic_start_list) - 1:
-            episodic_stop_list.append(len(states))
-        elif len(episodic_stop_list) != len(episodic_start_list):
+        episodic_start_list = [0] 
+        for episodic_stop in episodic_stop_list:
+            if 0 in states[episodic_stop+1:]:
+                episodic_start_list.append(states[episodic_stop+1:].index(0))
+        if episodic_stop_list[-1] != len(states) - 1:
+            episodic_stop_list.append(len(states) - 1)
+        if len(episodic_stop_list) != len(episodic_start_list):
             raise Exception("There is an error in the method find_episodic_start_stop_time_points")
         return episodic_start_list, episodic_stop_list
 
-    
     def data_for_IRC(self, is_continuing = False):
+        self.lists_to_episode()
         low_reward_blocks = {}
         low_reward_blocks['episodes'] = []
         low_reward_blocks['block_indices'] = []
@@ -158,7 +161,7 @@ class DataToEpisode():
         data_IRC = {}
         block_ind = 0
         if is_continuing:
-            for block_log in range(len(self.block_log_list)):
+            for block_log in self.block_log_list:
                 formatted_chopped_episode = self.edit_episode_to_IRC_format(self.chop_episode(self.episode, block_log['start'], block_log['stop']))
                 if block_log['reward'] == 1:
                     low_reward_blocks['episodes'].append(formatted_chopped_episode)
@@ -170,20 +173,20 @@ class DataToEpisode():
                     raise NotImplementedError("Reward size can only be 1 or 2.")
                 block_ind += 1
         else:
-            for block_log in range(len(self.block_log_list)):
-                chopped_continuing_episode = self.chop_episode(block_log['start'], block_log['stop'])
+            for block_log in self.block_log_list:
+                chopped_continuing_episode = self.chop_episode(self.episode, block_log['start'], block_log['stop'])
                 episodic_start_list, episodic_stop_list = self.find_episodic_start_stop_time_points(chopped_continuing_episode)
                 temp_list = []
                 for ind in range(len(episodic_start_list)):
                     temp_list.append(self.edit_episode_to_IRC_format(self.chop_episode(chopped_continuing_episode, episodic_start_list[ind], episodic_stop_list[ind])))
-                    if block_log['reward'] == 1:
-                        low_reward_blocks['episodes'].append(temp_list)
-                        low_reward_blocks['block_indices'].append(block_ind)
-                    elif block_log['reward'] == 2:
-                        high_reward_blocks['episodes'].append(temp_list)
-                        high_reward_blocks['block_indices'].append(block_ind)
-                    else:
-                        raise NotImplementedError("Reward size can only be 1 or 2.")
+                if block_log['reward'] == 1:
+                    low_reward_blocks['episodes'].append(temp_list)
+                    low_reward_blocks['block_indices'].append(block_ind)
+                elif block_log['reward'] == 2:
+                    high_reward_blocks['episodes'].append(temp_list)
+                    high_reward_blocks['block_indices'].append(block_ind)
+                else:
+                    raise NotImplementedError("Reward size can only be 1 or 2.")
                 block_ind += 1
         data_IRC['low_reward_blocks'] = low_reward_blocks
         data_IRC['high_reward_blocks'] = high_reward_blocks
