@@ -28,19 +28,17 @@ class PlotHelper():
         wrong_lick_choice = ax.scatter(np.arange(self.num_steps+1)[self.wrong_lick_choice_idxs], -0.3 * np.ones(sum(self.wrong_lick_choice_idxs)), color='darkorange', marker='v', s=50)
         feature_colors = ListedColormap(feature_color_list)
         if for_belief:
-            h = ax.imshow(plot_variable.T, aspect=aspect, extent=[-0.5, self.num_steps+0.5, -0.5, 0.5], vmin=0, vmax=1, origin='lower', cmap='gist_gray',)
+            
+            # Lokesh - modification for irc 0.3.1
+            # h = ax.imshow(plot_variable.T, aspect=aspect, extent=[-0.5, self.num_steps+0.5, -0.5, 0.5], vmin=0, vmax=1, origin='lower', cmap='gist_gray',)
+            h = ax.imshow(plot_variable.detach().numpy().T, aspect=aspect, extent=[-0.5, self.num_steps+0.5, -0.5, 0.5], vmin=0, vmax=1, origin='lower', cmap='gist_gray',)
+
             cbar = plt.colorbar(h, label=label)
             cbar.set_ticks(np.arange(2))
             ax.set_yticks(1/self.num_states * np.arange(self.num_states) - 0.5 + 0.5 * 1/self.num_states)
             ax.set_yticklabels([f'{i}' for i in range(self.num_states)])
         else:
             h = ax.imshow(plot_variable.T, aspect=aspect, extent=[-0.5, self.num_steps+0.5, -0.5, 0.5], vmin=np.min(plot_variable) - 0.5, vmax=np.max(plot_variable) + 0.5, origin='lower', cmap=feature_colors)
-
-            print('problem somwhere here')
-            print(plot_variable)
-            print(np.where(plot_variable == 2))
-
-
             cbar = plt.colorbar(h, label=label)
             cbar.set_ticks(np.arange(np.min(plot_variable), np.max(plot_variable)+1))
             ax.set_yticks([])
@@ -286,7 +284,11 @@ def plot_AF_episode(episode, env, agent, nodes_from_zero = 20, time_steps_before
     observations = episode['observations']
     actions = episode['actions']
     rewards = episode['rewards']
-    probs = episode['q_probs']
+
+    # modification for irc 0.3.1
+    # probs = episode['q_probs']
+    probs = episode['beliefs']
+    
     num_states = states.max()+1
 
     attention_color_list = ['blue','blueviolet','indigo','magenta','darkcyan','cyan']
