@@ -191,4 +191,3 @@ class DataToEpisode():
         data_IRC['low_reward_blocks'] = low_reward_blocks
         data_IRC['high_reward_blocks'] = high_reward_blocks
         return data_IRC
-
