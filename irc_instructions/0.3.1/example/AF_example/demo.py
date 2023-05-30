@@ -40,6 +40,6 @@ manager = AgentManager(defaults=defaults)
 
 
 env_param = [-3.0, 200.0, .08, .25, -5000, 0]
-num_epochs = 369
+num_epochs = 110
 agent, key = manager.train_agent(env_param = env_param, num_epochs=num_epochs)
 agent, fig = manager.inspect_agent(key, figsize=(5, 2.5))

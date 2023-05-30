@@ -9,6 +9,19 @@ from .alias import RandGen
 
 with open(Path(__file__).parent/'defaults.yaml') as f:
     D_ENV_SPEC = Config(yaml.safe_load(f)).auditory_foraging_v1
+
+# modification for irc 0.3.1
+def fill_dictionary_depth_2(default_dict, input_dict):
+            filled_dictionary = {}
+            for key1 in default_dict.keys():
+                filled_dictionary[key1] = {}
+                for key2 in default_dict[key1].keys():
+                    try:
+                        filled_dictionary[key1][key2] = input_dict[key1][key2]
+                    except:
+                        filled_dictionary[key1][key2] = default_dict[key1][key2]
+            return filled_dictionary
+
 """
     POMDP model
     -----------
@@ -45,6 +58,7 @@ class AuditoryForaging(Env):
     # ):
     def __init__(self,
         *,
+        spec: Optional[dict] = None,
         seed: Optional[int] = None,
         rng: Union[RandGen, int, None] = None,
     ):
@@ -61,7 +75,7 @@ class AuditoryForaging(Env):
         # self.spec = Config(spec).fill(D_ENV_SPEC)
         # self.rng = rng if isinstance(rng, RandGen) else np.random.default_rng(rng)
         self.rng = np.random.default_rng(seed)
-
+        
         # Experimental setup
         # modification for irc 0.3.1
         # self.prob_01 = self.spec.experiment.prob_01
@@ -69,10 +83,10 @@ class AuditoryForaging(Env):
         # self.no_penalty_nodes = self.spec.experiment.no_penalty_nodes
         # self.no_ITI_nodes =  self.spec.experiment.no_ITI_nodes
         # self.no_nodes = 1 + self.no_signal_nodes + self.no_penalty_nodes + self.no_ITI_nodes
-        self.prob_01 = D_ENV_SPEC['experiment']['prob_01']
-        self.no_signal_nodes = D_ENV_SPEC['experiment']['no_signal_nodes']
-        self.no_penalty_nodes = D_ENV_SPEC['experiment']['no_penalty_nodes']
-        self.no_ITI_nodes =  D_ENV_SPEC['experiment']['no_ITI_nodes']
+        self.prob_01 = spec['experiment']['prob_01'] if spec is not None else D_ENV_SPEC['experiment']['prob_01']
+        self.no_signal_nodes = spec['experiment']['no_signal_nodes'] if spec is not None else D_ENV_SPEC['experiment']['no_signal_nodes']
+        self.no_penalty_nodes = spec['experiment']['no_penalty_nodes'] if spec is not None else D_ENV_SPEC['experiment']['no_penalty_nodes']
+        self.no_ITI_nodes =  spec['experiment']['no_ITI_nodes']  if spec is not None else D_ENV_SPEC['experiment']['no_ITI_nodes']
         self.no_nodes = 1 + self.no_signal_nodes + self.no_penalty_nodes + self.no_ITI_nodes
 
         # Agent's RL model parameters
@@ -87,16 +101,16 @@ class AuditoryForaging(Env):
         # # self.attention_cost = np.array([0,self.high_attention_cost])
         # self.penalty_cost = self.spec.agent.penalty_cost
         # self.iti_cost = self.spec.agent.iti_cost
-        self.lick_cost = D_ENV_SPEC['agent']['lick_cost']
-        self.food_reward = D_ENV_SPEC['agent']['food_reward']
+        self.lick_cost = spec['agent']['lick_cost'] if spec is not None else D_ENV_SPEC['agent']['lick_cost']
+        self.food_reward = spec['agent']['food_reward'] if spec is not None else D_ENV_SPEC['agent']['food_reward']
         # self.high_attention_cost = self.spec.agent.high_attention_cost
-        self.attention_cost_coeff = D_ENV_SPEC['agent']['attention_cost_coeff']
-        self.attention_cost_temp = D_ENV_SPEC['agent']['attention_cost_temp']
-        self.no_attention_modes = D_ENV_SPEC['agent']['no_attention_modes']
+        self.attention_cost_coeff = spec['agent']['attention_cost_coeff'] if spec is not None else D_ENV_SPEC['agent']['attention_cost_coeff']
+        self.attention_cost_temp = spec['agent']['attention_cost_temp'] if spec is not None else D_ENV_SPEC['agent']['attention_cost_temp']
+        self.no_attention_modes = spec['agent']['no_attention_modes'] if spec is not None else D_ENV_SPEC['agent']['no_attention_modes']
         self.obs_certainity_possible = 1/(2*(self.no_attention_modes-1)) * np.arange(self.no_attention_modes) + 0.5 
         # self.attention_cost = np.array([0,self.high_attention_cost])
-        self.penalty_cost = D_ENV_SPEC['agent']['penalty_cost']
-        self.iti_cost = D_ENV_SPEC['agent']['iti_cost']
+        self.penalty_cost = spec['agent']['penalty_cost'] if spec is not None else D_ENV_SPEC['agent']['penalty_cost']
+        self.iti_cost = spec['agent']['iti_cost'] if spec is not None else D_ENV_SPEC['agent']['iti_cost']
 
         # Agent's sensory model parameters (may or may not be known)
         # self.attention_possible = np.array(self.spec.agent.attention_possible)
