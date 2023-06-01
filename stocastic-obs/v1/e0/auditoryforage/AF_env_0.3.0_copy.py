@@ -65,39 +65,20 @@ class AuditoryForaging(Env):
         # Agent's RL model parameters
         self.lick_cost = self.spec.agent.lick_cost
         self.food_reward = self.spec.agent.food_reward
-        # self.high_attention_cost = self.spec.agent.high_attention_cost
         self.attention_cost_coeff = self.spec.agent.attention_cost_coeff
         self.attention_cost_temp = self.spec.agent.attention_cost_temp
         self.no_attention_modes = self.spec.agent.no_attention_modes
         self.obs_certainity_possible = 1/(2*(self.no_attention_modes-1)) * np.arange(self.no_attention_modes) + 0.5 
-        # self.attention_cost = np.array([0,self.high_attention_cost])
         self.penalty_cost = self.spec.agent.penalty_cost
         self.iti_cost = self.spec.agent.iti_cost
-
-        # Agent's sensory model parameters (may or may not be known)
-        # self.attention_possible = np.array(self.spec.agent.attention_possible)
         self.attention_possible = np.arange(self.no_attention_modes)
-        # self.observation_possible = np.concatenate((np.array(self.spec.agent.attention_based_obs), np.arange(1 + self.no_signal_nodes, self.no_nodes)))
-        
-        #for episodic
-        # self.observation_possible = np.concatenate((np.arange(2), np.arange(1 + self.no_signal_nodes, self.no_nodes)))
         self.observation_possible = np.arange(4)
-
-        # Look-up dictionaries to map numbers used in OpenAI version (dict keys) to physical quantities in the foraging task (dict values).
         self.dict_observation_possible = dict(enumerate(self.observation_possible))
         self.dict_action_possible = dict(enumerate([(lick_choice,attention_choice) for lick_choice in range(2) for attention_choice in self.attention_possible]))
-
-        # Agent's observation space, which may be different from experimentalist's observation space!
+        
         self.observation_space = MultiDiscrete([len(self.dict_observation_possible)])
-
-        # Agent's action space, note that the experimentalist might not have direct access to attention choice!
         self.action_space = Discrete(len(self.dict_action_possible))
-
-        # State space
         self.state_space = MultiDiscrete([self.no_nodes])
-
-        # Initial state is the beginning of pink noise
-        self.state = 1 + self.no_signal_nodes + self.no_penalty_nodes
 
         # Initial rewards collected is 0
         self.collected_reward = 0
