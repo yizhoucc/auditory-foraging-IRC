@@ -125,8 +125,8 @@ class DataToEpisode():
         formatted_episode = {}
         formatted_episode['actions'] = unformatted_episode['actions'][:-1]
         formatted_episode['received_food'] = unformatted_episode['received_food'][:-1]
-        formatted_episode['states'] = [[state] for state in unformatted_episode['states']]
-        formatted_episode['observations'] = [[obs] for obs in unformatted_episode['observations']]
+        formatted_episode['states'] = np.array([[state] for state in unformatted_episode['states']])
+        formatted_episode['observations'] = np.array([[obs] for obs in unformatted_episode['observations']])
         return formatted_episode
 
     def chop_episode(self, episode, start, stop):

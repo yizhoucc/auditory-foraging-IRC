@@ -306,19 +306,18 @@ def plot_AF_episode(episode, env, agent, nodes_from_zero = 20, time_steps_before
     fig = env_plotter.make_episode_plot(plot_variable = probs, label = 'Belief', for_belief = True, attention_color_list = attention_color_list)    
     figs.append(fig)
 
-    fig = env_plotter.policy_for_all_signal_noise_durations(agent, env, states, probs, licking_action_keys, attention_action_keys, no_signal_nodes)
-    figs.append(fig)
-    
-    fig = env_plotter.policy_for_signal_noise_durations(agent, states, observations, probs, licking_action_keys, attention_action_keys, no_signal_nodes, nodes_from_zero = nodes_from_zero, time_steps_before_lick = time_steps_before_lick)
-    figs.append(fig)
-
-    average_success_streak, success_streak_list = env_plotter.count_success_streak(agent, env, states, no_signal_nodes, no_additional_episodes = 20)
-    print(f'average success streak is {average_success_streak}')
-    plt.figure()
-    plt.stem(1 + np.arange(0,len(success_streak_list)),success_streak_list)
-    plt.xlabel('episode no.')
-    plt.ylabel('success streak')
-    plt.show()
+    # Lokesh - commented to visualize just experimental data
+    # fig = env_plotter.policy_for_all_signal_noise_durations(agent, env, states, probs, licking_action_keys, attention_action_keys, no_signal_nodes)
+    # figs.append(fig)
+    # fig = env_plotter.policy_for_signal_noise_durations(agent, states, observations, probs, licking_action_keys, attention_action_keys, no_signal_nodes, nodes_from_zero = nodes_from_zero, time_steps_before_lick = time_steps_before_lick)
+    # figs.append(fig)
+    # average_success_streak, success_streak_list = env_plotter.count_success_streak(agent, env, states, no_signal_nodes, no_additional_episodes = 20)
+    # print(f'average success streak is {average_success_streak}')
+    # plt.figure()
+    # plt.stem(1 + np.arange(0,len(success_streak_list)),success_streak_list)
+    # plt.xlabel('episode no.')
+    # plt.ylabel('success streak')
+    # plt.show()
 
     # fig1, fig2, fig3 = env_plotter.policy_for_gaussian_beliefs(agent, no_nodes, dict_action_possible, licking_action_keys, attention_action_keys, no_signal_nodes, mu_max = 20, mu_length = 20)
     # figs.append(fig1)

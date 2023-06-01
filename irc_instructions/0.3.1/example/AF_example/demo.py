@@ -32,7 +32,8 @@ manager = AgentManager(defaults=defaults)
 # env_param = (0.2, 0.05, 0.8, 0.1, 10., -1.)
 # agent, key = manager.train_agent(env_param=env_param, num_epochs=10)
 
-env_param = [-3.0, 200.0, .08, .25, -5000, 0]
+# env_param = [-3.0, 200.0, .08, .25, -5000, 0] #better set of parameters, need to adjust below grid accordingly
+env_param = [-3.0, 16.0, 30, 14, -50, 0]
 num_epochs = 110
 agent, key = manager.train_agent(env_param = env_param, num_epochs=num_epochs)
 # agent, fig = manager.inspect_agent(key, figsize=(5, 2.5)) #removed for screen
