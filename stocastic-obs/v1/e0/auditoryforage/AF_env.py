@@ -71,22 +71,20 @@ class AuditoryForaging(Env):
             Random seed.
 
         """
-        # Experimental setup
         self.prob_01 = prob_01
         self.no_signal_nodes = no_signal_nodes
         self.no_penalty_nodes = no_penalty_nodes
         self.no_ITI_nodes =  no_ITI_nodes
-        self.no_nodes = 1 + self.no_signal_nodes + self.no_penalty_nodes + self.no_ITI_nodes
-
-        # Agent's parameters
         self.lick_cost = lick_cost
         self.food_reward = food_reward
         self.attention_cost_coeff = attention_cost_coeff
         self.attention_cost_temp = attention_cost_temp
         self.no_attention_modes = no_attention_modes
-        self.obs_certainity_possible = 1/(2*(self.no_attention_modes-1)) * np.arange(self.no_attention_modes) + 0.5 
         self.penalty_cost = penalty_cost
         self.iti_cost = iti_cost
+
+        self.no_nodes = 1 + self.no_signal_nodes + self.no_penalty_nodes + self.no_ITI_nodes
+        self.obs_certainity_possible = 1/(2*(self.no_attention_modes-1)) * np.arange(self.no_attention_modes) + 0.5 
         self.attention_possible = np.arange(self.no_attention_modes)
         self.observation_possible = np.arange(4)
         self.dict_observation_possible = dict(enumerate(self.observation_possible))
@@ -95,7 +93,145 @@ class AuditoryForaging(Env):
         self.observation_space = MultiDiscrete([len(self.dict_observation_possible)])
         self.action_space = Discrete(len(self.dict_action_possible))
         self.state_space = MultiDiscrete([self.no_nodes])
-        
         self.rng = np.random.default_rng(seed)
 
+    def get_param(self):
+        """
+        Returns environment parameters.
+        """
+
+        env_param = (
+            self.lick_cost,
+            self.food_reward,
+            self.attention_cost_coeff,
+            self.attention_cost_temp,
+            self.penalty_cost,
+            self.iti_cost,
+            self.no_attention_modes
+        )
+        return env_param
+    
+    def set_param(self, env_param):
+        """
+        Updates environment with parameters.
+        """
+
+        self.lick_cost = env_param[0]
+        self.food_reward = env_param[1]
+        self.attention_cost_coeff = env_param[2]
+        self.attention_cost_temp = env_param[3]
+        self.penalty_cost = env_param[4]
+        self.iti_cost = env_param[5]
+        self.no_attention_modes = env_param[6]
+
+    def get_state(self):
+        """
+        Returns environment state.
+        """
+
+        state_tuple = (self.state,)
+        return state_tuple
         
+    def find_reward(self, lick_choice, attention_choice):
+        """
+        Computes the reward, given the choice of licking and the amount of attention.
+        """
+
+        self.attention_cost = np.array([-self.attention_cost_coeff * np.exp(certainity/self.attention_cost_temp) for certainity in self.obs_certainity_possible])
+        attention_cost_value = self.attention_cost[list(self.attention_possible).index(attention_choice)] - self.attention_cost[0]
+        lick_cost_value = lick_choice * self.lick_cost
+        if self.state>=1 and self.state<=self.no_signal_nodes and lick_choice == 1:
+            food_reward_value = self.food_reward
+        else:
+            food_reward_value = 0
+        if self.state == 0 and lick_choice == 1:
+            penalty_cost_value = self.penalty_cost
+        else:
+            penalty_cost_value = 0
+        if self.state == self.no_signal_nodes + 2:
+            iti_cost_value = self.iti_cost
+        else:
+            iti_cost_value = 0
+        rw = food_reward_value + attention_cost_value + lick_cost_value + penalty_cost_value + iti_cost_value
+        return rw
+
+    def transition_step(self, lick_choice):
+        """
+        Based on the current state and the lick choice, the state value is updated
+        from the current state to the future state.
+        """
+        
+        if self.state == 0:
+            if lick_choice == 1: 
+                next_state = 1 + self.no_signal_nodes
+            else: 
+                next_state = self.state + np.random.choice(2, p=[1-self.prob_01, self.prob_01])
+        elif self.state == self.no_signal_nodes:
+            next_state = self.no_signal_nodes + self.no_penalty_nodes + np.random.randint(1, int(self.no_ITI_nodes/3)+1)
+        elif self.state == self.no_nodes-1:
+            next_state = 0
+        else:
+            next_state = self.state + 1
+        self.state = next_state
+
+    def observe_step(self, attention_choice):
+        """
+        Provides the observation given the choice of attention provided at the previous time step, and the current state.
+        """
+
+        if self.state == 0:
+            obs = list(self.observation_possible).index(1 - np.random.binomial(size=1, n=1, p= self.obs_certainity_possible[attention_choice])[0])
+        elif self.state in range(1, self.no_signal_nodes + 1):
+            obs = list(self.observation_possible).index(np.random.binomial(size=1, n=1, p= self.obs_certainity_possible[attention_choice])[0])
+        elif self.state in range(self.no_signal_nodes + 1, self.no_signal_nodes + self.no_penalty_nodes + 1):
+            obs  = self.observation_possible[-2]
+        elif self.state in range(self.no_signal_nodes + self.no_penalty_nodes + 1, self.no_nodes):
+            obs = self.observation_possible[-1]
+        else:
+            raise Exception("Some mistake in observe_step method, missing some case.")
+        obs = (obs,)
+        return obs
+    
+    def step(self, action):
+        """
+        One time step in the POMDP.
+        """
+
+        done = False
+        lick_choice, attention_choice = self.dict_action_possible[action]
+        rw = self.find_reward(lick_choice, attention_choice)
+        self.transition_step(lick_choice)
+        obs = self.observe_step(attention_choice)
+        if self.state == 1 + self.no_signal_nodes:
+            done = True
+        truncated, info = False, {}
+        return obs, rw, done, truncated, info
+    
+    def reset(self, seed = None):
+        """
+        Resetting to beginning of ITI period.
+        """
+        if seed is not None:
+            self.rng = np.random.default_rng(seed)
+        self.state = self.no_signal_nodes + self.no_penalty_nodes + np.random.randint(1, int(self.no_ITI_nodes/3)+1)
+        obs = self.observe_step(0)
+        info = {}
+        return obs, info
+        
+    def update_belief(self, previous_belief, action, observation):
+        """
+        Updating belief, given previous belief, new observation, and past action.
+        """
+        
+        #LOOK INTO MAKING TENSOR IF NEEDED!
+        
+        
+        lick_choice, attention_choice = self.dict_action_possible[action]
+        transition_matrix = self.find_transition_matrix()
+        observation_matrix = self.find_observation_matrix()
+        new_belief = np.zeros(self.no_nodes)
+        for state in range(self.no_nodes):
+            # note the transpose below, because of the way we made transition_matrix: (current state, next state, action)
+            new_belief[state] = observation_matrix[observation,state,int(attention_choice)] * np.reshape(np.transpose(transition_matrix[:,state,int(lick_choice)]),(1,self.no_nodes)) @ previous_belief
+        new_belief = new_belief/np.sum(new_belief) #Normalization
+        return new_belief

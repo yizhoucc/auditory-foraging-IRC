@@ -145,35 +145,21 @@ class AuditoryForaging(Env):
         """
 
         self.attention_cost = np.array([-self.attention_cost_coeff * np.exp(certainity/self.attention_cost_temp) for certainity in self.obs_certainity_possible])
-
-        #for episodic
-        # attention_cost_value = self.attention_cost[list(self.attention_possible).index(attention_choice)]
         attention_cost_value = self.attention_cost[list(self.attention_possible).index(attention_choice)] - self.attention_cost[0]
-        
         lick_cost_value = lick_choice * self.lick_cost
-
         if self.state>=1 and self.state<=self.no_signal_nodes and lick_choice == 1:
             food_reward_value = self.food_reward
         else:
             food_reward_value = 0
-
-        #for episodic
-        # if self.state == self.no_signal_nodes + 1:
-        #     penalty_cost_value = self.penalty_cost
-        # else:
-        #     penalty_cost_value = 0
         if self.state == 0 and lick_choice == 1:
             penalty_cost_value = self.penalty_cost
         else:
             penalty_cost_value = 0
-
         if self.state == self.no_signal_nodes + 2:
             iti_cost_value = self.iti_cost
         else:
             iti_cost_value = 0
-
         rw = food_reward_value + attention_cost_value + lick_cost_value + penalty_cost_value + iti_cost_value
-
         return rw
 
     def transition_step(self, lick_choice):
@@ -182,28 +168,22 @@ class AuditoryForaging(Env):
         from the current state value to the future state value.
         """
 
-        # If current state is node 0 (tone cloud without target)
+        # If current state is node 0 (tone cloud)
         if self.state == 0:
-            if lick_choice == 1: #penalty
+            if lick_choice == 1: 
                 next_state = 1 + self.no_signal_nodes
-            else: #no penalty
+            else: 
                 next_state = self.state + np.random.choice(2, p=[1-self.prob_01, self.prob_01])
 
-        # If current state is in the beginning of tone cloud with target
+        # If current state is in signal duration, but not last time step of signal.
         if self.state>=1 and self.state<self.no_signal_nodes:
             if lick_choice == 0: #time passes by
                 next_state = self.state + 1
             else: #goes to ITI
-                # next_state = 1 + self.no_signal_nodes + self.no_penalty_nodes
-                
-                #for episodic
                 next_state = self.no_signal_nodes + self.no_penalty_nodes + np.random.randint(1, int(self.no_ITI_nodes/3)+1)
 
-        # If current state is in the end of tone cloud without target
+        # If current state is in the end of signal duration
         if self.state == self.no_signal_nodes:
-            # next_state = 1 + self.no_signal_nodes + self.no_penalty_nodes
-
-            #for episodic
             next_state = self.no_signal_nodes + self.no_penalty_nodes + np.random.randint(1, int(self.no_ITI_nodes/3)+1)
 
         # If current state is anywhere in between beginning of penalty period or just before the end of ITI
@@ -223,21 +203,10 @@ class AuditoryForaging(Env):
 
         if self.state == 0:
             obs = list(self.observation_possible).index(1 - np.random.binomial(size=1, n=1, p= self.obs_certainity_possible[attention_choice])[0])
-            # if attention_choice == 0:
-            #     obs = list(self.observation_possible).index(0.5)
-            # else:
-            #     obs = list(self.observation_possible).index(0)
 
         if self.state in range(1, self.no_signal_nodes + 1):
             obs = list(self.observation_possible).index(np.random.binomial(size=1, n=1, p= self.obs_certainity_possible[attention_choice])[0])
-            # if attention_choice == 0:
-            #     obs = list(self.observation_possible).index(0.5)
-            # else:
-            #     obs = list(self.observation_possible).index(1)
 
-        #for episodic
-        # if self.state>=1 + self.no_signal_nodes and self.state<self.no_nodes:
-        #     obs = list(self.observation_possible).index(self.state)
         if self.state in range(self.no_signal_nodes + 1, self.no_signal_nodes + self.no_penalty_nodes + 1):
             obs  = self.observation_possible[-2]
         if self.state in range(self.no_signal_nodes + self.no_penalty_nodes + 1, self.no_nodes):
@@ -254,7 +223,6 @@ class AuditoryForaging(Env):
         done = False
 
         lick_choice, attention_choice = self.dict_action_possible[action]
-        # current_state = self.state
 
         # Reward
         rw = self.find_reward(lick_choice, attention_choice)
@@ -269,34 +237,19 @@ class AuditoryForaging(Env):
         #for episodic
         if self.state == 1 + self.no_signal_nodes:
             done = True
-        
-        # self.render(current_state, lick_choice, attention_choice, rw, obs)
 
-        # Lokesh - modification for irc 0.3.1
-        # return obs, rw, done
+        
         truncated, info = False, {}
         return obs, rw, done, truncated, info
 
-    # Lokesh - modification for irc 0.3.1
-    # def reset(self):
     def reset(self, seed=None):
         """
         Resetting to beginning of ITI period.
         """
-        # Lokesh - modification for irc 0.3.1
         if seed is not None:
             self.rng = np.random.default_rng(seed)
-
-        # self.state = 1 + self.no_signal_nodes + self.no_penalty_nodes
-
-        #for episodic
         self.state = self.no_signal_nodes + self.no_penalty_nodes + np.random.randint(1, int(self.no_ITI_nodes/3)+1)
-
         obs = self.observe_step(0)
-        # return self.state
-        
-        # Lokesh - modification for irc 0.3.1
-        # return obs
         info = {}
         return obs, info
 
