@@ -100,9 +100,9 @@ class DataToEpisode():
                 self.episode['received_food'] += (self.lick_wrt_trial_start_data[ind] + self.no_penalty_nodes) * [0]
             else:
                 self.episode['states'] += [0 for _ in range(self.noise_duration_data[ind])]
-                self.episode['states'] += [1+i for i in range(self.lick_wrt_trial_start_data[ind]-self.noise_duration_data[ind])]
-                self.lick_choice_list += (self.lick_wrt_trial_start_data[ind]-1) * [0] + [1]
-                self.episode['received_food'] += (self.lick_wrt_trial_start_data[ind]-1) * [0] + [self.reward_data[ind]] # recieved food reward at the same time step of lick
+                self.episode['states'] += [1+i for i in range(self.no_signal_nodes)]
+                self.lick_choice_list += (self.lick_wrt_trial_start_data[ind]-1) * [0] + [1] + (self.noise_duration_data[ind] + self.no_signal_nodes - self.lick_wrt_trial_start_data[ind]) * [0]
+                self.episode['received_food'] += (self.lick_wrt_trial_start_data[ind]-1) * [0] + [self.reward_data[ind]] + (self.noise_duration_data[ind] + self.no_signal_nodes - self.lick_wrt_trial_start_data[ind]) * [0] # recieved food reward at the same time step of lick
         self.block_log_list[-1]['stop'] = len(self.episode['states'])
 
         #fake
@@ -112,10 +112,15 @@ class DataToEpisode():
         self.episode['actions'] = [self.dict_action_meaning[(self.lick_choice_list[ind],self.attention_choice_list[ind])] for ind in range(len(self.lick_choice_list))]
         self.episode['observations'] = []
         for ind in range(len(self.episode['actions'])):
-            if self.episode['states'][ind] == 0:
-                self.episode['observations'].append(list(self.observation_possible).index(1 - np.random.binomial(size=1, n=1, p= self.obs_certainity_possible[self.attention_choice_list[ind]])[0]))
+            if ind == 0:
+                if self.episode['states'][ind] in range(self.no_signal_nodes + self.no_penalty_nodes + 1, self.no_nodes):
+                    self.episode['observations'].append(self.observation_possible[-1])
+                else:
+                    raise Exception("Beginning of the session should be ITI, there is some mistake.")
+            elif self.episode['states'][ind] == 0:
+                self.episode['observations'].append(list(self.observation_possible).index(1 - np.random.binomial(size=1, n=1, p= self.obs_certainity_possible[self.attention_choice_list[ind - 1]])[0]))
             elif self.episode['states'][ind] in range(1, self.no_signal_nodes + 1):
-                self.episode['observations'].append(list(self.observation_possible).index(np.random.binomial(size=1, n=1, p= self.obs_certainity_possible[self.attention_choice_list[ind]])[0]))
+                self.episode['observations'].append(list(self.observation_possible).index(np.random.binomial(size=1, n=1, p= self.obs_certainity_possible[self.attention_choice_list[ind - 1]])[0]))
             elif self.episode['states'][ind] in range(self.no_signal_nodes + 1, self.no_signal_nodes + self.no_penalty_nodes + 1):
                 self.episode['observations'].append(self.observation_possible[-2])
             elif self.episode['states'][ind] in range(self.no_signal_nodes + self.no_penalty_nodes + 1, self.no_nodes):
