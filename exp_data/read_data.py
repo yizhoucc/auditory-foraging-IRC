@@ -148,11 +148,12 @@ class DataToEpisode():
         episodic_start_list = [0] 
         for episodic_stop in episodic_stop_list:
             if 0 in states[episodic_stop+1:]:
-                episodic_start_list.append(states[episodic_stop+1:].index(0))
+                episodic_start_list.append(episodic_stop + 1 + states[episodic_stop+1:].index(0))
         if episodic_stop_list[-1] != len(states) - 1:
             episodic_stop_list.append(len(states) - 1)
         if len(episodic_stop_list) != len(episodic_start_list):
             raise Exception("There is an error in the method find_episodic_start_stop_time_points")
+        print(f'start list is {episodic_start_list} and stop list is {episodic_stop_list}')
         return episodic_start_list, episodic_stop_list
 
     def data_for_IRC(self, is_continuing = False):
@@ -184,6 +185,7 @@ class DataToEpisode():
                 temp_list = []
                 for ind in range(len(episodic_start_list)):
                     temp_list.append(self.edit_episode_to_IRC_format(self.chop_episode(chopped_continuing_episode, episodic_start_list[ind], episodic_stop_list[ind])))
+                    # print(self.find_episodic_start_stop_time_points(self.chop_episode(chopped_continuing_episode, episodic_start_list[ind], episodic_stop_list[ind])))
                 if block_log['reward'] == 1:
                     low_reward_blocks['episodes'].append(temp_list)
                     low_reward_blocks['block_indices'].append(block_ind)
