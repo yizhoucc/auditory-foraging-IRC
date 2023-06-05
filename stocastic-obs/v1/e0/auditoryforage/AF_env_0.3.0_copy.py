@@ -279,8 +279,6 @@ class AuditoryForaging(Env):
         transition_matrix[(0,0,0)] = 1 - self.prob_01
         transition_matrix[(0,1,0)] = self.prob_01
 
-        #for episodic
-        # transition_matrix[(self.no_signal_nodes,1 + self.no_signal_nodes + self.no_penalty_nodes,0)] = 1
         for i in range(self.no_signal_nodes + self.no_penalty_nodes + 1, self.no_signal_nodes + self.no_penalty_nodes + 1 + int(self.no_ITI_nodes/3)):
             transition_matrix[(self.no_signal_nodes, i, 0)] = 1/(self.no_ITI_nodes/3)
         
@@ -292,9 +290,6 @@ class AuditoryForaging(Env):
         # lick cases
         transition_matrix[(0,self.no_signal_nodes+1,1)] = 1
 
-        #for episodic
-        # for i in range(1,self.no_signal_nodes+1):
-        #     transition_matrix[(i,1 + self.no_signal_nodes + self.no_penalty_nodes,1)] = 1
         for i in range(1,self.no_signal_nodes+1):
             for j in range(self.no_signal_nodes + self.no_penalty_nodes + 1, self.no_signal_nodes + self.no_penalty_nodes + 1 + int(self.no_ITI_nodes/3)):
                 transition_matrix[(i, j, 1)] = 1/(self.no_ITI_nodes/3)

@@ -6,6 +6,7 @@ from gym.spaces import Discrete, MultiDiscrete
 from typing import Optional, Union
 from jarvis.config import Config
 from .alias import RandGen
+import torch
 
 """
     POMDP model
@@ -218,13 +219,17 @@ class AuditoryForaging(Env):
         info = {}
         return obs, info
         
+    def belief_to_normalized_tensor(self, belief):
+        ############################################################
+        #LOOK INTO NORMALIZING TENSOR TO DESIRABEL FORM!
+        ############################################################
+
+        return torch.from_numpy(belief)
+    
     def update_belief(self, previous_belief, action, observation):
         """
         Updating belief, given previous belief, new observation, and past action.
         """
-        
-        #LOOK INTO MAKING TENSOR IF NEEDED!
-        
         
         lick_choice, attention_choice = self.dict_action_possible[action]
         transition_matrix = self.find_transition_matrix()
@@ -234,4 +239,36 @@ class AuditoryForaging(Env):
             # note the transpose below, because of the way we made transition_matrix: (current state, next state, action)
             new_belief[state] = observation_matrix[observation,state,int(attention_choice)] * np.reshape(np.transpose(transition_matrix[:,state,int(lick_choice)]),(1,self.no_nodes)) @ previous_belief
         new_belief = new_belief/np.sum(new_belief) #Normalization
+        new_belief = self.belief_to_normalized_tensor(new_belief)
         return new_belief
+
+    def find_transition_matrix(self):
+        """
+        Function returns the transition matrix of the form transition_matrix(current_state,future_state,current_lick_choice).
+        Note that although the usual convention is transition_matrix(next state, current state, action),
+        we set it up as transition_matrix(current_state,future_state,current_lick_choice).
+        Because of the above choice, some places we use np.transpose() while using this matrix.
+        """
+
+        transition_matrix = np.zeros((self.no_nodes,self.no_nodes,2))
+
+        transition_matrix[(0,0,0)] = 1 - self.prob_01
+        transition_matrix[(0,1,0)] = self.prob_01
+        transition_matrix[(0, self.no_signal_nodes + 1, 1)] = 1
+        
+        temp_list = [i for i in range(1, self.no_signal_nodes)] 
+        temp_list += [self.no_signal_nodes + i for i in range(1, self.no_penalty_nodes)]
+        temp_list += [self.no_signal_nodes + self.no_penalty_nodes + i for i in range(1, self.no_ITI_nodes)]
+        for node in temp_list:
+            for lick_choice in range(2):
+                transition_matrix[(node,node+1,lick_choice)] = 1
+
+        for from_node in [self.no_signal_nodes, self.no_signal_nodes + self.no_penalty_nodes]:
+            for to_node in range(self.no_signal_nodes + self.no_penalty_nodes + 1, self.no_signal_nodes + self.no_penalty_nodes + 1 + int(self.no_ITI_nodes/3)):
+                for lick_choice in range(2):
+                    transition_matrix[(from_node, to_node, lick_choice)] = 1/int(self.no_ITI_nodes/3)
+        
+        for lick_choice in range(2):
+            transition_matrix[(self.no_nodes - 1, 0, lick_choice)] = 1
+        
+        return transition_matrix
