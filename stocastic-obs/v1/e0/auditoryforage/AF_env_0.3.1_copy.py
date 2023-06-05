@@ -324,8 +324,6 @@ class AuditoryForaging(Env):
         Representing the probability O(obs at (t+1)|state at (t+1),action at (t))
         """
 
-        # stimulus = np.zeros(self.no_nodes)
-        # stimulus[1:self.no_signal_nodes+1] = 1
         observation_matrix = np.zeros((len(self.observation_possible),self.no_nodes,len(self.attention_possible)))
         
         #Considering 0th state (partially observable)
@@ -339,9 +337,6 @@ class AuditoryForaging(Env):
                 observation_matrix[1,i,attention] = self.obs_certainity_possible[attention]
         
         # Considering 'non-trial' (fully observable) nodes
-        #for episodic
-        # for i in range(self.no_signal_nodes+1,self.no_nodes):
-        #     observation_matrix[np.where(self.observation_possible == i)[0][0],i,:] = 1
         for i in range(self.no_signal_nodes+1,self.no_signal_nodes+1+self.no_penalty_nodes):
             observation_matrix[2,i,:] = 1
         for i in range(self.no_signal_nodes+1+self.no_penalty_nodes,self.no_nodes):
@@ -370,8 +365,6 @@ class AuditoryForaging(Env):
 
         if observation[0] not in range(2):
             
-            #for episodic
-            # belief[observation[0]+self.no_signal_nodes-1] = 1
             if observation[0] == self.observation_possible[-2]:
                 belief[self.no_signal_nodes+1:self.no_signal_nodes+1+self.no_penalty_nodes] = 1/self.no_penalty_nodes
             elif observation[0] == self.observation_possible[-1]:

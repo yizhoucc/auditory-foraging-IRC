@@ -252,23 +252,119 @@ class AuditoryForaging(Env):
 
         transition_matrix = np.zeros((self.no_nodes,self.no_nodes,2))
 
-        transition_matrix[(0,0,0)] = 1 - self.prob_01
-        transition_matrix[(0,1,0)] = self.prob_01
-        transition_matrix[(0, self.no_signal_nodes + 1, 1)] = 1
+        transition_matrix[0,0,0] = 1 - self.prob_01
+        transition_matrix[0,1,0] = self.prob_01
+        transition_matrix[0, self.no_signal_nodes + 1, 1] = 1
         
         temp_list = [i for i in range(1, self.no_signal_nodes)] 
         temp_list += [self.no_signal_nodes + i for i in range(1, self.no_penalty_nodes)]
         temp_list += [self.no_signal_nodes + self.no_penalty_nodes + i for i in range(1, self.no_ITI_nodes)]
         for node in temp_list:
-            for lick_choice in range(2):
-                transition_matrix[(node,node+1,lick_choice)] = 1
+            transition_matrix[node,node+1,:] = 1
 
         for from_node in [self.no_signal_nodes, self.no_signal_nodes + self.no_penalty_nodes]:
             for to_node in range(self.no_signal_nodes + self.no_penalty_nodes + 1, self.no_signal_nodes + self.no_penalty_nodes + 1 + int(self.no_ITI_nodes/3)):
-                for lick_choice in range(2):
-                    transition_matrix[(from_node, to_node, lick_choice)] = 1/int(self.no_ITI_nodes/3)
+                transition_matrix[from_node, to_node, :] = 1/int(self.no_ITI_nodes/3)
         
-        for lick_choice in range(2):
-            transition_matrix[(self.no_nodes - 1, 0, lick_choice)] = 1
+        transition_matrix[self.no_nodes - 1, 0, :] = 1
         
         return transition_matrix
+    
+    def find_observation_matrix(self):
+        """
+        Function returns the observation matrix of the form observation_matrix(obs at (t+1), state at (t+1), action at (t)).
+        Representing the probability O(obs at (t+1)|state at (t+1),action at (t))
+        """
+
+        observation_matrix = np.zeros((len(self.observation_possible),self.no_nodes,len(self.attention_possible)))
+        
+        for attention in range(len(self.attention_possible)):
+            observation_matrix[0,0,attention] = self.obs_certainity_possible[attention]
+            observation_matrix[1,0,attention] = 1 - self.obs_certainity_possible[attention]
+        
+        for i in range(1,self.no_signal_nodes+1):
+            for attention in range(len(self.attention_possible)):
+                observation_matrix[0,i,attention] = 1 - self.obs_certainity_possible[attention]
+                observation_matrix[1,i,attention] = self.obs_certainity_possible[attention]
+        
+        for i in range(self.no_signal_nodes + 1, self.no_signal_nodes + self.no_penalty_nodes + 1):
+            observation_matrix[2, i, :] = 1
+        for i in range(self.no_signal_nodes + self.no_penalty_nodes + 1, self.no_nodes):
+            observation_matrix[3, i, :] = 1
+        
+        return observation_matrix
+    
+    def init_belief(self, observation):
+        r"""Initializes belief with observation.
+
+        Args
+        ----
+        observation:
+            Initial observation at the start of an episode, may not be provided
+            by the current environment.
+
+        Returns
+        -------
+        belief:
+            A belief vector compatible with the given observation.
+
+        """
+        if observation[0] not in range(len(self.observation_possible)):
+            raise Exception("Only the example environment is implemented.")
+        
+        belief = np.zeros(shape = self.no_nodes)
+        
+        if observation[0] == self.observation_possible[-2]:
+            belief[self.no_signal_nodes + 1: self.no_signal_nodes + self.no_penalty_nodes + 1] = 1/self.no_penalty_nodes
+        elif observation[0] == self.observation_possible[-1]:
+            belief[self.no_signal_nodes + self.no_penalty_nodes + 1: self.no_nodes] = 1/self.no_ITI_nodes
+        else:
+            certainity_sum = np.sum(self.obs_certainity_possible)
+            if observation[0] == 0:
+                normalization = (1 - self.no_signal_nodes) * certainity_sum + self.no_signal_nodes * self.no_attention_modes
+                belief[0] = certainity_sum/normalization
+                belief[1:self.no_signal_nodes+1] = (self.no_attention_modes - certainity_sum)/normalization
+            elif observation[0] == 1:
+                normalization = (self.no_signal_nodes - 1) * certainity_sum + self.no_attention_modes
+                belief[0] = (self.no_attention_modes - certainity_sum)/normalization
+                belief[1:self.no_signal_nodes+1] = certainity_sum/normalization
+        
+        belief = self.belief_to_normalized_tensor(belief)
+
+        return belief
+    
+    def sample_state(self, belief):
+        r"""Samples a state from the distribution described by the belief vector.
+
+        Args
+        ----
+        belief:
+            A belief vector that describe a distribution over states. Currently
+            `belief` is an array of state probabilities, summed up to 1.
+
+        Returns
+        -------
+        state:
+            The tuple of environment state.
+
+        """
+        state = (self.rng.choice(self.no_nodes, p=belief),)
+        return state
+    
+    def query_probs(self, belief, states):
+        r"""Returns probabilities of queried states given belief vector.
+
+        Args
+        ----
+        belief: (no_nodes,)
+            Probabilities of all states.
+        states: (num_queries, 1)
+            States of interest.
+
+        Returns
+        -------
+        probs: (num_queries,)
+            Probabilities of each queried state.
+
+        """
+        return belief[states[:, 0].astype(int)]
