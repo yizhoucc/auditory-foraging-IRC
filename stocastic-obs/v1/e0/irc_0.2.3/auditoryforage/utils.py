@@ -214,7 +214,7 @@ class PlotHelper():
         chosen_start_time = [i for i in range(len(episodes_states)) if episodes_states[i] < no_signal_and_noise_nodes and episodes_states[i-1] >= no_signal_and_noise_nodes]
         chosen_end_time = [i for i in range(len(episodes_states)) if episodes_states[i] < no_signal_and_noise_nodes and episodes_states[i+1] >= no_signal_and_noise_nodes]
         no_acquisitions = len(chosen_start_time)
-        if no_acquisitions is 1:
+        if no_acquisitions == 1:
             return None
         fig_w, fig_h = self.figsize
         fig, axs = plt.subplots(no_acquisitions, 2, figsize=(1.5*fig_w, 15*fig_h))

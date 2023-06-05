@@ -132,7 +132,14 @@ class AuditoryForaging(Env):
 
         state_tuple = (self.state,)
         return state_tuple
-        
+
+    def set_state(self, state_tuple):
+        """
+        Sets environment state.
+        """
+
+        self.state, = state_tuple
+
     def find_reward(self, lick_choice, attention_choice):
         """
         Computes the reward, given the choice of licking and the amount of attention.
@@ -224,7 +231,8 @@ class AuditoryForaging(Env):
         #LOOK INTO NORMALIZING TENSOR TO DESIRABEL FORM!
         ############################################################
 
-        return torch.from_numpy(belief)
+        # return torch.from_numpy(belief)
+        return belief
     
     def update_belief(self, previous_belief, action, observation):
         """
