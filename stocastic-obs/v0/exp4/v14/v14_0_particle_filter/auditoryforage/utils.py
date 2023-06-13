@@ -351,10 +351,11 @@ def particle_filter(agent, env, lick_actions, state_list, no_particles = 10, sam
         agent.algo.policy.set_training_mode(False)
         
         env.state = state_list[0]
-        observation = env.observe_step(0)[0] #attention choice shouldn't matter.
-        observation_list = [[observation] for _ in range(no_particles)]
+        observation = env.observe_step(0) #attention choice shouldn't matter.
         belief = env.init_belief(observation)
         belief_list = [[belief] for _ in range(no_particles)]
+        observation = observation[0]
+        observation_list = [[observation] for _ in range(no_particles)]        
         likelihood_list = [[1/no_particles] for _ in range(no_particles)]
         action_list = [[] for _ in range(no_particles)]
         
@@ -381,6 +382,8 @@ def particle_filter(agent, env, lick_actions, state_list, no_particles = 10, sam
                     observation_list[particle].append(observation)
                     next_belief = env.update_belief(belief_list[particle][-1], action, observation)
                     belief_list[particle].append(next_belief)
+                    if next_belief is None and likelihood != 0:
+                        raise Exception('Error: Liklihood should have been zero when wrong belief update happens!')
             instant_likelihood = [likelihood_list[particle][-1] * instant_likelihood[particle] for particle in range(no_particles)]
             
             if sum(instant_likelihood) == 0:
