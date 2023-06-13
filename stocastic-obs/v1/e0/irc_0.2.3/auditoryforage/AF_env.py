@@ -206,7 +206,7 @@ class AuditoryForaging(Env):
         """
 
         done = False
-        lick_choice, attention_choice = self.dict_action_possible[action]
+        lick_choice, attention_choice = self.dict_action_possible[int(action)]
         rw = self.find_reward(lick_choice, attention_choice)
         self.transition_step(lick_choice)
         obs = self.observe_step(attention_choice)
@@ -239,7 +239,7 @@ class AuditoryForaging(Env):
         Updating belief, given previous belief, new observation, and past action.
         """
         
-        lick_choice, attention_choice = self.dict_action_possible[action]
+        lick_choice, attention_choice = self.dict_action_possible[int(action)]
         transition_matrix = self.find_transition_matrix()
         observation_matrix = self.find_observation_matrix()
         new_belief = np.zeros(self.no_nodes)

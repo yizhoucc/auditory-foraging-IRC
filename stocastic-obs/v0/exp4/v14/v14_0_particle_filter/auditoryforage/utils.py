@@ -215,7 +215,7 @@ class PlotHelper():
         chosen_start_time = [i for i in range(len(episodes_states)) if episodes_states[i] < no_signal_and_noise_nodes and episodes_states[i-1] >= no_signal_and_noise_nodes]
         chosen_end_time = [i for i in range(len(episodes_states)) if episodes_states[i] < no_signal_and_noise_nodes and episodes_states[i+1] >= no_signal_and_noise_nodes]
         no_acquisitions = len(chosen_start_time)
-        if no_acquisitions is 1:
+        if no_acquisitions == 1:
             return None
         fig_w, fig_h = self.figsize
         fig, axs = plt.subplots(no_acquisitions, 2, figsize=(1.5*fig_w, 15*fig_h))
@@ -252,58 +252,6 @@ class PlotHelper():
             axs[acquisition_no, 1].legend(['lick']+[f'attention {attention_choice}' for attention_choice in range(len(attention_action_keys))]+['signal prob.'], bbox_to_anchor=(1.5, 1.05), fontsize=12)
         return fig
     
-    def particle_filter(self, agent, env, lick_actions, state_list, no_particles = 10, sampling_freq = 1):
-        
-        # code from agent.py in irc package
-        _to_restore_train = agent.algo.policy.training # policy will be set to evaluation mode temporarily
-        agent.algo.policy.set_training_mode(False)
-        
-        env.state = state_list[0]
-        observation = env.observe_step(0) #attention choice shouldn't matter.
-        observation_list = [[observation] for _ in no_particles]
-        belief = env.init_belief(observation)
-        belief_list = [[belief] for _ in no_particles]
-        likelihood_list = [[1/no_particles] for _ in no_particles]
-        action_list = [[] for _ in no_particles]
-        
-        for time in range(len(lick_actions)):
-            env.state = state_list[time + 1]
-            instant_likelihood = []
-            for particle in range(no_particles):
-                action = agent.algo.predict(belief_list[particle][-1]) # might have to have this in tensor
-                action_list[particle].append(action)
-                if lick_actions[time] == 1:
-                    likelihood = 1 if action >= env.no_attention_modes else 0
-                elif lick_actions[time] == 0:
-                    likelihood = 0 if action >= env.no_attention_modes else 1
-                else:
-                    raise Exception("Lick actions can only be 0 or 1.")
-                instant_likelihood.append(likelihood)
-                _, attention_choice = self.dict_action_possible[action]
-                observation = env.observe_step(attention_choice)[0] # check if [0] is required, depending on observer_step in new env code. Also note how observe_step comes after env.step.
-                observation_list[particle].append(observation)
-                next_belief = env.update_belief(self, belief_list[particle][-1], action, observation)
-                belief_list[particle].append(next_belief)
-            instant_likelihood = [likelihood_list[particle][-1] * instant_likelihood[particle] for particle in range(no_particles)]
-            instant_likelihood /= sum(instant_likelihood)
-            for particle in range(no_particles): likelihood_list[particle].append(instant_likelihood[particle])
-            if time%sampling_freq == 0:
-                temp_observation_list = [[] for _ in no_particles]
-                temp_belief_list = [[] for _ in no_particles]
-                temp_action_list = [[] for _ in no_particles]
-                for particle in range(no_particles):
-                    chosen_particle = np.random.choice(no_particles, p = [likelihood_list[particle][-1] for particle in no_particles])
-                    temp_observation_list[particle] = copy.deepcopy(observation_list[chosen_particle])
-                    temp_belief_list[particle] = copy.deepcopy(belief_list[chosen_particle])
-                    temp_action_list[particle] = copy.deepcopy(action_list[chosen_particle])
-                observation_list = copy.deepcopy(temp_observation_list)
-                belief_list = copy.deepcopy(temp_belief_list)
-                action_list = copy.deepcopy(temp_action_list)
-                for particle in range(no_particles): likelihood_list[particle][-1] = 1/no_particles
-        
-        # code from agent.py in irc package
-        agent.algo.policy.set_training_mode(_to_restore_train) 
-        return state_list, observation_list, belief_list, action_list, likelihood_list
 
 #for episodic
 def assign_state_class(true_state, no_signal_nodes, no_penalty_nodes):
@@ -395,3 +343,66 @@ def plot_AF_episode(episode, env, agent, nodes_from_zero = 20, time_steps_before
     # figs.append(fig3)
     # figs.append(fig4)
     return figs
+
+def particle_filter(agent, env, lick_actions, state_list, no_particles = 10, sampling_freq = 1):
+        
+        # code from agent.py in irc package
+        _to_restore_train = agent.algo.policy.training # policy will be set to evaluation mode temporarily
+        agent.algo.policy.set_training_mode(False)
+        
+        env.state = state_list[0]
+        observation = env.observe_step(0)[0] #attention choice shouldn't matter.
+        observation_list = [[observation] for _ in range(no_particles)]
+        belief = env.init_belief(observation)
+        belief_list = [[belief] for _ in range(no_particles)]
+        likelihood_list = [[1/no_particles] for _ in range(no_particles)]
+        action_list = [[] for _ in range(no_particles)]
+        
+        for time in range(len(lick_actions)):
+            if time != len(lick_actions) - 1: env.state = state_list[time + 1]
+            instant_likelihood = []
+
+            print(time)
+
+            for particle in range(no_particles):
+                action, _ = agent.algo.predict(belief_list[particle][-1]) # might have to have this in tensor
+                action_list[particle].append(action)
+                if lick_actions[time] == 1:
+                    likelihood = 1 if action >= env.no_attention_modes else 0
+                elif lick_actions[time] == 0:
+                    likelihood = 0 if action >= env.no_attention_modes else 1
+                else:
+                    raise Exception("Lick actions can only be 0 or 1.")
+                instant_likelihood.append(likelihood)
+                _, attention_choice = env.dict_action_possible[int(action)]
+                
+                if time != len(lick_actions) - 1: 
+                    observation = env.observe_step(attention_choice)[0] # check if [0] is required, depending on observer_step in new env code. Also note how observe_step comes after env.step.
+                    observation_list[particle].append(observation)
+                    next_belief = env.update_belief(belief_list[particle][-1], action, observation)
+                    belief_list[particle].append(next_belief)
+            instant_likelihood = [likelihood_list[particle][-1] * instant_likelihood[particle] for particle in range(no_particles)]
+            
+            if sum(instant_likelihood) == 0:
+                raise Exception(f'Need to sample again for time {time}')
+            
+            instant_likelihood = [likelihood/sum(instant_likelihood) for likelihood in instant_likelihood]
+            for particle in range(no_particles): likelihood_list[particle].append(instant_likelihood[particle])
+            if time%sampling_freq == 0:
+                temp_observation_list = [[] for _ in range(no_particles)]
+                temp_belief_list = [[] for _ in range(no_particles)]
+                temp_action_list = [[] for _ in range(no_particles)]
+                for particle in range(no_particles):
+                    chosen_particle = np.random.choice(no_particles, p = [likelihood_list[particle][-1] for particle in range(no_particles)])
+                    temp_observation_list[particle] = copy.deepcopy(observation_list[chosen_particle])
+                    temp_belief_list[particle] = copy.deepcopy(belief_list[chosen_particle])
+                    temp_action_list[particle] = copy.deepcopy(action_list[chosen_particle])
+                observation_list = copy.deepcopy(temp_observation_list)
+                belief_list = copy.deepcopy(temp_belief_list)
+                action_list = copy.deepcopy(temp_action_list)
+                for particle in range(no_particles): likelihood_list[particle][-1] = 1/no_particles
+        
+        # code from agent.py in irc package
+        agent.algo.policy.set_training_mode(_to_restore_train) 
+        
+        return action_list, observation_list, belief_list, likelihood_list

@@ -259,7 +259,7 @@ class AuditoryForaging(Env):
         done = False
         info = {}
 
-        lick_choice, attention_choice = self.dict_action_possible[action]
+        lick_choice, attention_choice = self.dict_action_possible[int(action)]
         # current_state = self.state
 
         # Reward
@@ -310,7 +310,7 @@ class AuditoryForaging(Env):
         Updating belief, given previous belief, new observation, and past action.
         """
 
-        lick_choice, attention_choice = self.dict_action_possible[action]
+        lick_choice, attention_choice = self.dict_action_possible[int(action)]
 
         transition_matrix = self.find_transition_matrix()
         observation_matrix = self.find_observation_matrix()
@@ -319,6 +319,10 @@ class AuditoryForaging(Env):
         for state in range(self.no_nodes):
             # note the transpose below, because of the way we made transition_matrix: (current state, next state, action)
             new_belief[state] = observation_matrix[observation,state,int(attention_choice)] * np.reshape(np.transpose(transition_matrix[:,state,int(lick_choice)]),(1,self.no_nodes)) @ previous_belief
+        
+        if np.sum(new_belief) == 0:
+            raise Exception('Error: Mistake in belief update as all probabilities are coming out to be 0 somehow.')
+        
         new_belief = new_belief/np.sum(new_belief) #Normalization
         return new_belief
 
