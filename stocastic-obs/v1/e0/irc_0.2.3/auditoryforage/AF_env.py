@@ -228,7 +228,9 @@ class AuditoryForaging(Env):
         
     def belief_to_normalized_tensor(self, belief):
         ############################################################
-        #LOOK INTO NORMALIZING TENSOR TO DESIRABEL FORM!
+        # LOOK INTO NORMALIZING TENSOR TO DESIRABLE FORM!
+        # MAYBE NOT REQUIRED, GO THROUGH THE TRAINING CODE.
+        # ALTHOUGH I NEED TO CODE UP HOW WE CAN NORMALIZE.
         ############################################################
 
         # return torch.from_numpy(belief)
