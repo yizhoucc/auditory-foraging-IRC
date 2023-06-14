@@ -350,13 +350,15 @@ def particle_filter(agent, env, lick_actions, state_list, no_particles = 10, sam
         _to_restore_train = agent.algo.policy.training # policy will be set to evaluation mode temporarily
         agent.algo.policy.set_training_mode(False)
         
+        observation_matrix = env.find_observation_matrix()
+        
         env.state = state_list[0]
         observation = env.observe_step(0) #attention choice shouldn't matter.
         belief = env.init_belief(observation)
         belief_list = [[belief] for _ in range(no_particles)]
         observation = observation[0]
         observation_list = [[observation] for _ in range(no_particles)]        
-        likelihood_list = [[1/no_particles] for _ in range(no_particles)]
+        particles_distribution = [[1/no_particles] for _ in range(no_particles)]
         action_list = [[] for _ in range(no_particles)]
         
         for time in range(len(lick_actions)):
@@ -369,41 +371,42 @@ def particle_filter(agent, env, lick_actions, state_list, no_particles = 10, sam
                 action, _ = agent.algo.predict(belief_list[particle][-1]) # might have to have this in tensor
                 action_list[particle].append(action)
                 if lick_actions[time] == 1:
-                    likelihood = 1 if action >= env.no_attention_modes else 0
+                    particle_action_prob = 1 if action >= env.no_attention_modes else 0
                 elif lick_actions[time] == 0:
-                    likelihood = 0 if action >= env.no_attention_modes else 1
+                    particle_action_prob = 0 if action >= env.no_attention_modes else 1
                 else:
                     raise Exception("Lick actions can only be 0 or 1.")
-                instant_likelihood.append(likelihood)
+                instant_likelihood.append(particle_observation_prob * particle_action_prob)
                 _, attention_choice = env.dict_action_possible[int(action)]
                 
                 if time != len(lick_actions) - 1: 
                     observation = env.observe_step(attention_choice)[0] # check if [0] is required, depending on observer_step in new env code. Also note how observe_step comes after env.step.
                     observation_list[particle].append(observation)
+                    particle_observation_prob = observation_matrix(observation, env.state, attention_choice)
                     next_belief = env.update_belief(belief_list[particle][-1], action, observation)
                     belief_list[particle].append(next_belief)
-                    if next_belief is None and likelihood != 0:
+                    if next_belief is None and particle_action_prob != 0:
                         raise Exception('Error: Liklihood should have been zero when wrong belief update happens!')
-            instant_likelihood = [likelihood_list[particle][-1] * instant_likelihood[particle] for particle in range(no_particles)]
+            instant_likelihood = [particles_distribution[particle][-1] * instant_likelihood[particle] for particle in range(no_particles)]
             
             if sum(instant_likelihood) == 0:
                 raise Exception(f'Need to sample again for time {time}')
             
             instant_likelihood = [likelihood/sum(instant_likelihood) for likelihood in instant_likelihood]
-            for particle in range(no_particles): likelihood_list[particle].append(instant_likelihood[particle])
+            for particle in range(no_particles): particles_distribution[particle].append(instant_likelihood[particle])
             if time%sampling_freq == 0:
                 temp_observation_list = [[] for _ in range(no_particles)]
                 temp_belief_list = [[] for _ in range(no_particles)]
                 temp_action_list = [[] for _ in range(no_particles)]
                 for particle in range(no_particles):
-                    chosen_particle = np.random.choice(no_particles, p = [likelihood_list[particle][-1] for particle in range(no_particles)])
+                    chosen_particle = np.random.choice(no_particles, p = [particles_distribution[particle][-1] for particle in range(no_particles)])
                     temp_observation_list[particle] = copy.deepcopy(observation_list[chosen_particle])
                     temp_belief_list[particle] = copy.deepcopy(belief_list[chosen_particle])
                     temp_action_list[particle] = copy.deepcopy(action_list[chosen_particle])
                 observation_list = copy.deepcopy(temp_observation_list)
                 belief_list = copy.deepcopy(temp_belief_list)
                 action_list = copy.deepcopy(temp_action_list)
-                for particle in range(no_particles): likelihood_list[particle][-1] = 1/no_particles
+                for particle in range(no_particles): particles_distribution[particle][-1] = 1/no_particles
         
         # code from agent.py in irc package
         agent.algo.policy.set_training_mode(_to_restore_train) 
