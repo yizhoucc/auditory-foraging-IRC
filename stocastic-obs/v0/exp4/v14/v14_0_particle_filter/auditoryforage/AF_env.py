@@ -321,7 +321,7 @@ class AuditoryForaging(Env):
             new_belief[state] = observation_matrix[observation,state,int(attention_choice)] * np.reshape(np.transpose(transition_matrix[:,state,int(lick_choice)]),(1,self.no_nodes)) @ previous_belief
         
         if np.sum(new_belief) == 0:
-            print('Error: Mistake in belief update as all probabilities are coming out to be 0 somehow. Returned None!')
+            # print('Error: Mistake in belief update as all probabilities are coming out to be 0 somehow. Returned None!')
             new_belief = None
         else:
             new_belief = new_belief/np.sum(new_belief) #Normalization

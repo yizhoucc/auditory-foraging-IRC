@@ -353,52 +353,71 @@ def particle_filter(agent, env, lick_actions, state_list, no_particles = 10, sam
         observation_matrix = env.find_observation_matrix()
         
         env.state = state_list[0]
-        observation = env.observe_step(0) #attention choice shouldn't matter, assuming we start with ITI.
+        observation = env.observe_step(0) # attention choice shouldn't matter, assuming we start with ITI.
         belief = env.init_belief(observation)
         belief_list = [[belief] for _ in range(no_particles)]
         observation = observation[0]
-        particle_observation_prob = 1 #assuming we start with a fully observable state (ITI).
+        particle_observation_prob = 1 # assuming we start with a fully observable state (ITI).
         observation_list = [[[observation]] for _ in range(no_particles)]        
         particles_distribution = 1/no_particles * np.ones(no_particles)
         particles_likelihoods = np.ones(no_particles)
         action_list = [[] for _ in range(no_particles)]
+
+        sampling_count_tracker = {} #key are the time indices where additional sampling was done, and values represent number of times. 
         
         for time in range(len(lick_actions)):
             if time != len(lick_actions) - 1: env.state = state_list[time + 1]
-            instant_likelihood = []
+            
 
             print(time)
 
-            for particle in range(no_particles):
-                action, _ = agent.algo.predict(belief_list[particle][-1]) # might have to have this in tensor
-                action_list[particle].append(action.item())
-                instant_action_probs = agent.agent_action_distribution(np.array([belief_list[particle][-1]]))[0]
-                if lick_actions[time] == 1:
-                    if action >= env.no_attention_modes:
-                        particle_action_prob = instant_action_probs[action]/sum(instant_action_probs[env.no_attention_modes:])
-                    else:
-                        particle_action_prob = 0
-                elif lick_actions[time] == 0:
-                    if action >= env.no_attention_modes:
-                        particle_action_prob = 0
-                    else: 
-                        particle_action_prob = instant_action_probs[action]/sum(instant_action_probs[:env.no_attention_modes])
-                else:
-                    raise Exception("Lick actions can only be 0 or 1.")
-                instant_likelihood.append(particle_observation_prob * particle_action_prob)
-                _, attention_choice = env.dict_action_possible[int(action)]
+            step_particle = True
+            sampling_count = 0
+
+            while step_particle:
                 
-                if time != len(lick_actions) - 1: 
-                    observation = env.observe_step(attention_choice)[0] # check if [0] is required, depending on observer_step in new env code. Also note how observe_step comes after env.step.
-                    observation_list[particle].append([observation])
-                    particle_observation_prob = observation_matrix[observation, env.state, attention_choice]
-                    next_belief = env.update_belief(belief_list[particle][-1], action, observation)
-                    belief_list[particle].append(next_belief)
-                    if next_belief is None and particle_action_prob != 0:
-                        raise Exception('Error: Liklihood should have been zero when wrong belief update happens!')
+                instant_likelihood = []
+
+                sampling_count += 1
+                
+                for particle in range(no_particles):
+                    action, _ = agent.algo.predict(belief_list[particle][-1]) # might have to have this in tensor
+                    action_list[particle].append(action.item())
+                    instant_action_probs = agent.agent_action_distribution(np.array([belief_list[particle][-1]]))[0]
+                    if lick_actions[time] == 1:
+                        if action >= env.no_attention_modes:
+                            particle_action_prob = instant_action_probs[action]/sum(instant_action_probs[env.no_attention_modes:])
+                        else:
+                            particle_action_prob = 0
+                    elif lick_actions[time] == 0:
+                        if action >= env.no_attention_modes:
+                            particle_action_prob = 0
+                        else: 
+                            particle_action_prob = instant_action_probs[action]/sum(instant_action_probs[:env.no_attention_modes])
+                    else:
+                        raise Exception("Lick actions can only be 0 or 1.")
+                    instant_likelihood.append(particle_observation_prob * particle_action_prob)
+                    _, attention_choice = env.dict_action_possible[int(action)]
+                    
+                    if time != len(lick_actions) - 1: 
+                        observation = env.observe_step(attention_choice)[0] # check if [0] is required, depending on observer_step in new env code. Also note how observe_step comes after env.step.
+                        observation_list[particle].append([observation])
+                        particle_observation_prob = observation_matrix[observation, env.state, attention_choice]
+                        next_belief = env.update_belief(belief_list[particle][-1], action, observation)
+                        belief_list[particle].append(next_belief)
+                        if next_belief is None and particle_action_prob != 0:
+                            raise Exception('Error: Liklihood should have been zero when wrong belief update happens!')
+                
+                if sum(instant_likelihood) == 0:
+                    # print(f'Need to sample again for time {time}')
+                    action_list = belief_list[:-1]
+                    observation_list = observation_list[:-1]
+                    belief_list = belief_list[:-1]
+                else:
+                    step_particle = False
             
-            if sum(instant_likelihood) == 0:
-                raise Exception(f'Need to sample again for time {time}')
+            if sampling_count > 1:
+                sampling_count_tracker[time] = sampling_count
             
             particles_likelihoods = np.multiply(particles_likelihoods, np.array(instant_likelihood))
             particles_distribution = np.multiply(particles_distribution, np.array(instant_likelihood))

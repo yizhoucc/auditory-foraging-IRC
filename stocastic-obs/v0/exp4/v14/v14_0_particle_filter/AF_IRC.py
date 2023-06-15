@@ -47,6 +47,7 @@ episode = agent.run_one_episode(env=env, num_steps=10000, q_states = [[i] for i 
 
 # env.spec
 
+
 ################################################################
 
 from auditoryforage.utils import particle_filter
@@ -57,8 +58,54 @@ no_particles = 500
 state_list = [list_of_state[0] for list_of_state in episode['states']]
 lick_actions = [env.dict_action_possible[action][0] for action in episode['actions']]
 
-state_list = state_list[:end_index]
-lick_actions = lick_actions[:end_index]
+# state_list = state_list[:end_index]
+# lick_actions = lick_actions[:end_index]
 
-action_list, observation_list, belief_list, likelihood_list = particle_filter(agent = agent, env = env, lick_actions = lick_actions, state_list = state_list, no_particles = no_particles, sampling_freq = 1)
+state_list = state_list
+lick_actions = lick_actions
+
+generated_episodes = particle_filter(agent = agent, env = env, lick_actions = lick_actions, state_list = state_list, no_particles = no_particles, sampling_freq = 1)
+
+################################################################
+
+import pickle 
+
+actual_episode = episode
+particle_filter_data = {'actual episode': episode, "generated episodes": generated_episodes}
+file_name = "particle_filter_data.pkl"
+
+open_file = open(file_name, "wb")
+pickle.dump(particle_filter_data, open_file)
+open_file.close()
+
+open_file = open(file_name, "rb")
+loaded_list = pickle.load(open_file)
+open_file.close()
+
+print(loaded_list)
+
+################################################################
+
+generated_episode = generated_episodes[0]
+
+################################################################
+
+# computing error rate
+generated_attention = np.array([env.dict_action_possible[int(action)][1] for action in generated_episode['actions']])
+actual_attention = np.array([env.dict_action_possible[int(action)][1] for action in episode['actions']])
+error_rate = np.abs(generated_attention-actual_attention)/len(generated_attention)
+print(f'error rate is {error_rate}')
+
+################################################################
+
+# plotting generated episode
+generated_episode['rewards'] = np.zeros(len(generated_episode['actions']))
+fig = plot_AF_episode(generated_episode, env, agent, nodes_from_zero = 40, time_steps_before_lick = 20)
+
+################################################################
+
+# plotting likelihoods of particles
+particles_likelihoods = [generated_episodes[particle_ind]['particle_likelihood'] for particle_ind in range(no_particles)]
+plt.stem(particles_likelihoods)
+plt.show()
 
