@@ -345,7 +345,7 @@ def plot_AF_episode(episode, env, agent, nodes_from_zero = 20, time_steps_before
     return figs
 
 def particle_filter(agent, env, lick_actions, state_list, no_particles = 10, sampling_freq = 1):
-        
+
         # code from agent.py in irc package
         _to_restore_train = agent.algo.policy.training # policy will be set to evaluation mode temporarily
         agent.algo.policy.set_training_mode(False)
@@ -358,7 +358,7 @@ def particle_filter(agent, env, lick_actions, state_list, no_particles = 10, sam
         belief_list = [[belief] for _ in range(no_particles)]
         observation = observation[0]
         particle_observation_prob = 1 #assuming we start with a fully observable state (ITI).
-        observation_list = [[observation] for _ in range(no_particles)]        
+        observation_list = [[[observation]] for _ in range(no_particles)]        
         particles_distribution = 1/no_particles * np.ones(no_particles)
         particles_likelihoods = np.ones(no_particles)
         action_list = [[] for _ in range(no_particles)]
@@ -371,7 +371,7 @@ def particle_filter(agent, env, lick_actions, state_list, no_particles = 10, sam
 
             for particle in range(no_particles):
                 action, _ = agent.algo.predict(belief_list[particle][-1]) # might have to have this in tensor
-                action_list[particle].append(action)
+                action_list[particle].append(action.item())
                 instant_action_probs = agent.agent_action_distribution(np.array([belief_list[particle][-1]]))[0]
                 if lick_actions[time] == 1:
                     if action >= env.no_attention_modes:
@@ -390,7 +390,7 @@ def particle_filter(agent, env, lick_actions, state_list, no_particles = 10, sam
                 
                 if time != len(lick_actions) - 1: 
                     observation = env.observe_step(attention_choice)[0] # check if [0] is required, depending on observer_step in new env code. Also note how observe_step comes after env.step.
-                    observation_list[particle].append(observation)
+                    observation_list[particle].append([observation])
                     particle_observation_prob = observation_matrix[observation, env.state, attention_choice]
                     next_belief = env.update_belief(belief_list[particle][-1], action, observation)
                     belief_list[particle].append(next_belief)
@@ -424,4 +424,16 @@ def particle_filter(agent, env, lick_actions, state_list, no_particles = 10, sam
         # code from agent.py in irc package
         agent.algo.policy.set_training_mode(_to_restore_train) 
         
-        return action_list, observation_list, belief_list, particles_likelihoods
+        generated_episodes = []
+        sorted_indices = np.argsort(-1 * particles_likelihoods)
+        episode_states = np.array([[state] for state in state_list])
+        for ind in sorted_indices:
+            temp_dict = {}
+            temp_dict['states'] = episode_states
+            temp_dict['actions'] = np.array(action_list[ind][:-1])
+            temp_dict['observations'] = np.array(observation_list[ind])
+            temp_dict['q_probs'] = np.array(belief_list[ind])
+            temp_dict['particle_likelihood'] = particles_likelihoods[ind]
+            generated_episodes.append(temp_dict)
+        
+        return generated_episodes
