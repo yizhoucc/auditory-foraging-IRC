@@ -410,9 +410,10 @@ def particle_filter(agent, env, lick_actions, state_list, no_particles = 10, sam
                 
                 if sum(instant_likelihood) == 0:
                     # print(f'Need to sample again for time {time}')
-                    action_list = belief_list[:-1]
-                    observation_list = observation_list[:-1]
-                    belief_list = belief_list[:-1]
+                    for particle_ind in range(len(belief_list)):
+                        action_list[particle_ind] = action_list[particle_ind][:-1]
+                        observation_list[particle_ind] = observation_list[particle_ind][:-1]
+                        belief_list[particle_ind] = belief_list[particle_ind][:-1]
                 else:
                     step_particle = False
             
@@ -443,6 +444,7 @@ def particle_filter(agent, env, lick_actions, state_list, no_particles = 10, sam
         # code from agent.py in irc package
         agent.algo.policy.set_training_mode(_to_restore_train) 
         
+        particle_filter_output = {}
         generated_episodes = []
         sorted_indices = np.argsort(-1 * particles_likelihoods)
         episode_states = np.array([[state] for state in state_list])
@@ -452,7 +454,9 @@ def particle_filter(agent, env, lick_actions, state_list, no_particles = 10, sam
             temp_dict['actions'] = np.array(action_list[ind][:-1])
             temp_dict['observations'] = np.array(observation_list[ind])
             temp_dict['q_probs'] = np.array(belief_list[ind])
-            temp_dict['particle_likelihood'] = particles_likelihoods[ind]
             generated_episodes.append(temp_dict)
+        particle_filter_output['generated_episodes'] = generated_episodes
+        particle_filter_output['particles_likelihoods'] = particles_likelihoods
+        particle_filter_output['sampling count tracker'] = sampling_count_tracker
         
-        return generated_episodes
+        return particle_filter_output

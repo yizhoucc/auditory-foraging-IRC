@@ -86,7 +86,7 @@ print(loaded_list)
 
 ################################################################
 
-generated_episode = generated_episodes[0]
+generated_episode = particle_filter_compare_data['particle_filter_output']['generated_episodes'][0]
 
 ################################################################
 
