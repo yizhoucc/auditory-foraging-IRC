@@ -451,12 +451,13 @@ def particle_filter(agent, env, lick_actions, state_list, no_particles = 10, sam
         for ind in sorted_indices:
             temp_dict = {}
             temp_dict['states'] = episode_states
-            temp_dict['actions'] = np.array(action_list[ind][:-1])
+            temp_dict['actions'] = np.array(action_list[ind])
             temp_dict['observations'] = np.array(observation_list[ind])
             temp_dict['q_probs'] = np.array(belief_list[ind])
+            temp_dict['num_steps'] =  len(temp_dict['actions'])
             generated_episodes.append(temp_dict)
         particle_filter_output['generated_episodes'] = generated_episodes
-        particle_filter_output['particles_likelihoods'] = particles_likelihoods
+        particle_filter_output['particles_likelihoods'] = particles_likelihoods[sorted_indices]
         particle_filter_output['sampling count tracker'] = sampling_count_tracker
         
         return particle_filter_output

@@ -64,25 +64,23 @@ lick_actions = [env.dict_action_possible[action][0] for action in episode['actio
 state_list = state_list
 lick_actions = lick_actions
 
-generated_episodes = particle_filter(agent = agent, env = env, lick_actions = lick_actions, state_list = state_list, no_particles = no_particles, sampling_freq = 1)
+particle_filter_output = particle_filter(agent = agent, env = env, lick_actions = lick_actions, state_list = state_list, no_particles = no_particles, sampling_freq = 1)
 
 ################################################################
 
 import pickle 
 
-actual_episode = episode
-particle_filter_data = {'actual episode': episode, "generated episodes": generated_episodes}
-file_name = "particle_filter_data.pkl"
+reference_episode = episode
+particle_filter_compare_data = {'reference_episode': episode, "particle_filter_output": particle_filter_output}
+file_name = "PF_IO_episodes.pkl"
 
 open_file = open(file_name, "wb")
-pickle.dump(particle_filter_data, open_file)
+pickle.dump(particle_filter_compare_data, open_file)
 open_file.close()
 
 open_file = open(file_name, "rb")
-loaded_list = pickle.load(open_file)
+particle_filter_compare_data_loaded = pickle.load(open_file)
 open_file.close()
-
-print(loaded_list)
 
 ################################################################
 
@@ -99,13 +97,11 @@ print(f'error rate is {error_rate}')
 ################################################################
 
 # plotting generated episode
-generated_episode['rewards'] = np.zeros(len(generated_episode['actions']))
-fig = plot_AF_episode(generated_episode, env, agent, nodes_from_zero = 40, time_steps_before_lick = 20)
+# generated_episode['rewards'] = np.zeros(len(generated_episode['actions']))
+# fig = plot_AF_episode(generated_episode, env, agent, nodes_from_zero = 40, time_steps_before_lick = 20)
 
 ################################################################
 
 # plotting likelihoods of particles
-particles_likelihoods = [generated_episodes[particle_ind]['particle_likelihood'] for particle_ind in range(no_particles)]
-plt.stem(particles_likelihoods)
-plt.show()
-
+# plt.stem(particle_filter_compare_data['particle_filter_output']['particles_likelihoods'])
+# plt.show()
