@@ -369,7 +369,7 @@ def particle_filter(agent, env, lick_actions, state_list, no_particles = 10, sam
             if time != len(lick_actions) - 1: env.state = state_list[time + 1]
             
 
-            print(time)
+            # print(time)
 
             step_particle = True
             sampling_count = 0
