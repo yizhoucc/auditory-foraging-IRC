@@ -91,7 +91,7 @@ generated_episode = particle_filter_compare_data['particle_filter_output']['gene
 # computing error rate
 generated_attention = np.array([env.dict_action_possible[int(action)][1] for action in generated_episode['actions']])
 actual_attention = np.array([env.dict_action_possible[int(action)][1] for action in episode['actions']])
-error_rate = np.abs(generated_attention-actual_attention)/len(generated_attention)
+error_rate = np.sum(np.abs(generated_attention-actual_attention))/len(generated_attention)
 print(f'error rate is {error_rate}')
 
 ################################################################
