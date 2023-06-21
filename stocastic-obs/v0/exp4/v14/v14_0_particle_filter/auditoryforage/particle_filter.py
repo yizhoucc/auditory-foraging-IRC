@@ -5,9 +5,23 @@
 
 import matplotlib.pyplot as plt
 import numpy as np
-from matplotlib.colors import ListedColormap
+import pickle
 import copy
 
+def package_PF_IO(particle_filter_output, input_state_list, input_lick_actions, root_episode = None):
+    input_time_series = {'state_list': input_state_list, 'lick_actions': input_lick_actions}
+    input = {'root_episode': root_episode, 'input_time_series': input_time_series}
+    particle_filter_IO = {'input': input, 'output': particle_filter_output}
+    return particle_filter_IO
+
+def save_filter_output(particle_filter_output, state_list = None, lick_actions = None, root_episode = None):
+    particle_filter_IO = package_PF_IO(particle_filter_output, state_list, lick_actions, root_episode)
+    no_particles = particle_filter_output['filter_specs']['no_particles']
+    sampling_freq = particle_filter_output['filter_specs']['sampling_freq']
+    file_name = f'PF_np_{no_particles}_sf_{sampling_freq}_{np.random.randint(0,100)}.pkl'
+    open_file = open(file_name, "wb")
+    pickle.dump(particle_filter_IO, open_file)
+    open_file.close()
 
 class ParticleFilter():
 
@@ -47,7 +61,7 @@ class ParticleFilter():
 
         Returns
         -------
-        particle_filter_output:
+        particle_filter_IO:
             Output of filter method.
         """
         no_particles = self.no_particles if no_particles is None else no_particles
@@ -57,7 +71,9 @@ class ParticleFilter():
         end_index = len(state_list) if end_index is None else end_index
         state_list = state_list[:end_index]
         lick_actions = lick_actions[:end_index]
-        return self.filter(lick_actions, state_list, no_particles, sampling_freq)
+        particle_filter_IO = self.filter(lick_actions, state_list, no_particles, sampling_freq)
+        particle_filter_IO['input']['root_episode'] = episode
+        return particle_filter_IO
 
     def filter(self, lick_actions, state_list, no_particles = None, sampling_freq = None):
         r"""Performs particle filter to generate attention and observation sequences.
@@ -75,16 +91,20 @@ class ParticleFilter():
 
         Returns
         -------
-        particle_filter_output:
-            A dictionary contatining the following keys.
-            'particles_likelihoods': 
-                A numpy array containing the absolute likelihood value of each particle's trajectory.
-            'sampling count tracker': 
-                A dictionary where keys are the time instances where additional sampling was done, and values 
-                represent the number of times sampling had to be repeated. 
-            'generated_episodes':
-                A list with each element as a particle's trajectory stored in IRC compatible 'episode dictionary format'. The order of
-                the list is in decreasing order of particles' likelihoods. 
+        particle_filter_IO:
+            A dictionary containing the input and ouput of particle filter stored in values corresponding to keys 'input', and 'output'.
+            Most important part of that dictionary being the (sub) key 'particle_filter_output', described below.
+            
+            particle_filter_output:
+                A dictionary contatining the following keys.
+                'particles_likelihoods': 
+                    A numpy array containing the absolute likelihood value of each particle's trajectory.
+                'sampling count tracker': 
+                    A dictionary where keys are the time instances where additional sampling was done, and values 
+                    represent the number of times sampling had to be repeated. 
+                'generated_episodes':
+                    A list with each element as a particle's trajectory stored in IRC compatible 'episode dictionary format'. The order of
+                    the list is in decreasing order of particles' likelihoods. 
         """
             
         agent = self.agent
@@ -209,11 +229,17 @@ class ParticleFilter():
         particle_filter_output['generated_episodes'] = generated_episodes
         particle_filter_output['particles_likelihoods'] = particles_likelihoods[sorted_indices]
         particle_filter_output['sampling_count_tracker'] = sampling_count_tracker
-        
-        return particle_filter_output
+        particle_filter_output['filter_specs'] = {'no_particles': no_particles, 'sampling_freq': sampling_freq}
+        particle_filter_IO = package_PF_IO(particle_filter_output, state_list, lick_actions)
+        return particle_filter_IO
     
     def plot_comparison(reference_ep, generated_ep, start, stop):
-
+        # NEED TO WORK ON THIS
+        # NEED TO WORK ON THIS
+        # NEED TO WORK ON THIS
+        # NEED TO WORK ON THIS
+        # NEED TO WORK ON THIS
+        # NEED TO WORK ON THIS
         def tranform_beleifs(episode):
             return np.log(episode['q_probs'].T[:,start:stop])
 
