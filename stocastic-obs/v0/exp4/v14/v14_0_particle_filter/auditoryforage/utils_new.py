@@ -381,7 +381,10 @@ def particle_filter(agent, env, lick_actions, state_list, no_particles = 10, sam
                 sampling_count += 1
                 
                 for particle in range(no_particles):
+                    
                     action, _ = agent.algo.predict(belief_list[particle][-1]) # might have to have this in tensor
+                    
+                    
                     action_list[particle].append(action.item())
                     instant_action_probs = agent.agent_action_distribution(np.array([belief_list[particle][-1]]))[0]
                     if lick_actions[time] == 1:
@@ -403,11 +406,25 @@ def particle_filter(agent, env, lick_actions, state_list, no_particles = 10, sam
                         observation = env.observe_step(attention_choice)[0] # check if [0] is required, depending on observer_step in new env code. Also note how observe_step comes after env.step.
                         observation_list[particle].append([observation])
                         particle_observation_prob = observation_matrix[observation, env.state, attention_choice]
+                        
+                        if time > 100:
+                            print('################')
+                            print(f'particle index is {particle}')
+                            print(f'prev belief was {belief_list[particle][-1]}')
+                            print(f'action was {action}')
+                            print(f'observation was {observation}')
+                        
                         next_belief = env.update_belief(belief_list[particle][-1], action, observation)
                         belief_list[particle].append(next_belief)
                         if next_belief is None and particle_action_prob != 0:
                             raise Exception('Error: Liklihood should have been zero when wrong belief update happens!')
-                
+
+                        if time > 100:
+                            print(f'next belief is {next_belief}')
+                            print('################\n')
+
+
+
                 if sum(instant_likelihood) == 0:
                     # print(f'Need to sample again for time {time}')
                     for particle_ind in range(len(belief_list)):
