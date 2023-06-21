@@ -8,7 +8,90 @@ import numpy as np
 from matplotlib.colors import ListedColormap
 import copy
 
-def particle_filter(agent, env, lick_actions, state_list, no_particles = 10, sampling_freq = 1, verbose = False):
+
+class ParticleFilter():
+
+    def __init__(self, agent, env, default_no_particles = 100, default_sampling_freq = 1, verbose = False):
+        r"""Performs particle filter to generate attention and observation sequences.
+
+        Args
+        ----
+        agent:
+            Agent with learned policy.
+        env:
+            Environment.
+        verbose:
+            Flag to indicate if time and other information needs to be printed as the particle filter runs.
+
+        """
+        
+        self.agent = agent
+        self.env = env
+        self.no_particles = default_no_particles
+        self.sampling_freq = default_sampling_freq
+        self.verbose = verbose
+                
+    def generate_wrt_reference_episode(self, episode, no_particles = None, sampling_freq = None, end_index = None):
+        r"""Performs particle filter to generate attention and observation sequences.
+
+        Args
+        ----
+        episode:
+            Trajectory stored in IRC compatible 'episode dictionary format'.
+        no_particles:
+            Number of particles to be used in the particle filter.
+        sampling_freq:
+            Particle filter samples particles once in every sampling_freq steps.
+        end_index:
+            Up until what point in the episode should be considered for doing particle filter.
+
+        Returns
+        -------
+        particle_filter_output:
+            Output of filter method.
+        """
+        no_particles = self.no_particles if no_particles is None else no_particles
+        sampling_freq = self.sampling_freq if sampling_freq is None else sampling_freq
+        state_list = [list_of_state[0] for list_of_state in episode['states']]
+        lick_actions = [self.env.dict_action_possible[action][0] for action in episode['actions']]
+        end_index = len(state_list) if end_index is None else end_index
+        state_list = state_list[:end_index]
+        lick_actions = lick_actions[:end_index]
+        return self.filter(lick_actions, state_list, no_particles, sampling_freq)
+
+    def filter(self, lick_actions, state_list, no_particles = None, sampling_freq = None):
+        r"""Performs particle filter to generate attention and observation sequences.
+
+        Args
+        ----
+        lick_actions:
+            A list contatining true lick choice time series.
+        state_list:
+            A list contatining true state time series.
+        no_particles:
+            Number of particles to be used in the particle filter.
+        sampling_freq:
+            Particle filter samples particles once in every sampling_freq steps.
+
+        Returns
+        -------
+        particle_filter_output:
+            A dictionary contatining the following keys.
+            'particles_likelihoods': 
+                A numpy array containing the absolute likelihood value of each particle's trajectory.
+            'sampling count tracker': 
+                A dictionary where keys are the time instances where additional sampling was done, and values 
+                represent the number of times sampling had to be repeated. 
+            'generated_episodes':
+                A list with each element as a particle's trajectory stored in IRC compatible 'episode dictionary format'. The order of
+                the list is in decreasing order of particles' likelihoods. 
+        """
+            
+        agent = self.agent
+        env = self.env
+        verbose = self.verbose
+        no_particles = self.no_particles if no_particles is None else no_particles
+        sampling_freq = self.sampling_freq if sampling_freq is None else sampling_freq
         
         _to_restore_train = agent.algo.policy.training 
         agent.algo.policy.set_training_mode(False)
@@ -24,8 +107,7 @@ def particle_filter(agent, env, lick_actions, state_list, no_particles = 10, sam
         particles_likelihoods = np.ones(no_particles)
         action_list = [[] for _ in range(no_particles)]
         overdue_status = [False for _ in range(no_particles)]
-
-        sampling_count_tracker = {} #key are the time indices where additional sampling was done, and values represent number of times. 
+        sampling_count_tracker = {} 
         
         for time in range(len(lick_actions)):
             if verbose: print(time)
@@ -126,6 +208,29 @@ def particle_filter(agent, env, lick_actions, state_list, no_particles = 10, sam
             generated_episodes.append(temp_dict)
         particle_filter_output['generated_episodes'] = generated_episodes
         particle_filter_output['particles_likelihoods'] = particles_likelihoods[sorted_indices]
-        particle_filter_output['sampling count tracker'] = sampling_count_tracker
+        particle_filter_output['sampling_count_tracker'] = sampling_count_tracker
         
         return particle_filter_output
+    
+    def plot_comparison(reference_ep, generated_ep, start, stop):
+
+        def tranform_beleifs(episode):
+            return np.log(episode['q_probs'].T[:,start:stop])
+
+        def tranform_actions(episode):
+            return episode['actions'].T[start:stop]
+
+        plt.subplot(2,1,1)
+        plt.imshow(tranform_beleifs(reference_ep))
+        plt.colorbar()
+        plt.subplot(2,1,2)
+        plt.imshow(tranform_beleifs(generated_ep))
+        plt.colorbar()
+        plt.show()
+
+        plt.figure()
+        plt.subplot(2,1,1)
+        plt.stem(tranform_actions(reference_ep))
+        plt.subplot(2,1,2)
+        plt.stem(tranform_actions(generated_ep))
+        plt.show()
