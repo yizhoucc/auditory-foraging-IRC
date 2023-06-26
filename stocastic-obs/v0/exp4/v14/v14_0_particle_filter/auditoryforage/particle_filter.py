@@ -5,23 +5,7 @@
 
 import matplotlib.pyplot as plt
 import numpy as np
-import pickle
-import copy
-
-def package_PF_IO(particle_filter_output, input_state_list, input_lick_actions, root_episode = None):
-    input_time_series = {'state_list': input_state_list, 'lick_actions': input_lick_actions}
-    input = {'root_episode': root_episode, 'input_time_series': input_time_series}
-    particle_filter_IO = {'input': input, 'output': particle_filter_output}
-    return particle_filter_IO
-
-def save_filter_output(particle_filter_output, state_list = None, lick_actions = None, root_episode = None):
-    particle_filter_IO = package_PF_IO(particle_filter_output, state_list, lick_actions, root_episode)
-    no_particles = particle_filter_output['filter_specs']['no_particles']
-    sampling_freq = particle_filter_output['filter_specs']['sampling_freq']
-    file_name = f'PF_np_{no_particles}_sf_{sampling_freq}_{np.random.randint(0,100)}.pkl'
-    open_file = open(file_name, "wb")
-    pickle.dump(particle_filter_IO, open_file)
-    open_file.close()
+import copy, pickle, os
 
 class ParticleFilter():
 
@@ -45,7 +29,7 @@ class ParticleFilter():
         self.sampling_freq = default_sampling_freq
         self.verbose = verbose
                 
-    def generate_wrt_reference_episode(self, episode, no_particles = None, sampling_freq = None, end_index = None):
+    def generate_wrt_reference_episode(self, episode, no_particles = None, sampling_freq = None, end_index = None, do_save = True):
         r"""Performs particle filter to generate attention and observation sequences.
 
         Args
@@ -73,9 +57,10 @@ class ParticleFilter():
         lick_actions = lick_actions[:end_index]
         particle_filter_IO = self.filter(lick_actions, state_list, no_particles, sampling_freq)
         particle_filter_IO['input']['root_episode'] = episode
+        if do_save: self.save_filter_output(particle_filter_IO)
         return particle_filter_IO
 
-    def filter(self, lick_actions, state_list, no_particles = None, sampling_freq = None):
+    def filter(self, lick_actions, state_list, no_particles = None, sampling_freq = None, do_save = False):
         r"""Performs particle filter to generate attention and observation sequences.
 
         Args
@@ -230,33 +215,55 @@ class ParticleFilter():
         particle_filter_output['particles_likelihoods'] = particles_likelihoods[sorted_indices]
         particle_filter_output['sampling_count_tracker'] = sampling_count_tracker
         particle_filter_output['filter_specs'] = {'no_particles': no_particles, 'sampling_freq': sampling_freq}
-        particle_filter_IO = package_PF_IO(particle_filter_output, state_list, lick_actions)
+        particle_filter_IO = self.package_PF_IO(particle_filter_output, state_list, lick_actions)
+        if do_save: self.save_filter_output(particle_filter_IO)
         return particle_filter_IO
     
-    def plot_comparison(reference_ep, generated_ep, start, stop):
-        # NEED TO WORK ON THIS
-        # NEED TO WORK ON THIS
-        # NEED TO WORK ON THIS
-        # NEED TO WORK ON THIS
-        # NEED TO WORK ON THIS
-        # NEED TO WORK ON THIS
-        def tranform_beleifs(episode):
-            return np.log(episode['q_probs'].T[:,start:stop])
+    def package_PF_IO(self, particle_filter_output, input_state_list, input_lick_actions, root_episode = None):
+        input_time_series = {'state_list': input_state_list, 'lick_actions': input_lick_actions}
+        input = {'root_episode': root_episode, 'input_time_series': input_time_series}
+        particle_filter_IO = {'input': input, 'output': particle_filter_output}
+        return particle_filter_IO
 
-        def tranform_actions(episode):
-            return episode['actions'].T[start:stop]
+    def save_filter_output(self, particle_filter_IO):
+        no_particles = particle_filter_IO['output']['filter_specs']['no_particles']
+        sampling_freq = particle_filter_IO['output']['filter_specs']['sampling_freq']
+        store_folder = 'store/particle_filter/'
+        if not os.path.exists(store_folder): os.makedirs(store_folder)
+        file_name = store_folder + f'PF_np_{no_particles}_sf_{sampling_freq}_{np.random.randint(0,100)}.pkl'
+        open_file = open(file_name, "wb")
+        pickle.dump(particle_filter_IO, open_file)
+        open_file.close()
 
-        plt.subplot(2,1,1)
-        plt.imshow(tranform_beleifs(reference_ep))
-        plt.colorbar()
-        plt.subplot(2,1,2)
-        plt.imshow(tranform_beleifs(generated_ep))
-        plt.colorbar()
-        plt.show()
+    def multiple_filtering(self, episode, no_particles_list, sampling_freq_list, end_index):
+        for no_particles in no_particles_list:
+            for sampling_freq in sampling_freq_list:
+                _ = self.generate_wrt_reference_episode(episode, no_particles, sampling_freq, end_index)
 
-        plt.figure()
-        plt.subplot(2,1,1)
-        plt.stem(tranform_actions(reference_ep))
-        plt.subplot(2,1,2)
-        plt.stem(tranform_actions(generated_ep))
-        plt.show()
+def plot_comparison(reference_ep, generated_ep, start, stop):
+    # NEED TO WORK ON THIS
+    # NEED TO WORK ON THIS
+    # NEED TO WORK ON THIS
+    # NEED TO WORK ON THIS
+    # NEED TO WORK ON THIS
+    # NEED TO WORK ON THIS
+    def tranform_beleifs(episode):
+        return np.log(episode['q_probs'].T[:,start:stop])
+
+    def tranform_actions(episode):
+        return episode['actions'].T[start:stop]
+
+    plt.subplot(2,1,1)
+    plt.imshow(tranform_beleifs(reference_ep))
+    plt.colorbar()
+    plt.subplot(2,1,2)
+    plt.imshow(tranform_beleifs(generated_ep))
+    plt.colorbar()
+    plt.show()
+
+    plt.figure()
+    plt.subplot(2,1,1)
+    plt.stem(tranform_actions(reference_ep))
+    plt.subplot(2,1,2)
+    plt.stem(tranform_actions(generated_ep))
+    plt.show()
