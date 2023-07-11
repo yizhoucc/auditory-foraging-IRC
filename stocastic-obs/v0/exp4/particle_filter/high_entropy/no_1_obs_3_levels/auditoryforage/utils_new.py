@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.colors import ListedColormap
+import copy
 
 class PlotHelper():
     def __init__(self, num_steps, no_attention_modes, correct_lick_choice_idxs, wrong_lick_choice_idxs, attention_choice_idxs, obs_certainity_possible, num_states, figsize=(15, 3),bbox_to_anchor=(1.5, 1.05)):
@@ -250,7 +251,7 @@ class PlotHelper():
             axs[acquisition_no, 1].set(title = f'Policy before licking')
             axs[acquisition_no, 1].legend(['lick']+[f'attention {attention_choice}' for attention_choice in range(len(attention_action_keys))]+['signal prob.'], bbox_to_anchor=(1.5, 1.05), fontsize=12)
         return fig
-
+    
 
 #for episodic
 def assign_state_class(true_state, no_signal_nodes, no_penalty_nodes):
@@ -333,8 +334,8 @@ def plot_AF_episode(episode, env, agent, nodes_from_zero = 20, time_steps_before
     # figs.append(fig2)
     # figs.append(fig3)
     
-    fig = env_plotter.make_hist_plots(offset_actions, observations, states, no_signal_nodes, no_attention_modes)
-    figs.append(fig)
+    # fig = env_plotter.make_hist_plots(offset_actions, observations, states, no_signal_nodes, no_attention_modes)
+    # figs.append(fig)
 
     # fig1, fig2, fig3, fig4 = env_plotter.policy_for_all_signal_noise_durations(agent, env, states, probs, licking_action_keys, attention_action_keys, no_signal_nodes)
     # figs.append(fig1)
@@ -342,3 +343,141 @@ def plot_AF_episode(episode, env, agent, nodes_from_zero = 20, time_steps_before
     # figs.append(fig3)
     # figs.append(fig4)
     return figs
+
+def particle_filter(agent, env, lick_actions, state_list, no_particles = 10, sampling_freq = 1):
+
+        # code from agent.py in irc package
+        _to_restore_train = agent.algo.policy.training # policy will be set to evaluation mode temporarily
+        agent.algo.policy.set_training_mode(False)
+        
+        observation_matrix = env.find_observation_matrix()
+        
+        env.state = state_list[0]
+        observation = env.observe_step(0) # attention choice shouldn't matter, assuming we start with ITI.
+        belief = env.init_belief(observation)
+        belief_list = [[belief] for _ in range(no_particles)]
+        observation = observation[0]
+        particle_observation_prob = 1 # assuming we start with a fully observable state (ITI).
+        observation_list = [[[observation]] for _ in range(no_particles)]        
+        particles_distribution = 1/no_particles * np.ones(no_particles)
+        particles_likelihoods = np.ones(no_particles)
+        action_list = [[] for _ in range(no_particles)]
+
+        sampling_count_tracker = {} #key are the time indices where additional sampling was done, and values represent number of times. 
+        sorted_particles_distribution_tracker = [[] for time in range(len(lick_actions))]
+        
+        for time in range(len(lick_actions)):
+            if time != len(lick_actions) - 1: env.state = state_list[time + 1]
+            
+            print(time)
+
+            step_particle = True
+            sampling_count = 0
+
+            while step_particle:
+                
+                instant_likelihood = []
+
+                sampling_count += 1
+                
+                for particle in range(no_particles):
+                    
+                    action, _ = agent.algo.predict(belief_list[particle][-1]) # might have to have this in tensor
+                    
+                    
+                    action_list[particle].append(action.item())
+                    instant_action_probs = agent.agent_action_distribution(np.array([belief_list[particle][-1]]))[0]
+                    if lick_actions[time] == 1:
+                        if action >= env.no_attention_modes:
+                            particle_action_prob = instant_action_probs[action]/sum(instant_action_probs[env.no_attention_modes:])
+                        else:
+                            particle_action_prob = 0
+                    elif lick_actions[time] == 0:
+                        if action >= env.no_attention_modes:
+                            particle_action_prob = 0
+                        else: 
+                            particle_action_prob = instant_action_probs[action]/sum(instant_action_probs[:env.no_attention_modes])
+                    else:
+                        raise Exception("Lick actions can only be 0 or 1.")
+                    instant_likelihood.append(particle_observation_prob * particle_action_prob)
+                    _, attention_choice = env.dict_action_possible[int(action)]
+                    
+                    if time != len(lick_actions) - 1: 
+                        observation = env.observe_step(attention_choice)[0] # check if [0] is required, depending on observer_step in new env code. Also note how observe_step comes after env.step.
+                        observation_list[particle].append([observation])
+                        particle_observation_prob = observation_matrix[observation, env.state, attention_choice]
+                        
+                        if time > 100:
+                            print('################')
+                            print(f'particle index is {particle}')
+                            print(f'prev belief was {belief_list[particle][-1]}')
+                            print(f'action was {action}')
+                            print(f'observation was {observation}')
+                        
+                        next_belief = env.update_belief(belief_list[particle][-1], action, observation)
+                        belief_list[particle].append(next_belief)
+                        if next_belief is None and particle_action_prob != 0:
+                            raise Exception('Error: Liklihood should have been zero when wrong belief update happens!')
+
+                        if time > 100:
+                            print(f'next belief is {next_belief}')
+                            print('################\n')
+
+
+
+                if sum(instant_likelihood) == 0:
+                    # print(f'Need to sample again for time {time}')
+                    for particle_ind in range(len(belief_list)):
+                        action_list[particle_ind] = action_list[particle_ind][:-1]
+                        observation_list[particle_ind] = observation_list[particle_ind][:-1]
+                        belief_list[particle_ind] = belief_list[particle_ind][:-1]
+                else:
+                    step_particle = False
+            
+            if sampling_count > 1:
+                sampling_count_tracker[time] = sampling_count
+            
+            particles_likelihoods = np.multiply(particles_likelihoods, np.array(instant_likelihood))
+            particles_distribution = np.multiply(particles_distribution, np.array(instant_likelihood))
+            particles_distribution = particles_distribution/np.sum(particles_distribution)
+            sorted_particles_distribution_tracker[time].append(sorted(particles_distribution, reverse = True))
+            
+            if time%sampling_freq == 0:
+                temp_observation_list = [[] for _ in range(no_particles)]
+                temp_belief_list = [[] for _ in range(no_particles)]
+                temp_action_list = [[] for _ in range(no_particles)]
+                temp_particles_likelihoods = [[] for _ in range(no_particles)]
+                for particle in range(no_particles):
+                    chosen_particle = np.random.choice(no_particles, p = particles_distribution)
+                    temp_observation_list[particle] = copy.deepcopy(observation_list[chosen_particle])
+                    temp_belief_list[particle] = copy.deepcopy(belief_list[chosen_particle])
+                    temp_action_list[particle] = copy.deepcopy(action_list[chosen_particle])
+                    temp_particles_likelihoods[particle] = particles_likelihoods[chosen_particle]
+                observation_list = copy.deepcopy(temp_observation_list)
+                belief_list = copy.deepcopy(temp_belief_list)
+                action_list = copy.deepcopy(temp_action_list)
+                particles_likelihoods = np.array(temp_particles_likelihoods)
+                particles_distribution = 1/no_particles * np.ones(no_particles)
+                sorted_particles_distribution_tracker[time].append(particles_distribution)
+        
+        # code from agent.py in irc package
+        agent.algo.policy.set_training_mode(_to_restore_train) 
+        
+        particle_filter_output = {}
+        generated_episodes = []
+        sorted_indices = np.argsort(-1 * particles_likelihoods)
+        episode_states = np.array([[state] for state in state_list])
+        for ind in sorted_indices:
+            temp_dict = {}
+            temp_dict['states'] = episode_states
+            temp_dict['actions'] = np.array(action_list[ind])
+            temp_dict['observations'] = np.array(observation_list[ind])
+            temp_dict['q_probs'] = np.array(belief_list[ind])
+            temp_dict['num_steps'] =  len(temp_dict['actions'])
+            generated_episodes.append(temp_dict)
+        particle_filter_output['generated_episodes'] = generated_episodes
+        particle_filter_output['particles_likelihoods'] = particles_likelihoods[sorted_indices]
+        particle_filter_output['sampling_count_tracker'] = sampling_count_tracker
+        particle_filter_output['sorted_particles_distribution_tracker'] = sorted_particles_distribution_tracker
+        
+        return particle_filter_output

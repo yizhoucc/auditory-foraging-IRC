@@ -28,7 +28,7 @@ manager = IRCManager(defaults=defaults)
 ################################################################
 
 env_param = [-3.0, 200.0, .08, .25, -5000, 0, 6]
-num_epochs = 100
+num_epochs = 400
 
 agent = manager.train_agent(env_param, num_epochs=num_epochs)
 agent, fig = manager.inspect_agent(env_param, figsize=(5, 2.5))
