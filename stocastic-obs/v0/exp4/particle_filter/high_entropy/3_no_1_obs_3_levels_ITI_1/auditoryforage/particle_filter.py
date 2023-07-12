@@ -185,8 +185,14 @@ class ParticleFilter():
             # print(f'particles_distribution is {particles_distribution}')
             # print(f'instant_likelihood is {np.array(instant_likelihood)}')
             # print(f'\n')
-            
-            
+
+            # Lokesh added temporarily
+            # There is a problem here - 
+            # np.multiply(particles_distribution, np.array(instant_likelihood)) sometimes gives all 0 even if 
+            # the individual factors are not always 0. May be it's not even exactly 0, but almost 0 as time progresses??
+            # Looks like the reason was sampling frequency was set higher than 1.
+
+
             particles_distribution = np.multiply(particles_distribution, np.array(instant_likelihood))
             particles_distribution = particles_distribution/np.sum(particles_distribution)
             
@@ -252,30 +258,63 @@ class ParticleFilter():
                 print(f'Filter with no_particles = {no_particles} and sampling_freq = {sampling_freq} in action.')
                 _ = self.generate_wrt_reference_episode(episode, no_particles, sampling_freq, end_index)
 
-def plot_comparison(reference_ep, generated_ep, start, stop):
-    # NEED TO WORK ON THIS
-    # NEED TO WORK ON THIS
-    # NEED TO WORK ON THIS
-    # NEED TO WORK ON THIS
-    # NEED TO WORK ON THIS
-    # NEED TO WORK ON THIS
-    def tranform_beleifs(episode):
-        return np.log(episode['q_probs'].T[:,start:stop])
+class Compare_plots():
 
-    def tranform_actions(episode):
-        return episode['actions'].T[start:stop]
-
-    plt.subplot(2,1,1)
-    plt.imshow(tranform_beleifs(reference_ep))
-    plt.colorbar()
-    plt.subplot(2,1,2)
-    plt.imshow(tranform_beleifs(generated_ep))
-    plt.colorbar()
-    plt.show()
-
-    plt.figure()
-    plt.subplot(2,1,1)
-    plt.stem(tranform_actions(reference_ep))
-    plt.subplot(2,1,2)
-    plt.stem(tranform_actions(generated_ep))
-    plt.show()
+    def __init__(self, file_name):
+        open_file = open(file_name, "rb")
+        particle_filter_IO = pickle.load(open_file)
+        open_file.close()
+        self.reference_ep = particle_filter_IO['input']['root_episode']
+        self.generated_eps = particle_filter_IO['output']['generated_episodes']
+   
+    def plot_actions(self, likelihood_rank = 0, start= 0, stop = None):
+        generated_ep = self.generated_eps[likelihood_rank]
+        stop = len(generated_ep['actions']) if stop is None else stop
+        def tranform_actions(episode):
+            return episode['actions'].T[start:stop], ''
+        trans_reference, trans_string = tranform_actions(self.reference_ep)
+        trans_generated, trans_string = tranform_actions(generated_ep)
+        fig, ax = plt.subplots(2)
+        ax[0].stem(trans_reference)
+        ax[0].set_title('Reference actions ' + f'({trans_string})')
+        ax[0].set_xlabel('time')
+        ax[0].set_ylabel('action')
+        ax[1].stem(trans_generated)
+        ax[1].set_title('Generated actions ' + f'({trans_string})')
+        ax[1].set_xlabel('time')
+        ax[1].set_ylabel('action')
+        fig.tight_layout()
+        plt.show()
+        
+    def plot_beliefs(self, likelihood_rank = 0, start= 0, stop = None, minmin = -50, maxmax = 0):
+        generated_ep = self.generated_eps[likelihood_rank]
+        stop = len(generated_ep['actions']) if stop is None else stop
+        def tranform_beleifs(episode):
+            return np.log(episode['q_probs'].T[:,start:stop]), 'log'
+        trans_reference, trans_string = tranform_beleifs(self.reference_ep)
+        trans_generated, trans_string = tranform_beleifs(generated_ep)
+        
+        # minmin = np.min([np.min(trans_reference), np.min(trans_generated)])
+        # maxmax = np.max([np.max(trans_reference), np.max(trans_generated)])
+        
+        fig, ax = plt.subplots(2)
+        num_states, num_steps  = np.shape(trans_reference)
+        im1 = ax[0].imshow(trans_reference, vmin=minmin, vmax=maxmax, extent=[-0.5, num_steps+0.5, -0.5, num_states+0.5], aspect='auto', cmap='viridis') 
+        ax[0].set_title('Reference beliefs ' + f'(after {trans_string})')
+        ax[0].set_xlabel('time')
+        ax[0].set_ylabel('state')
+        im2 = ax[1].imshow(trans_generated, vmin=minmin, vmax=maxmax, extent=[-0.5, num_steps+0.5, -0.5, num_states+0.5], aspect='auto', cmap='viridis')
+        ax[1].set_title('Generated beliefs ' + f'(after {trans_string})')
+        ax[1].set_xlabel('time')
+        ax[1].set_ylabel('state')
+        fig.tight_layout()
+        
+        fig.subplots_adjust(right=0.85)
+        cbar_ax = fig.add_axes([0.88, 0.15, 0.04, 0.7])
+        fig.colorbar(im2, cax=cbar_ax)
+        
+        plt.show()
+    
+    def plot_comparisons(self):
+        self.plot_actions()
+        self.plot_beliefs()

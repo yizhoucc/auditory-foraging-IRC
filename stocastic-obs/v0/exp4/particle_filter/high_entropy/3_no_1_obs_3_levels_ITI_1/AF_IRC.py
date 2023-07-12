@@ -49,8 +49,27 @@ from auditoryforage.AF_env import AuditoryForaging
 # env_param = [-3.0, 8.0, 13, 8, -8, -4]
 
 env = AuditoryForaging(spec={'agent':{'lick_cost':env_param[0],'food_reward':env_param[1],'attention_cost_coeff':env_param[2], 'attention_cost_temp': env_param[3], 'penalty_cost': env_param[4], 'iti_cost': env_param[5]}})
-episode = agent.run_one_episode(env=env, num_steps=10000, q_states = [[i] for i in range(env.no_nodes)])
-fig = plot_AF_episode(episode, env, agent, nodes_from_zero = 40, time_steps_before_lick = 20)
+# episode = agent.run_one_episode(env=env, num_steps=10000, q_states = [[i] for i in range(env.no_nodes)])
+# fig = plot_AF_episode(episode, env, agent, nodes_from_zero = 40, time_steps_before_lick = 20)
+# env.spec
 
-env.spec
+################################################################
+
+file_name = 'store/particle_filter/PF_np_100_sf_1_80.pkl'
+open_file = open(file_name, "rb")
+particle_filter_IO = pickle.load(open_file)
+open_file.close()
+episode = particle_filter_IO['input']['root_episode']
+
+################################################################
+
+from auditoryforage.particle_filter import ParticleFilter
+
+end_index = 4000
+
+no_particles_list = [100, 200, 500, 1000, 2000]
+sampling_freq_list = [1, 10, 20, 50]
+
+particle_filter = ParticleFilter(agent, env)
+particle_filter_IO = particle_filter.multiple_filtering(episode, no_particles_list, sampling_freq_list, end_index)
 
