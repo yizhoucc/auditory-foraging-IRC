@@ -14,3 +14,6 @@
 - For a given target time, we assume that the collected data follows a gamma distribution with mean as the target time.
 - Compute the number of nodes in our graphical model that would best fit the empirical distribution (using MLE maybe).
 - Find out the dependence between chosen time and best fitting number of nodes.
+
+## Requirements:
+pip install getkey
