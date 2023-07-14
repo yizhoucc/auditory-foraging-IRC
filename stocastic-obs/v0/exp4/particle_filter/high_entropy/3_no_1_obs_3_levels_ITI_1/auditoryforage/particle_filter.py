@@ -260,61 +260,106 @@ class ParticleFilter():
 
 class Compare_plots():
 
-    def __init__(self, file_name):
+    def __init__(self, file_name, likelihood_rank = 0):
         open_file = open(file_name, "rb")
-        particle_filter_IO = pickle.load(open_file)
+        self.particle_filter_IO = pickle.load(open_file)
         open_file.close()
-        self.reference_ep = particle_filter_IO['input']['root_episode']
-        self.generated_eps = particle_filter_IO['output']['generated_episodes']
+        self.likelihood_rank = likelihood_rank
    
-    def plot_actions(self, likelihood_rank = 0, start= 0, stop = None):
-        generated_ep = self.generated_eps[likelihood_rank]
+    def return_pf_results(self):
+        return self.particle_filter_IO
+    
+    def plot_actions(self, start= 0, stop = None):
+        generated_ep = self.particle_filter_IO['output']['generated_episodes'][self.likelihood_rank]
+        reference_ep = self.particle_filter_IO['input']['root_episode']
         stop = len(generated_ep['actions']) if stop is None else stop
         def tranform_actions(episode):
             return episode['actions'].T[start:stop], ''
-        trans_reference, trans_string = tranform_actions(self.reference_ep)
+        trans_reference, trans_string = tranform_actions(reference_ep)
         trans_generated, trans_string = tranform_actions(generated_ep)
+        max_action = max(max(trans_reference), max(trans_generated))
+        print(f'Maximum action is {max_action}')
         fig, ax = plt.subplots(2)
         ax[0].stem(trans_reference)
         ax[0].set_title('Reference actions ' + f'({trans_string})')
         ax[0].set_xlabel('time')
         ax[0].set_ylabel('action')
+        ax[0].set_yticks(np.arange(max_action + 1))
         ax[1].stem(trans_generated)
         ax[1].set_title('Generated actions ' + f'({trans_string})')
         ax[1].set_xlabel('time')
         ax[1].set_ylabel('action')
+        ax[1].set_yticks(np.arange(max_action + 1))
         fig.tight_layout()
         plt.show()
         
-    def plot_beliefs(self, likelihood_rank = 0, start= 0, stop = None, minmin = -50, maxmax = 0):
-        generated_ep = self.generated_eps[likelihood_rank]
+    def plot_beliefs(self, start= 0, stop = None, min_color_val = -50, max_color_val = 0):
+        generated_ep = self.particle_filter_IO['output']['generated_episodes'][self.likelihood_rank]
+        reference_ep = self.particle_filter_IO['input']['root_episode']
         stop = len(generated_ep['actions']) if stop is None else stop
         def tranform_beleifs(episode):
             return np.log(episode['q_probs'].T[:,start:stop]), 'log'
-        trans_reference, trans_string = tranform_beleifs(self.reference_ep)
+        trans_reference, trans_string = tranform_beleifs(reference_ep)
         trans_generated, trans_string = tranform_beleifs(generated_ep)
-        
-        # minmin = np.min([np.min(trans_reference), np.min(trans_generated)])
-        # maxmax = np.max([np.max(trans_reference), np.max(trans_generated)])
-        
         fig, ax = plt.subplots(2)
         num_states, num_steps  = np.shape(trans_reference)
-        im1 = ax[0].imshow(trans_reference, vmin=minmin, vmax=maxmax, extent=[-0.5, num_steps+0.5, -0.5, num_states+0.5], aspect='auto', cmap='viridis') 
+        im1 = ax[0].imshow(trans_reference, vmin=min_color_val, vmax=max_color_val, extent=[-0.5, num_steps+0.5, num_states+0.5, -0.5], aspect='auto', cmap='viridis') 
         ax[0].set_title('Reference beliefs ' + f'(after {trans_string})')
         ax[0].set_xlabel('time')
         ax[0].set_ylabel('state')
-        im2 = ax[1].imshow(trans_generated, vmin=minmin, vmax=maxmax, extent=[-0.5, num_steps+0.5, -0.5, num_states+0.5], aspect='auto', cmap='viridis')
+        im2 = ax[1].imshow(trans_generated, vmin=min_color_val, vmax=max_color_val, extent=[-0.5, num_steps+0.5, num_states+0.5, -0.5], aspect='auto', cmap='viridis')
         ax[1].set_title('Generated beliefs ' + f'(after {trans_string})')
         ax[1].set_xlabel('time')
         ax[1].set_ylabel('state')
         fig.tight_layout()
-        
         fig.subplots_adjust(right=0.85)
         cbar_ax = fig.add_axes([0.88, 0.15, 0.04, 0.7])
         fig.colorbar(im2, cax=cbar_ax)
-        
         plt.show()
+    
+    def plot_absolute_particle_likelihood(self):
+        particles_likelihoods = self.particle_filter_IO['output']['particles_likelihoods']
+        if np.sum(particles_likelihoods) == 0:
+            print('\n Absolute particle likelihoods for all particles are close to 0.')
+        else:
+            plt.stem(self.particle_filter_IO['output']['particles_likelihoods'])
+            plt.show()
+    
+    def check_for_different_trajectories(self):
+        no_particles = len(self.particle_filter_IO['output']['particles_likelihoods'])
+        matching_indices = []
+        did_it_converge = False
+        ind = 0
+        diff_in_actions = 0
+        while diff_in_actions == 0:
+            ind += 1
+            if ind > no_particles - 1:
+                did_it_converge = True
+                print('All particles converged to the same trajectory.')
+                break
+            a = self.particle_filter_IO['output']['generated_episodes'][0]['actions']
+            b = self.particle_filter_IO['output']['generated_episodes'][ind]['actions']
+            diff_in_actions = np.sum(np.abs(a-b))/len(a)
+        if not did_it_converge:
+            matching_indices.append(0)
+            matching_indices.append(ind)
+            print(f'\n Found at least two particles with different trajectories, namely particle {ind} and particle 0.')
+            print(f'Rate of absolute difference in actions between them is {diff_in_actions} per time step.')
+        return matching_indices
+
+    def compute_attention_difference(self, no_attentions):
+        generated_actions = self.particle_filter_IO['output']['generated_episodes'][self.likelihood_rank]['actions']
+        actual_actions = self.particle_filter_IO['input']['root_episode']['actions'][:len(generated_actions)]
+        generated_attention = np.array([action % no_attentions for action in generated_actions])
+        actual_attention = np.array([action % no_attentions for action in actual_actions])
+        error_rate = np.sum(np.abs(generated_attention-actual_attention))/len(generated_attention)
+        print(f'\n Avgerage attention error rate (abs) between generated episode likelihood_rank-{self.likelihood_rank} and true episode is {error_rate} per time step.')
     
     def plot_comparisons(self):
         self.plot_actions()
         self.plot_beliefs()
+        self.plot_absolute_particle_likelihood()
+        self.check_for_different_trajectories()
+        # self.compute_attention_difference(3)
+
+
