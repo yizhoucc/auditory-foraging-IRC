@@ -1,12 +1,8 @@
-import matplotlib.pyplot as plt
 import numpy as np
-import copy, pickle, os
+import pickle, os
 from itertools import product
 
 class AttentionPosterior():
-
-    ### AFTER COMPUTING ATTENTIONS, MIGHT HAVE TO ALIGN W/ OR W/O LICK DEPENDING ON EPISODE FORMATTING!!
-
     def __init__(self, agent, env, episode, end_index):
         self.agent = agent
         self.env = env
@@ -100,5 +96,3 @@ class AttentionPosterior():
         self.attention_posterior_IO['output']['posterior_list'] = posterior_list
         if do_save: self.save_output(self.attention_posterior_IO)
         return self.attention_posterior_IO
-    
-    
