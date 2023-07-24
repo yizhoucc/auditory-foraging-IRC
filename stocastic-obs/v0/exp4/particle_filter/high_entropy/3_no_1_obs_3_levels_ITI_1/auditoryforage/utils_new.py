@@ -252,7 +252,17 @@ class PlotHelper():
             axs[acquisition_no, 1].legend(['lick']+[f'attention {attention_choice}' for attention_choice in range(len(attention_action_keys))]+['signal prob.'], bbox_to_anchor=(1.5, 1.05), fontsize=12)
         return fig
     
+def open_pickle_file(file_name):
+    open_file = open(file_name, "rb")
+    data = pickle.load(open_file)
+    open_file.close()
+    return data
 
+def save_pickle_file(data, file_name):
+    open_file = open(file_name, "wb")
+    pickle.dump(data, open_file)
+    open_file.close()
+    
 #for episodic
 def assign_state_class(true_state, no_signal_nodes, no_penalty_nodes):
     if true_state == 0:

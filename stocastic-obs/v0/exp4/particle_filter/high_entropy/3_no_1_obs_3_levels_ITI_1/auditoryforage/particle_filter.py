@@ -8,6 +8,8 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import copy, pickle, os
+from collections import Counter
+from utils import open_pickle_file, save_pickle_file
 
 class ParticleFilter():
 
@@ -31,7 +33,7 @@ class ParticleFilter():
         self.sampling_freq = default_sampling_freq
         self.verbose = verbose
                 
-    def generate_wrt_reference_episode(self, episode, no_particles = None, sampling_freq = None, end_index = None, do_save = True):
+    def generate_wrt_reference_episode(self, episode, no_particles = None, sampling_freq = None, end_index = None, do_save = True, req_output_posterior = False):
         r"""Performs particle filter to generate attention and observation sequences.
 
         Args
@@ -59,7 +61,8 @@ class ParticleFilter():
         lick_actions = lick_actions[:end_index]
         particle_filter_IO = self.filter(lick_actions, state_list, no_particles, sampling_freq)
         particle_filter_IO['input']['root_episode'] = episode
-        if do_save: self.save_filter_output(particle_filter_IO)
+        particle_filter_IO = self.compute_posterior(particle_filter_IO) if req_output_posterior else particle_filter_IO
+        if do_save: self.save_filter_output(particle_filter_IO, end_index)
         return particle_filter_IO
 
     def filter(self, lick_actions, state_list, no_particles = None, sampling_freq = None, do_save = False):
@@ -108,7 +111,6 @@ class ParticleFilter():
         belief = env.init_belief(observation)
         belief_list = [[belief] for _ in range(no_particles)]
         observation = observation[0]
-        # particle_observation_prob = 1 #A1
         particles_observation_probs = [1 for _ in range(no_particles)] #A1
         observation_list = [[[observation]] for _ in range(no_particles)]        
         particles_distribution = 1/no_particles * np.ones(no_particles)
@@ -178,10 +180,6 @@ class ParticleFilter():
             if sampling_count > 1:
                 sampling_count_tracker[time] = sampling_count
             
-            
-            print(f'particles_likelihoods are {particles_likelihoods}')
-            print(f'instant_likelihood are {instant_likelihood}')
-            
             particles_likelihoods = np.multiply(particles_likelihoods, np.array(instant_likelihood))
 
             
@@ -200,15 +198,6 @@ class ParticleFilter():
 
             particles_distribution = np.multiply(particles_distribution, np.array(instant_likelihood))
             particles_distribution = particles_distribution/np.sum(particles_distribution)
-            
-            
-            print('\n BEFORE SAMPLING')
-            for ind in range(len(action_list)):
-                print(f'This is for particle {ind}')
-                print(f'actions are {action_list[ind]}')
-                print(f'observations are {observation_list[ind]}')
-                print(f'particles_likelihood is {particles_likelihoods[ind]}')
-                print('\n')
             
             if time%sampling_freq == 0 or time == len(lick_actions) - 1: #H1
                 overdue_status = [False for _ in range(no_particles)]
@@ -230,16 +219,6 @@ class ParticleFilter():
                 particles_observation_probs = copy.deepcopy(temp_particles_observation_probs)
                 particles_likelihoods = np.array(temp_particles_likelihoods)
                 particles_distribution = 1/no_particles * np.ones(no_particles)
-        
-        
-            print('\n AFTER SAMPLING')
-            for ind in range(len(action_list)):
-                print(f'This is for particle {ind}')
-                print(f'actions are {action_list[ind]}')
-                print(f'observations are {observation_list[ind]}')
-                print(f'particles_likelihood is {particles_likelihoods[ind]}')
-                print('\n')
-        
         
         agent.algo.policy.set_training_mode(_to_restore_train) 
         
@@ -269,28 +248,41 @@ class ParticleFilter():
         particle_filter_IO = {'input': input, 'output': particle_filter_output}
         return particle_filter_IO
 
-    def save_filter_output(self, particle_filter_IO):
+    def save_filter_output(self, particle_filter_IO, end_index):
         no_particles = particle_filter_IO['output']['filter_specs']['no_particles']
         sampling_freq = particle_filter_IO['output']['filter_specs']['sampling_freq']
         store_folder = 'store/particle_filter/'
         if not os.path.exists(store_folder): os.makedirs(store_folder)
-        file_name = store_folder + f'PF_np_{no_particles}_sf_{sampling_freq}_{np.random.randint(0,100)}.pkl'
-        open_file = open(file_name, "wb")
-        pickle.dump(particle_filter_IO, open_file)
-        open_file.close()
+        file_name = store_folder + f'PF_np_{no_particles}_sf_{sampling_freq}_ei_{end_index}_rn_{np.random.randint(0,100)}.pkl'
+        save_pickle_file(particle_filter_IO, file_name)
+        print(f'Saved data to file {file_name}.')
 
-    def multiple_filtering(self, episode, no_particles_list, sampling_freq_list, end_index):
+    def multiple_filtering(self, episode, no_particles_list, sampling_freq_list, end_index, req_output_posterior = False):
         for no_particles in no_particles_list:
             for sampling_freq in sampling_freq_list:
                 print(f'Filter with no_particles = {no_particles} and sampling_freq = {sampling_freq} in action.')
-                _ = self.generate_wrt_reference_episode(episode, no_particles, sampling_freq, end_index)
+                _ = self.generate_wrt_reference_episode(episode, no_particles, sampling_freq, end_index, req_output_posterior = req_output_posterior)
+
+    def compute_posterior(self, particle_filter_IO):
+        generated_actions = [list(generated_episode['actions']) for generated_episode in particle_filter_IO['output']['generated_episodes']]
+        element_counts = Counter([tuple(action_seq) for action_seq in generated_actions])
+        posterior_ranked, attention_seq_ranked = [], []
+        for action_seq, count in element_counts.items():
+            posterior_ranked.append(count)
+            attention_seq_ranked.append(np.array(action_seq)%self.env.no_attention_modes)
+        posterior_ranked = np.array(posterior_ranked)/sum(posterior_ranked)
+        sorted_ind = np.argsort(-1 * posterior_ranked)
+        posterior_ranked = posterior_ranked[sorted_ind]
+        attention_seq_ranked = [list(attention_seq_ranked[ind]) for ind in sorted_ind]
+        particle_filter_IO['output']['posterior'] = {}
+        particle_filter_IO['output']['posterior']['posterior_ranked'] = posterior_ranked
+        particle_filter_IO['output']['posterior']['attention_seq_ranked'] = attention_seq_ranked
+        return particle_filter_IO
 
 class Compare_plots():
 
     def __init__(self, file_name, likelihood_rank = 0):
-        open_file = open(file_name, "rb")
-        self.particle_filter_IO = pickle.load(open_file)
-        open_file.close()
+        self.particle_filter_IO = open_pickle_file(file_name)
         self.likelihood_rank = likelihood_rank
    
     def return_pf_results(self):

@@ -1,6 +1,7 @@
 import numpy as np
 import pickle, os
 from itertools import product
+from utils import save_pickle_file
 
 class AttentionPosterior():
     def __init__(self, agent, env, episode, end_index):
@@ -82,10 +83,9 @@ class AttentionPosterior():
     def save_output(self):
         store_folder = 'store/particle_filter/'
         if not os.path.exists(store_folder): os.makedirs(store_folder)
-        file_name = store_folder + f'HMM_attention_series_posterior_{np.random.randint(0,100)}.pkl'
-        open_file = open(file_name, "wb")
-        pickle.dump(self.attention_posterior_IO, open_file)
-        open_file.close()
+        file_name = store_folder + f'HMM_attention_series_posterior_ei_{self.end_index}_rn{np.random.randint(0,100)}.pkl'
+        save_pickle_file(self.attention_posterior_IO, file_name)
+        print(f'Saved data to file {file_name}.')
     
     def compute_posterior_across_attention_series(self, do_save = True):
         _to_restore_train = self.agent.algo.policy.training 
