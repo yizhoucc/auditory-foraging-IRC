@@ -108,7 +108,8 @@ class ParticleFilter():
         belief = env.init_belief(observation)
         belief_list = [[belief] for _ in range(no_particles)]
         observation = observation[0]
-        particle_observation_prob = 1 #A1
+        # particle_observation_prob = 1 #A1
+        particles_observation_probs = [1 for _ in range(no_particles)] #A1
         observation_list = [[[observation]] for _ in range(no_particles)]        
         particles_distribution = 1/no_particles * np.ones(no_particles)
         particles_likelihoods = np.ones(no_particles)
@@ -144,13 +145,13 @@ class ParticleFilter():
                                 particle_action_prob = instant_action_probs[action]/sum(instant_action_probs[:env.no_attention_modes])
                         else:
                             raise Exception("Lick actions can only be 0 or 1.")
-                        instant_likelihood.append(particle_observation_prob * particle_action_prob)
+                        instant_likelihood.append(particles_observation_probs[particle] * particle_action_prob)
                         _, attention_choice = env.dict_action_possible[int(action)]
                         
                         if time != len(lick_actions) - 1: 
                             observation = env.observe_step(attention_choice)[0] #C2
                             observation_list[particle].append([observation])
-                            particle_observation_prob = observation_matrix[observation, env.state, attention_choice]
+                            particles_observation_probs[particle] = observation_matrix[observation, env.state, attention_choice]
                             next_belief = env.update_belief(belief_list[particle][-1], action, observation)
                             belief_list[particle].append(next_belief)
                             if next_belief is None:
@@ -177,6 +178,10 @@ class ParticleFilter():
             if sampling_count > 1:
                 sampling_count_tracker[time] = sampling_count
             
+            
+            print(f'particles_likelihoods are {particles_likelihoods}')
+            print(f'instant_likelihood are {instant_likelihood}')
+            
             particles_likelihoods = np.multiply(particles_likelihoods, np.array(instant_likelihood))
 
             
@@ -196,23 +201,45 @@ class ParticleFilter():
             particles_distribution = np.multiply(particles_distribution, np.array(instant_likelihood))
             particles_distribution = particles_distribution/np.sum(particles_distribution)
             
+            
+            print('\n BEFORE SAMPLING')
+            for ind in range(len(action_list)):
+                print(f'This is for particle {ind}')
+                print(f'actions are {action_list[ind]}')
+                print(f'observations are {observation_list[ind]}')
+                print(f'particles_likelihood is {particles_likelihoods[ind]}')
+                print('\n')
+            
             if time%sampling_freq == 0 or time == len(lick_actions) - 1: #H1
                 overdue_status = [False for _ in range(no_particles)]
                 temp_observation_list = [[] for _ in range(no_particles)]
                 temp_belief_list = [[] for _ in range(no_particles)]
                 temp_action_list = [[] for _ in range(no_particles)]
                 temp_particles_likelihoods = [[] for _ in range(no_particles)]
+                temp_particles_observation_probs = [[] for _ in range(no_particles)]
                 for particle in range(no_particles):
                     chosen_particle = np.random.choice(no_particles, p = particles_distribution)
                     temp_observation_list[particle] = copy.deepcopy(observation_list[chosen_particle])
                     temp_belief_list[particle] = copy.deepcopy(belief_list[chosen_particle])
                     temp_action_list[particle] = copy.deepcopy(action_list[chosen_particle])
                     temp_particles_likelihoods[particle] = particles_likelihoods[chosen_particle]
+                    temp_particles_observation_probs[particle] = particles_observation_probs[chosen_particle]
                 observation_list = copy.deepcopy(temp_observation_list)
                 belief_list = copy.deepcopy(temp_belief_list)
                 action_list = copy.deepcopy(temp_action_list)
+                particles_observation_probs = copy.deepcopy(temp_particles_observation_probs)
                 particles_likelihoods = np.array(temp_particles_likelihoods)
                 particles_distribution = 1/no_particles * np.ones(no_particles)
+        
+        
+            print('\n AFTER SAMPLING')
+            for ind in range(len(action_list)):
+                print(f'This is for particle {ind}')
+                print(f'actions are {action_list[ind]}')
+                print(f'observations are {observation_list[ind]}')
+                print(f'particles_likelihood is {particles_likelihoods[ind]}')
+                print('\n')
+        
         
         agent.algo.policy.set_training_mode(_to_restore_train) 
         
