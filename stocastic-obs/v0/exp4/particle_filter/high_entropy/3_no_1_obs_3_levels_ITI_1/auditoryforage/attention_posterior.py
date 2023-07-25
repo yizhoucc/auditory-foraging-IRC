@@ -84,7 +84,7 @@ class AttentionPosterior():
     def save_output(self):
         store_folder = 'store/particle_filter/'
         if not os.path.exists(store_folder): os.makedirs(store_folder)
-        file_name = store_folder + f'HMM_attention_series_posterior_ei_{self.end_index}_rn{np.random.randint(0,100)}.pkl'
+        file_name = store_folder + f'HMM_attention_series_posterior_ei_{self.end_index}_rn_{np.random.randint(0,100)}.pkl'
         save_pickle_file(self.attention_posterior_IO, file_name)
         print(f'Saved data to file {file_name}.')
     
@@ -109,7 +109,7 @@ class AttentionPosterior():
         if do_save: self.save_output()
         return self.attention_posterior_IO
     
-def compare_PF_and_HMM(particle_filter_IO, attention_posterior_IO):
+def plot_PF_HMM_comparison(particle_filter_IO, attention_posterior_IO):
     PF_posterior_ranked = particle_filter_IO['output']['posterior']['posterior_ranked']
     PF_attention_seq_ranked = particle_filter_IO['output']['posterior']['attention_seq_ranked']
     HMM_attention_series_list = attention_posterior_IO['output']['attention_series_list']
@@ -138,3 +138,8 @@ def compare_PF_and_HMM(particle_filter_IO, attention_posterior_IO):
     plt.xlabel('attention sequence')
     plt.ylabel('HMM posterior')
     plt.show()
+
+def compare_PF_HMM(PF_file_name, HMM_file_name):
+    particle_filter_IO = open_pickle_file(PF_file_name)
+    attention_posterior_IO = open_pickle_file(HMM_file_name)
+    plot_PF_HMM_comparison(particle_filter_IO, attention_posterior_IO)

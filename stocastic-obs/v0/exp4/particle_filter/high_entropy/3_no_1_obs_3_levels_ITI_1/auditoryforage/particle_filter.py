@@ -7,9 +7,11 @@
 
 import matplotlib.pyplot as plt
 import numpy as np
-import copy, pickle, os
+import copy, os
 from collections import Counter
-from .utils import open_pickle_file, save_pickle_file
+from .utils import open_pickle_file, save_pickle_file, plot_AF_episode
+from itertools import product
+import multiprocessing
 
 class ParticleFilter():
 
@@ -181,21 +183,6 @@ class ParticleFilter():
                 sampling_count_tracker[time] = sampling_count
             
             particles_likelihoods = np.multiply(particles_likelihoods, np.array(instant_likelihood))
-
-            
-            # print('___________________')
-            # print(f'time is {time}')
-            # print(f'particles_distribution is {particles_distribution}')
-            # print(f'instant_likelihood is {np.array(instant_likelihood)}')
-            # print(f'\n')
-
-            # Lokesh added temporarily
-            # There is a problem here - 
-            # np.multiply(particles_distribution, np.array(instant_likelihood)) sometimes gives all 0 even if 
-            # the individual factors are not always 0. May be it's not even exactly 0, but almost 0 as time progresses??
-            # Looks like the reason was sampling frequency was set higher than 1.
-
-
             particles_distribution = np.multiply(particles_distribution, np.array(instant_likelihood))
             particles_distribution = particles_distribution/np.sum(particles_distribution)
             
@@ -263,6 +250,15 @@ class ParticleFilter():
                 print(f'Filter with no_particles = {no_particles} and sampling_freq = {sampling_freq} in action.')
                 _ = self.generate_wrt_reference_episode(episode, no_particles, sampling_freq, end_index, req_output_posterior = req_output_posterior)
 
+    def multiple_filtering_in_parallel(self, episode, no_particles_list, sampling_freq_list, end_index, req_output_posterior = False):
+        def run_and_save_particle_filter(no_particles_sampling_freq_tuple):
+            no_particles, sampling_freq = no_particles_sampling_freq_tuple
+            _ = self.generate_wrt_reference_episode(episode, no_particles, sampling_freq, end_index, req_output_posterior = req_output_posterior)
+            print(f'Completed filter with no_particles = {no_particles} and sampling_freq = {sampling_freq}.', flush = True)
+        no_particles_sampling_freq_tuples_list = list(product(no_particles_list, sampling_freq_list))
+        with multiprocessing.Pool() as pool:
+            pool.map(run_and_save_particle_filter, no_particles_sampling_freq_tuples_list)
+
     def compute_posterior(self, particle_filter_IO):
         generated_actions = [list(generated_episode['actions']) for generated_episode in particle_filter_IO['output']['generated_episodes']]
         element_counts = Counter([tuple(action_seq) for action_seq in generated_actions])
@@ -279,7 +275,13 @@ class ParticleFilter():
         particle_filter_IO['output']['posterior']['attention_seq_ranked'] = attention_seq_ranked
         return particle_filter_IO
 
-class Compare_plots():
+    def plot_generated_episode(self, file_name, likelihood_rank, nodes_from_zero = 40, time_steps_before_lick = 20):
+        particle_filter_IO = open_pickle_file(file_name)
+        generated_ep = particle_filter_IO['output']['generated_episodes'][likelihood_rank]
+        generated_ep['rewards'] = np.zeros(len(generated_ep['actions']))
+        fig = plot_AF_episode(generated_ep, self.env, self.agent, nodes_from_zero = nodes_from_zero, time_steps_before_lick = time_steps_before_lick)
+
+class PF_results_analyzer():
 
     def __init__(self, file_name, likelihood_rank = 0):
         self.particle_filter_IO = open_pickle_file(file_name)
@@ -297,7 +299,6 @@ class Compare_plots():
         trans_reference, trans_string = tranform_actions(reference_ep)
         trans_generated, trans_string = tranform_actions(generated_ep)
         max_action = max(max(trans_reference), max(trans_generated))
-        print(f'Maximum action is {max_action}')
         fig, ax = plt.subplots(2)
         ax[0].stem(trans_reference)
         ax[0].set_title('Reference actions ' + f'({trans_string})')
@@ -344,6 +345,19 @@ class Compare_plots():
             plt.stem(self.particle_filter_IO['output']['particles_likelihoods'])
             plt.show()
     
+    def plot_posterior(self):
+        plt.stem(self.particle_filter_IO['output']['posterior']['posterior_ranked'])
+        plt.xlabel('Attention sequence')
+        plt.ylabel('PF posterior')
+        plt.show()
+    
+    def print_repetition_dicitonary(self):
+        repetition_dicitonary = self.particle_filter_IO['output']['sampling_count_tracker']
+        if len(repetition_dicitonary) == 0:
+            print(f"No sampling repetition was needed. Good stuff!")
+        else:
+            print(f"Sampling repeatition dictionary is {repetition_dicitonary}.")
+    
     def check_for_different_trajectories(self):
         no_particles = len(self.particle_filter_IO['output']['particles_likelihoods'])
         matching_indices = []
@@ -374,11 +388,13 @@ class Compare_plots():
         error_rate = np.sum(np.abs(generated_attention-actual_attention))/len(generated_attention)
         print(f'\n Avgerage attention error rate (abs) between generated episode likelihood_rank-{self.likelihood_rank} and true episode is {error_rate} per time step.')
     
-    def plot_comparisons(self):
+    def analyze_results(self):
         self.plot_actions()
         self.plot_beliefs()
+        self.plot_posterior()
+        # self.check_for_different_trajectories()
         self.plot_absolute_particle_likelihood()
-        self.check_for_different_trajectories()
+        self.print_repetition_dicitonary()
         # self.compute_attention_difference(3)
 
 
