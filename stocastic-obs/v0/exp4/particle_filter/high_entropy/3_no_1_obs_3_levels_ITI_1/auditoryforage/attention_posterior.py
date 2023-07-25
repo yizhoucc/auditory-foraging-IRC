@@ -1,7 +1,8 @@
+import os
 import numpy as np
-import pickle, os
 from itertools import product
-from utils import save_pickle_file
+import matplotlib.pyplot as plt
+from .utils import save_pickle_file, open_pickle_file
 
 class AttentionPosterior():
     def __init__(self, agent, env, episode, end_index):
@@ -107,3 +108,33 @@ class AttentionPosterior():
         self.attention_posterior_IO['output']['posterior_list'] = posterior_list
         if do_save: self.save_output()
         return self.attention_posterior_IO
+    
+def compare_PF_and_HMM(particle_filter_IO, attention_posterior_IO):
+    PF_posterior_ranked = particle_filter_IO['output']['posterior']['posterior_ranked']
+    PF_attention_seq_ranked = particle_filter_IO['output']['posterior']['attention_seq_ranked']
+    HMM_attention_series_list = attention_posterior_IO['output']['attention_series_list']
+    HMM_attention_posterior_list = attention_posterior_IO['output']['posterior_list']
+    PF_rank_in_HMM = []
+    HMM_posterior_arranged_wrt_PF_rank = []
+    for PF_attention_seq in PF_attention_seq_ranked:
+        PF_attention_seq = list(PF_attention_seq)
+        HMM_rank = HMM_attention_series_list.index(PF_attention_seq)
+        PF_rank_in_HMM.append(HMM_rank)
+        HMM_posterior_arranged_wrt_PF_rank.append(HMM_attention_posterior_list[HMM_rank])
+    plt.stem(PF_rank_in_HMM)
+    plt.plot(np.arange(min(PF_rank_in_HMM),max(PF_rank_in_HMM)+1))
+    plt.xlabel('rank in PF')
+    plt.ylabel('rank in HMM')
+    plt.show()
+    plt.scatter(PF_posterior_ranked, HMM_posterior_arranged_wrt_PF_rank)
+    plt.xlabel('PF posterior ranked')
+    plt.ylabel('HMM posterior arranged wrt PF rank')
+    plt.show()
+    plt.stem(PF_posterior_ranked)
+    plt.xlabel('attention sequence')
+    plt.ylabel('PF posterior')
+    plt.show()
+    plt.stem(HMM_attention_posterior_list)
+    plt.xlabel('attention sequence')
+    plt.ylabel('HMM posterior')
+    plt.show()

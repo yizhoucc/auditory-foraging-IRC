@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import copy, pickle, os
 from collections import Counter
-from utils import open_pickle_file, save_pickle_file
+from .utils import open_pickle_file, save_pickle_file
 
 class ParticleFilter():
 
