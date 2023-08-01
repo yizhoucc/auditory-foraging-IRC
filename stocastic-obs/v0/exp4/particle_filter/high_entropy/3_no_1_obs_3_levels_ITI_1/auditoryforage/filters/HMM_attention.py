@@ -2,7 +2,7 @@ import os
 import numpy as np
 from itertools import product
 import matplotlib.pyplot as plt
-from .utils import save_pickle_file, open_pickle_file
+from ..utils import save_pickle_file, open_pickle_file
 
 class AttentionPosterior():
     def __init__(self, agent, env, episode, end_index):
@@ -82,9 +82,9 @@ class AttentionPosterior():
         return posterior
     
     def save_output(self):
-        store_folder = 'store/particle_filter/'
+        store_folder = 'store/filters/HMM_attention/'
         if not os.path.exists(store_folder): os.makedirs(store_folder)
-        file_name = store_folder + f'HMM_attention_series_posterior_ei_{self.end_index}_rn_{np.random.randint(0,100)}.pkl'
+        file_name = store_folder + f'HMM_ei_{self.end_index}_rn_{np.random.randint(0,100)}.pkl'
         save_pickle_file(self.attention_posterior_IO, file_name)
         print(f'Saved data to file {file_name}.')
     
