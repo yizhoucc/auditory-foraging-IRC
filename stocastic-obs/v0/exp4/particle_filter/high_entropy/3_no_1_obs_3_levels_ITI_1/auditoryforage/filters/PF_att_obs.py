@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import copy, os
 from collections import Counter
-from .utils import open_pickle_file, save_pickle_file, plot_AF_episode
+from ..utils import open_pickle_file, save_pickle_file, plot_AF_episode
 from itertools import product
 import multiprocessing
 
@@ -51,7 +51,7 @@ class ParticleFilter():
 
         Returns
         -------
-        particle_filter_IO:
+        PF_IO:
             Output of filter method.
         """
         no_particles = self.no_particles if no_particles is None else no_particles
@@ -61,11 +61,11 @@ class ParticleFilter():
         end_index = len(state_list) if end_index is None else end_index
         state_list = state_list[:end_index]
         lick_actions = lick_actions[:end_index]
-        particle_filter_IO = self.filter(lick_actions, state_list, no_particles, sampling_freq)
-        particle_filter_IO['input']['root_episode'] = episode
-        particle_filter_IO = self.compute_posterior(particle_filter_IO) if req_output_posterior else particle_filter_IO
-        if do_save: self.save_filter_output(particle_filter_IO, end_index)
-        return particle_filter_IO
+        PF_IO = self.filter(lick_actions, state_list, no_particles, sampling_freq)
+        PF_IO['input']['root_episode'] = episode
+        PF_IO = self.compute_posterior(PF_IO) if req_output_posterior else PF_IO
+        if do_save: self.save_filter_output(PF_IO, end_index)
+        return PF_IO
 
     def filter(self, lick_actions, state_list, no_particles = None, sampling_freq = None, do_save = False):
         r"""Performs particle filter to generate attention and observation sequences.
@@ -83,7 +83,7 @@ class ParticleFilter():
 
         Returns
         -------
-        particle_filter_IO:
+        PF_IO:
             A dictionary containing the input and ouput of particle filter stored in values corresponding to keys 'input', and 'output'.
             Most important part of that dictionary being the (sub) key 'particle_filter_output', described below.
             
@@ -232,23 +232,23 @@ class ParticleFilter():
         particle_filter_output['particles_log_likelihoods'] = particles_log_likelihoods[sorted_indices]
         particle_filter_output['sampling_count_tracker'] = sampling_count_tracker
         particle_filter_output['filter_specs'] = {'no_particles': no_particles, 'sampling_freq': sampling_freq}
-        particle_filter_IO = self.package_PF_IO(particle_filter_output, state_list, lick_actions)
-        if do_save: self.save_filter_output(particle_filter_IO)
-        return particle_filter_IO
+        PF_IO = self.package_PF_IO(particle_filter_output, state_list, lick_actions)
+        if do_save: self.save_filter_output(PF_IO)
+        return PF_IO
     
     def package_PF_IO(self, particle_filter_output, input_state_list, input_lick_actions, root_episode = None):
         input_time_series = {'state_list': input_state_list, 'lick_actions': input_lick_actions}
         input = {'root_episode': root_episode, 'input_time_series': input_time_series}
-        particle_filter_IO = {'input': input, 'output': particle_filter_output}
-        return particle_filter_IO
+        PF_IO = {'input': input, 'output': particle_filter_output}
+        return PF_IO
 
-    def save_filter_output(self, particle_filter_IO, end_index):
-        no_particles = particle_filter_IO['output']['filter_specs']['no_particles']
-        sampling_freq = particle_filter_IO['output']['filter_specs']['sampling_freq']
-        store_folder = 'store/particle_filter/'
+    def save_filter_output(self, PF_IO, end_index):
+        no_particles = PF_IO['output']['filter_specs']['no_particles']
+        sampling_freq = PF_IO['output']['filter_specs']['sampling_freq']
+        store_folder = 'store/filters/PF_att_obs/'
         if not os.path.exists(store_folder): os.makedirs(store_folder)
         file_name = store_folder + f'PF_np_{no_particles}_sf_{sampling_freq}_ei_{end_index}_rn_{np.random.randint(0,100)}.pkl'
-        save_pickle_file(particle_filter_IO, file_name)
+        save_pickle_file(PF_IO, file_name)
         print(f'Saved data to file {file_name}.')
 
     def multiple_filtering(self, episode, no_particles_list, sampling_freq_list, end_index, req_output_posterior = False):
@@ -266,50 +266,53 @@ class ParticleFilter():
         with multiprocessing.Pool() as pool:
             pool.map(run_and_save_particle_filter, no_particles_sampling_freq_tuples_list)
 
-    def compute_posterior(self, particle_filter_IO):
-        generated_actions = [list(generated_episode['actions']) for generated_episode in particle_filter_IO['output']['generated_episodes']]
-        element_counts = Counter([tuple(action_seq) for action_seq in generated_actions])
-        IRC_log_likelihood_ranked, PF_posterior_ranked, attention_seq_ranked, action_seq_ranked = [], [], [], []
-        for action_seq, count in element_counts.items():
+    def compute_posterior(self, PF_IO):
+        generated_actions_obs = [(generated_episode['actions'],generated_episode['observations']) for generated_episode in PF_IO['output']['generated_episodes']]
+        hash_generated_actions_obs = [tuple(list(actions) + [tuple(obs) for obs in observations]) for actions, observations in generated_actions_obs]
+        element_counts = Counter(hash_generated_actions_obs)
+        IRC_log_likelihood_ranked, PF_posterior_ranked, action_obs_seq_ranked = [], [], []
+        for action_obs_seq, count in element_counts.items():
             PF_posterior_ranked.append(count)
-            action_seq_ranked.append(np.array(action_seq))
-            attention_seq_ranked.append(np.array(action_seq)%self.env.no_attention_modes)
-            IRC_log_likelihood_ranked.append(particle_filter_IO['output']['particles_log_likelihoods'][generated_actions.index(list(action_seq))])
+            chosen_index = hash_generated_actions_obs.index(action_obs_seq)
+            temp_dict = {}
+            temp_dict['actions'] = np.array(generated_actions_obs[chosen_index][0])
+            temp_dict['observations'] = np.array(generated_actions_obs[chosen_index][1])
+            temp_dict['attentions'] = temp_dict['actions']%self.env.no_attention_modes
+            action_obs_seq_ranked.append(temp_dict)
+            IRC_log_likelihood_ranked.append(PF_IO['output']['particles_log_likelihoods'][chosen_index])
         PF_posterior_ranked = np.array(PF_posterior_ranked)/sum(PF_posterior_ranked)
         IRC_based_posterior_ranked = np.exp(np.array(IRC_log_likelihood_ranked))
         IRC_based_posterior_ranked = IRC_based_posterior_ranked/np.sum(IRC_based_posterior_ranked)
         sorted_ind = np.argsort(-1 * PF_posterior_ranked)
         PF_posterior_ranked = PF_posterior_ranked[sorted_ind]
-        attention_seq_ranked = [list(attention_seq_ranked[ind]) for ind in sorted_ind]
-        action_seq_ranked = [list(action_seq_ranked[ind]) for ind in sorted_ind]
+        action_obs_seq_ranked = [action_obs_seq_ranked[ind] for ind in sorted_ind]
         IRC_log_likelihood_ranked = np.array(IRC_log_likelihood_ranked)[sorted_ind]
         IRC_based_posterior_ranked = IRC_based_posterior_ranked[sorted_ind]
-        particle_filter_IO['output']['sorted_results'] = {}
-        particle_filter_IO['output']['sorted_results']['PF_posterior_ranked'] = PF_posterior_ranked
-        particle_filter_IO['output']['sorted_results']['attention_seq_ranked'] = attention_seq_ranked
-        particle_filter_IO['output']['sorted_results']['action_seq_ranked'] = action_seq_ranked
-        particle_filter_IO['output']['sorted_results']['IRC_based_posterior_ranked'] = IRC_based_posterior_ranked
-        particle_filter_IO['output']['sorted_results']['IRC_log_likelihood_ranked'] = IRC_log_likelihood_ranked
-        return particle_filter_IO
+        PF_IO['output']['sorted_results'] = {}
+        PF_IO['output']['sorted_results']['PF_posterior_ranked'] = PF_posterior_ranked
+        PF_IO['output']['sorted_results']['action_obs_seq_ranked'] = action_obs_seq_ranked
+        PF_IO['output']['sorted_results']['IRC_based_posterior_ranked'] = IRC_based_posterior_ranked
+        PF_IO['output']['sorted_results']['IRC_log_likelihood_ranked'] = IRC_log_likelihood_ranked
+        return PF_IO
 
     def plot_generated_episode(self, file_name, likelihood_rank, nodes_from_zero = 40, time_steps_before_lick = 20):
-        particle_filter_IO = open_pickle_file(file_name)
-        generated_ep = particle_filter_IO['output']['generated_episodes'][likelihood_rank]
+        PF_IO = open_pickle_file(file_name)
+        generated_ep = PF_IO['output']['generated_episodes'][likelihood_rank]
         generated_ep['rewards'] = np.zeros(len(generated_ep['actions']))
         fig = plot_AF_episode(generated_ep, self.env, self.agent, nodes_from_zero = nodes_from_zero, time_steps_before_lick = time_steps_before_lick)
 
 class PF_results_analyzer():
 
     def __init__(self, PF_file_name, likelihood_rank = 0):
-        self.particle_filter_IO = open_pickle_file(PF_file_name)
+        self.PF_IO = open_pickle_file(PF_file_name)
         self.likelihood_rank = likelihood_rank
    
     def return_pf_results(self):
-        return self.particle_filter_IO
+        return self.PF_IO
     
     def plot_actions(self, start= 0, stop = None):
-        generated_ep = self.particle_filter_IO['output']['generated_episodes'][self.likelihood_rank]
-        reference_ep = self.particle_filter_IO['input']['root_episode']
+        generated_ep = self.PF_IO['output']['generated_episodes'][self.likelihood_rank]
+        reference_ep = self.PF_IO['input']['root_episode']
         stop = len(generated_ep['actions']) if stop is None else stop
         def tranform_actions(episode):
             return episode['actions'].T[start:stop], ''
@@ -331,8 +334,8 @@ class PF_results_analyzer():
         plt.show()
         
     def plot_beliefs(self, start= 0, stop = None, min_color_val = -50, max_color_val = 0):
-        generated_ep = self.particle_filter_IO['output']['generated_episodes'][self.likelihood_rank]
-        reference_ep = self.particle_filter_IO['input']['root_episode']
+        generated_ep = self.PF_IO['output']['generated_episodes'][self.likelihood_rank]
+        reference_ep = self.PF_IO['input']['root_episode']
         stop = len(generated_ep['actions']) if stop is None else stop
         def tranform_beleifs(episode):
             return np.log(episode['q_probs'].T[:,start:stop]), 'log'
@@ -355,22 +358,22 @@ class PF_results_analyzer():
         plt.show()
     
     def plot_absolute_particle_log_likelihood(self):
-        particles_log_likelihoods = self.particle_filter_IO['output']['particles_log_likelihoods']
+        particles_log_likelihoods = self.PF_IO['output']['particles_log_likelihoods']
         if np.sum(particles_log_likelihoods) == 0:
             print('\n Absolute particle likelihoods for all particles are close to 0.')
         else:
-            plt.stem(self.particle_filter_IO['output']['particles_log_likelihoods'])
+            plt.stem(self.PF_IO['output']['particles_log_likelihoods'])
             plt.show()
     
     def plot_posterior(self):
-        PF_posterior_ranked = self.particle_filter_IO['output']['sorted_results']['PF_posterior_ranked']
-        IRC_based_posterior_ranked = self.particle_filter_IO['output']['sorted_results']['IRC_based_posterior_ranked']
+        PF_posterior_ranked = self.PF_IO['output']['sorted_results']['PF_posterior_ranked']
+        IRC_based_posterior_ranked = self.PF_IO['output']['sorted_results']['IRC_based_posterior_ranked']
         plt.stem(PF_posterior_ranked)
-        plt.xlabel('Attention sequence')
+        plt.xlabel('attention + observation sequence')
         plt.ylabel('PF posterior')
         plt.show()
         plt.stem(IRC_based_posterior_ranked)
-        plt.xlabel('Attention sequence')
+        plt.xlabel('attention + observation sequence')
         plt.ylabel('IRC based posterior')
         plt.show()
         plt.scatter(PF_posterior_ranked, IRC_based_posterior_ranked)
@@ -380,20 +383,20 @@ class PF_results_analyzer():
         plt.show()
     
     def plot_IRC_likelihood_across_particles(self):
-        plt.stem(self.particle_filter_IO['output']['sorted_results']['IRC_log_likelihood_ranked'])
-        plt.xlabel('Attention sequence')
+        plt.stem(self.PF_IO['output']['sorted_results']['IRC_log_likelihood_ranked'])
+        plt.xlabel('attention + observation sequence')
         plt.ylabel('IRC log likelihood')
         plt.show()
     
     def print_repetition_dicitonary(self):
-        repetition_dicitonary = self.particle_filter_IO['output']['sampling_count_tracker']
+        repetition_dicitonary = self.PF_IO['output']['sampling_count_tracker']
         if len(repetition_dicitonary) == 0:
             print(f"No sampling repetition was needed. Good stuff!")
         else:
             print(f"Sampling repeatition dictionary is {repetition_dicitonary}.")
     
     def check_for_different_trajectories(self):
-        no_particles = len(self.particle_filter_IO['output']['particles_log_likelihoods'])
+        no_particles = len(self.PF_IO['output']['particles_log_likelihoods'])
         matching_indices = []
         did_it_converge = False
         ind = 0
@@ -404,8 +407,8 @@ class PF_results_analyzer():
                 did_it_converge = True
                 print('All particles converged to the same trajectory.')
                 break
-            a = self.particle_filter_IO['output']['generated_episodes'][0]['actions']
-            b = self.particle_filter_IO['output']['generated_episodes'][ind]['actions']
+            a = self.PF_IO['output']['generated_episodes'][0]['actions']
+            b = self.PF_IO['output']['generated_episodes'][ind]['actions']
             diff_in_actions = np.sum(np.abs(a-b))/len(a)
         if not did_it_converge:
             matching_indices.append(0)
@@ -415,8 +418,8 @@ class PF_results_analyzer():
         return matching_indices
 
     def compute_attention_difference(self, no_attentions):
-        generated_actions = self.particle_filter_IO['output']['generated_episodes'][self.likelihood_rank]['actions']
-        actual_actions = self.particle_filter_IO['input']['root_episode']['actions'][:len(generated_actions)]
+        generated_actions = self.PF_IO['output']['generated_episodes'][self.likelihood_rank]['actions']
+        actual_actions = self.PF_IO['input']['root_episode']['actions'][:len(generated_actions)]
         generated_attention = np.array([action % no_attentions for action in generated_actions])
         actual_attention = np.array([action % no_attentions for action in actual_actions])
         error_rate = np.sum(np.abs(generated_attention-actual_attention))/len(generated_attention)

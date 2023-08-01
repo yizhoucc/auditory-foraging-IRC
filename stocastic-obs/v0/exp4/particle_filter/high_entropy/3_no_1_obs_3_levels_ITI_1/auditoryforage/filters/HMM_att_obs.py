@@ -1,4 +1,4 @@
-import os
+import os, copy
 import numpy as np
 from itertools import product
 import matplotlib.pyplot as plt
@@ -81,8 +81,13 @@ class HMM():
         posterior /= self.marginalize(self.possible_obs_attention_series())
         return posterior
     
-    def save_output(self):
-        store_folder = 'store/filters/HMM_attention/'
+    def compute_posterior_for_given_obs_attention_series(self, obs_attention_series):
+        posterior = self.marginalize([obs_attention_series])
+        posterior /= self.marginalize(self.possible_obs_attention_series())
+        return posterior
+    
+    def save_output(self, subfolder):
+        store_folder = 'store/filters/' + subfolder + '/'
         if not os.path.exists(store_folder): os.makedirs(store_folder)
         file_name = store_folder + f'HMM_ei_{self.end_index}_rn_{np.random.randint(0,100)}.pkl'
         save_pickle_file(self.HMM_IO, file_name)
@@ -102,33 +107,71 @@ class HMM():
         self.HMM_IO['output'] = {}
         self.HMM_IO['output']['attention_series_list'] = attention_series_list
         self.HMM_IO['output']['posterior_list'] = posterior_list
-        if do_save: self.save_output()
+        if do_save: self.save_output('HMM_attention')
         return self.HMM_IO
     
-def plot_PF_HMM_comparison(particle_filter_IO, HMM_IO):
-    PF_posterior_ranked = particle_filter_IO['output']['sorted_results']['PF_posterior_ranked']
-    PF_attention_seq_ranked = particle_filter_IO['output']['sorted_results']['attention_seq_ranked']
-    HMM_attention_series_list = HMM_IO['output']['attention_series_list']
-    HMM_attention_posterior_list = HMM_IO['output']['posterior_list']
+    def compute_posterior_across_attention_obs_series(self, do_save = True):
+        _to_restore_train = self.agent.algo.policy.training 
+        self.agent.algo.policy.set_training_mode(False)
+        obs_attention_series_list = self.possible_obs_attention_series()
+        posterior_list = []
+        for obs_attention_series in obs_attention_series_list:
+            posterior_list.append(self.compute_posterior_for_given_obs_attention_series(obs_attention_series))
+        self.agent.algo.policy.set_training_mode(_to_restore_train)
+        sorted_indices = list(np.argsort(-1 * np.array(posterior_list)))
+        obs_attention_series_list = [obs_attention_series_list[ind] for ind in sorted_indices]
+        posterior_list = [posterior_list[ind] for ind in sorted_indices]
+        self.HMM_IO['output'] = {}
+        self.HMM_IO['output']['obs_attention_series_list'] = obs_attention_series_list
+        self.HMM_IO['output']['posterior_list'] = posterior_list
+        if do_save: self.save_output('HMM_att_obs')
+        return self.HMM_IO
+    
+def plot_PF_HMM_comparison(PF_IO, HMM_IO):
+    PF_posterior_ranked = PF_IO['output']['sorted_results']['PF_posterior_ranked']
+    PF_action_obs_seq_ranked = PF_IO['output']['sorted_results']['action_obs_seq_ranked']
+    IRC_based_posterior_ranked = PF_IO['output']['sorted_results']['IRC_based_posterior_ranked']
+    HMM_obs_attention_series_list = HMM_IO['output']['obs_attention_series_list']
+    
+    HMM_obs_attention_seq = []
+    for obs_attention_series in HMM_obs_attention_series_list:
+        temp_dict = {}
+        temp_dict['observations'] = []
+        temp_dict['attentions'] = []
+        for obs_attention_pair in obs_attention_series:
+            temp_dict['observations'].append([obs_attention_pair[0]])
+            temp_dict['attentions'].append(obs_attention_pair[1])
+        HMM_obs_attention_seq.append(temp_dict)
+    PF_obs_attention_seq_ranked = copy.deepcopy(PF_action_obs_seq_ranked)
+    for dict_elt in PF_obs_attention_seq_ranked:
+        dict_elt['attentions'] = list(dict_elt['attentions'])
+        dict_elt['observations'] = list(dict_elt['observations'])
+        _ = dict_elt.pop('actions')
+    HMM_posterior_list = HMM_IO['output']['posterior_list']
     PF_rank_in_HMM = []
     HMM_posterior_arranged_wrt_PF_rank = []
-    for PF_attention_seq in PF_attention_seq_ranked:
-        PF_attention_seq = list(PF_attention_seq)
-        HMM_rank = HMM_attention_series_list.index(PF_attention_seq)
+    for PF_obs_attention_seq in PF_obs_attention_seq_ranked:
+        HMM_rank = HMM_obs_attention_seq.index(PF_obs_attention_seq)
         PF_rank_in_HMM.append(HMM_rank)
-        HMM_posterior_arranged_wrt_PF_rank.append(HMM_attention_posterior_list[HMM_rank])
+        HMM_posterior_arranged_wrt_PF_rank.append(HMM_posterior_list[HMM_rank])
     plt.scatter(PF_posterior_ranked, HMM_posterior_arranged_wrt_PF_rank)
     PF_exact_match = np.linspace(min(PF_posterior_ranked), max(PF_posterior_ranked),len(PF_posterior_ranked))
     plt.plot(PF_exact_match, PF_exact_match, 'r')
     plt.xlabel('PF posterior')
     plt.ylabel('HMM posterior')
     plt.show()
+    plt.scatter(HMM_posterior_arranged_wrt_PF_rank, IRC_based_posterior_ranked)
+    HMM_exact_match = np.linspace(min(HMM_posterior_arranged_wrt_PF_rank), max(HMM_posterior_arranged_wrt_PF_rank),len(HMM_posterior_arranged_wrt_PF_rank))
+    plt.plot(HMM_exact_match, HMM_exact_match, 'r')
+    plt.xlabel('HMM posterior')
+    plt.ylabel('IRC based posterior')
+    plt.show()
     plt.plot(PF_posterior_ranked, '-o')
-    plt.xlabel('attention sequence')
+    plt.xlabel('attention + observation sequence')
     plt.ylabel('PF posterior')
     plt.show()
-    plt.plot(HMM_attention_posterior_list,'-o')
-    plt.xlabel('attention sequence')
+    plt.plot(HMM_posterior_list,'-o')
+    plt.xlabel('attention + observation sequence')
     plt.ylabel('HMM posterior')
     plt.show()
     plt.scatter(np.arange(len(PF_rank_in_HMM)), PF_rank_in_HMM)
@@ -138,6 +181,6 @@ def plot_PF_HMM_comparison(particle_filter_IO, HMM_IO):
     plt.show()
 
 def compare_PF_HMM(PF_file_name, HMM_file_name):
-    particle_filter_IO = open_pickle_file(PF_file_name)
+    PF_IO = open_pickle_file(PF_file_name)
     HMM_IO = open_pickle_file(HMM_file_name)
-    plot_PF_HMM_comparison(particle_filter_IO, HMM_IO)
+    plot_PF_HMM_comparison(PF_IO, HMM_IO)
