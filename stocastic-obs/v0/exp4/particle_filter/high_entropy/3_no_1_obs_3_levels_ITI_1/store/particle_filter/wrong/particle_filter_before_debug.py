@@ -129,8 +129,7 @@ class ParticleFilter():
 
             while step_particle:
                 
-                instant_PF_likelihood = []
-                instant_IRC_likelihood = []
+                instant_likelihood = []
                 sampling_count += 1
                 
                 for particle in range(no_particles):
@@ -150,12 +149,7 @@ class ParticleFilter():
                                 particle_action_prob = instant_action_probs[action]/sum(instant_action_probs[:env.no_attention_modes])
                         else:
                             raise Exception("Lick actions can only be 0 or 1.")
-
-                        # fixed
-                        instant_IRC_likelihood.append(particles_observation_probs[particle] * particle_action_prob)
-                        instant_PF_likelihood.append(np.sign(particle_action_prob))
-
-
+                        instant_likelihood.append(particles_observation_probs[particle] * particle_action_prob)
                         _, attention_choice = env.dict_action_possible[int(action)]
                         
                         if time != len(lick_actions) - 1: 
@@ -171,13 +165,12 @@ class ParticleFilter():
                                     overdue_status[particle] = True
                     else:
                         action_list[particle].append(None)
-                        instant_IRC_likelihood.append(0)
-                        instant_PF_likelihood.append(0)
+                        instant_likelihood.append(0)
                         if time != len(lick_actions) - 1:
                             observation_list[particle].append([None])
                             belief_list[particle].append(None) 
                 
-                if sum(instant_PF_likelihood) == 0:
+                if sum(instant_likelihood) == 0:
                     if verbose: print(f'Need to sample again for time {time}')
                     for particle_ind in range(len(belief_list)):
                         action_list[particle_ind] = action_list[particle_ind][:-1]
@@ -189,8 +182,8 @@ class ParticleFilter():
             if sampling_count > 1:
                 sampling_count_tracker[time] = sampling_count
             
-            particles_log_likelihoods = particles_log_likelihoods + np.log(np.array(instant_IRC_likelihood))
-            particles_distribution = np.multiply(particles_distribution, np.array(instant_PF_likelihood))
+            particles_log_likelihoods = particles_log_likelihoods + np.log(np.array(instant_likelihood))
+            particles_distribution = np.multiply(particles_distribution, np.array(instant_likelihood))
             particles_distribution = particles_distribution/np.sum(particles_distribution)
             
             if time%sampling_freq == 0 or time == len(lick_actions) - 1: #H1
@@ -269,27 +262,17 @@ class ParticleFilter():
     def compute_posterior(self, particle_filter_IO):
         generated_actions = [list(generated_episode['actions']) for generated_episode in particle_filter_IO['output']['generated_episodes']]
         element_counts = Counter([tuple(action_seq) for action_seq in generated_actions])
-        IRC_log_likelihood_ranked, PF_posterior_ranked, attention_seq_ranked, action_seq_ranked = [], [], [], []
+        posterior_ranked, attention_seq_ranked = [], []
         for action_seq, count in element_counts.items():
-            PF_posterior_ranked.append(count)
-            action_seq_ranked.append(np.array(action_seq))
+            posterior_ranked.append(count)
             attention_seq_ranked.append(np.array(action_seq)%self.env.no_attention_modes)
-            IRC_log_likelihood_ranked.append(particle_filter_IO['output']['particles_log_likelihoods'][generated_actions.index(list(action_seq))])
-        PF_posterior_ranked = np.array(PF_posterior_ranked)/sum(PF_posterior_ranked)
-        IRC_based_posterior_ranked = np.exp(np.array(IRC_log_likelihood_ranked))
-        IRC_based_posterior_ranked = IRC_based_posterior_ranked/np.sum(IRC_based_posterior_ranked)
-        sorted_ind = np.argsort(-1 * PF_posterior_ranked)
-        PF_posterior_ranked = PF_posterior_ranked[sorted_ind]
+        posterior_ranked = np.array(posterior_ranked)/sum(posterior_ranked)
+        sorted_ind = np.argsort(-1 * posterior_ranked)
+        posterior_ranked = posterior_ranked[sorted_ind]
         attention_seq_ranked = [list(attention_seq_ranked[ind]) for ind in sorted_ind]
-        action_seq_ranked = [list(action_seq_ranked[ind]) for ind in sorted_ind]
-        IRC_log_likelihood_ranked = np.array(IRC_log_likelihood_ranked)[sorted_ind]
-        IRC_based_posterior_ranked = IRC_based_posterior_ranked[sorted_ind]
-        particle_filter_IO['output']['sorted_results'] = {}
-        particle_filter_IO['output']['sorted_results']['PF_posterior_ranked'] = PF_posterior_ranked
-        particle_filter_IO['output']['sorted_results']['attention_seq_ranked'] = attention_seq_ranked
-        particle_filter_IO['output']['sorted_results']['action_seq_ranked'] = action_seq_ranked
-        particle_filter_IO['output']['sorted_results']['IRC_based_posterior_ranked'] = IRC_based_posterior_ranked
-        particle_filter_IO['output']['sorted_results']['IRC_log_likelihood_ranked'] = IRC_log_likelihood_ranked
+        particle_filter_IO['output']['posterior'] = {}
+        particle_filter_IO['output']['posterior']['posterior_ranked'] = posterior_ranked
+        particle_filter_IO['output']['posterior']['attention_seq_ranked'] = attention_seq_ranked
         return particle_filter_IO
 
     def plot_generated_episode(self, file_name, likelihood_rank, nodes_from_zero = 40, time_steps_before_lick = 20):
@@ -300,8 +283,8 @@ class ParticleFilter():
 
 class PF_results_analyzer():
 
-    def __init__(self, PF_file_name, likelihood_rank = 0):
-        self.particle_filter_IO = open_pickle_file(PF_file_name)
+    def __init__(self, file_name, likelihood_rank = 0):
+        self.particle_filter_IO = open_pickle_file(file_name)
         self.likelihood_rank = likelihood_rank
    
     def return_pf_results(self):
@@ -363,26 +346,9 @@ class PF_results_analyzer():
             plt.show()
     
     def plot_posterior(self):
-        PF_posterior_ranked = self.particle_filter_IO['output']['sorted_results']['PF_posterior_ranked']
-        IRC_based_posterior_ranked = self.particle_filter_IO['output']['sorted_results']['IRC_based_posterior_ranked']
-        plt.stem(PF_posterior_ranked)
+        plt.stem(self.particle_filter_IO['output']['posterior']['posterior_ranked'])
         plt.xlabel('Attention sequence')
         plt.ylabel('PF posterior')
-        plt.show()
-        plt.stem(IRC_based_posterior_ranked)
-        plt.xlabel('Attention sequence')
-        plt.ylabel('IRC based posterior')
-        plt.show()
-        plt.scatter(PF_posterior_ranked, IRC_based_posterior_ranked)
-        plt.plot(PF_posterior_ranked, PF_posterior_ranked, 'r')
-        plt.xlabel('PF posterior ranked')
-        plt.ylabel('IRC based posterior ranked')
-        plt.show()
-    
-    def plot_IRC_likelihood_across_particles(self):
-        plt.stem(self.particle_filter_IO['output']['sorted_results']['IRC_log_likelihood_ranked'])
-        plt.xlabel('Attention sequence')
-        plt.ylabel('IRC log likelihood')
         plt.show()
     
     def print_repetition_dicitonary(self):
@@ -426,7 +392,6 @@ class PF_results_analyzer():
         self.plot_actions()
         self.plot_beliefs()
         self.plot_posterior()
-        self.plot_IRC_likelihood_across_particles()
         # self.check_for_different_trajectories()
         # self.plot_absolute_particle_log_likelihood()
         self.print_repetition_dicitonary()

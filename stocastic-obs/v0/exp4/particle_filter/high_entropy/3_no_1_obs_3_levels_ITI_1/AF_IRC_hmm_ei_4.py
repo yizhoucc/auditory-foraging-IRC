@@ -28,7 +28,7 @@ episode = temp_particle_filter_IO['input']['root_episode']
 
 ###################################
 
-end_index = 4
+end_index = 2
 
 ###################################
 
