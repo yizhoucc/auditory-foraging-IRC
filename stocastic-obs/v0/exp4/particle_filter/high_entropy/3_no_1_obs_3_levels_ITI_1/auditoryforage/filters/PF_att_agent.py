@@ -15,7 +15,7 @@ import multiprocessing
 
 class ParticleFilter():
 
-    def __init__(self, agent, env, default_no_particles = 100, default_sampling_freq = 1, verbose = False):
+    def __init__(self, agent_list, env, default_no_particles = 100, default_sampling_freq = 1, verbose = False):
         r"""Performs particle filter to generate attention and observation sequences.
 
         Args
@@ -29,7 +29,7 @@ class ParticleFilter():
 
         """
         
-        self.agent = agent
+        self.agent_list = agent_list
         self.env = env
         self.no_particles = default_no_particles
         self.sampling_freq = default_sampling_freq
@@ -67,6 +67,13 @@ class ParticleFilter():
         if do_save: self.save_filter_output(PF_IO, end_index)
         return PF_IO
 
+    def distribute_particles_to_agents(self, no_particles, no_agents):
+        quotient, remainder = divmod(no_particles, no_agents)
+        no_particles_for_agents = [quotient] * no_agents
+        for ind in range(remainder):
+            no_particles_for_agents[ind] += 1
+        return no_particles_for_agents
+    
     def filter(self, lick_actions, state_list, no_particles = None, sampling_freq = None, do_save = False):
         r"""Performs particle filter to generate attention and observation sequences.
 
@@ -99,14 +106,18 @@ class ParticleFilter():
                     the list is in decreasing order of particles' likelihoods. 
         """
             
-        agent = self.agent
+        agent_list = self.agent_list
         env = self.env
         verbose = self.verbose
         no_particles = self.no_particles if no_particles is None else no_particles
         sampling_freq = self.sampling_freq if sampling_freq is None else sampling_freq
+        no_particles_for_agents = self.distribute_particles_to_agents(no_particles, len(agent_list))
         
-        _to_restore_train = agent.algo.policy.training 
-        agent.algo.policy.set_training_mode(False)
+        _to_restore_train_list = []
+        for agent in agent_list: 
+            _to_restore_train_list.append(agent.algo.policy.training)
+            agent.algo.policy.set_training_mode(False)
+        
         observation_matrix = env.find_observation_matrix()
         env.state = state_list[0]
         observation = env.observe_step(0) #A1
@@ -114,6 +125,9 @@ class ParticleFilter():
         belief_list = [[belief] for _ in range(no_particles)]
         observation = observation[0]
         particles_observation_probs = [1 for _ in range(no_particles)] #A1
+        particles_agents = []
+        for ind in range(len(agent_list)):
+            particles_agents += no_particles_for_agents[ind] * [agent_list[ind]]
         observation_list = [[[observation]] for _ in range(no_particles)]        
         particles_distribution = 1/no_particles * np.ones(no_particles)
         particles_log_likelihoods = np.zeros(no_particles)
@@ -135,9 +149,9 @@ class ParticleFilter():
                 
                 for particle in range(no_particles):
                     if not overdue_status[particle]:
-                        action, _ = agent.algo.predict(belief_list[particle][-1]) #C1
+                        action, _ = particles_agents[particle].algo.predict(belief_list[particle][-1]) #C1
                         action_list[particle].append(action.item())
-                        instant_action_probs = agent.agent_action_distribution(np.array([belief_list[particle][-1]]))[0]
+                        instant_action_probs = particles_agents[particle].agent_action_distribution(np.array([belief_list[particle][-1]]))[0]
                         if lick_actions[time] == 1:
                             if action >= env.no_attention_modes:
                                 particle_action_prob = instant_action_probs[action]/sum(instant_action_probs[env.no_attention_modes:])
@@ -195,6 +209,7 @@ class ParticleFilter():
             
             if time%sampling_freq == 0 or time == len(lick_actions) - 1: #H1
                 overdue_status = [False for _ in range(no_particles)]
+                temp_particles_agents = [[] for _ in range(no_particles)]
                 temp_observation_list = [[] for _ in range(no_particles)]
                 temp_belief_list = [[] for _ in range(no_particles)]
                 temp_action_list = [[] for _ in range(no_particles)]
@@ -202,11 +217,13 @@ class ParticleFilter():
                 temp_particles_observation_probs = [[] for _ in range(no_particles)]
                 for particle in range(no_particles):
                     chosen_particle = np.random.choice(no_particles, p = particles_distribution)
+                    temp_particles_agents[particle] = particles_agents[chosen_particle]
                     temp_observation_list[particle] = copy.deepcopy(observation_list[chosen_particle])
                     temp_belief_list[particle] = copy.deepcopy(belief_list[chosen_particle])
                     temp_action_list[particle] = copy.deepcopy(action_list[chosen_particle])
                     temp_particles_log_likelihoods[particle] = particles_log_likelihoods[chosen_particle]
                     temp_particles_observation_probs[particle] = particles_observation_probs[chosen_particle]
+                particles_agents = temp_particles_agents
                 observation_list = copy.deepcopy(temp_observation_list)
                 belief_list = copy.deepcopy(temp_belief_list)
                 action_list = copy.deepcopy(temp_action_list)
@@ -214,7 +231,8 @@ class ParticleFilter():
                 particles_log_likelihoods = np.array(temp_particles_log_likelihoods)
                 particles_distribution = 1/no_particles * np.ones(no_particles)
         
-        agent.algo.policy.set_training_mode(_to_restore_train) 
+        for ind in range(len(agent_list)): 
+            agent_list[ind].algo.policy.set_training_mode(_to_restore_train_list[ind])
         
         particle_filter_output = {}
         generated_episodes = []
@@ -232,6 +250,7 @@ class ParticleFilter():
         particle_filter_output['particles_log_likelihoods'] = particles_log_likelihoods[sorted_indices]
         particle_filter_output['sampling_count_tracker'] = sampling_count_tracker
         particle_filter_output['filter_specs'] = {'no_particles': no_particles, 'sampling_freq': sampling_freq}
+        particle_filter_output['particles_agents'] = [particles_agents[ind] for ind in sorted_indices]
         PF_IO = self.package_PF_IO(particle_filter_output, state_list, lick_actions)
         if do_save: self.save_filter_output(PF_IO)
         return PF_IO
@@ -245,7 +264,7 @@ class ParticleFilter():
     def save_filter_output(self, PF_IO, end_index):
         no_particles = PF_IO['output']['filter_specs']['no_particles']
         sampling_freq = PF_IO['output']['filter_specs']['sampling_freq']
-        store_folder = 'store/filters/PF_attention/'
+        store_folder = 'store/filters/PF_att_agent/'
         if not os.path.exists(store_folder): os.makedirs(store_folder)
         file_name = store_folder + f'PF_np_{no_particles}_sf_{sampling_freq}_ei_{end_index}_rn_{np.random.randint(0,100)}.pkl'
         save_pickle_file(PF_IO, file_name)
@@ -264,32 +283,52 @@ class ParticleFilter():
             print(f'Completed filter with no_particles = {no_particles} and sampling_freq = {sampling_freq}.', flush = True)
         no_particles_sampling_freq_tuples_list = list(product(no_particles_list, sampling_freq_list))
         with multiprocessing.Pool() as pool:
-            pool.map(run_and_save_particle_filter, no_particles_sampling_freq_tuples_list)
-
+            pool.map(run_and_save_particle_filter, no_particles_sampling_freq_tuples_list) 
+    
     def compute_posterior(self, PF_IO):
         generated_actions = [list(generated_episode['actions']) for generated_episode in PF_IO['output']['generated_episodes']]
-        element_counts = Counter([tuple(action_seq) for action_seq in generated_actions])
-        IRC_log_likelihood_ranked, PF_posterior_ranked, attention_seq_ranked, action_seq_ranked = [], [], [], []
-        for action_seq, count in element_counts.items():
-            PF_posterior_ranked.append(count)
-            action_seq_ranked.append(np.array(action_seq))
-            attention_seq_ranked.append(np.array(action_seq)%self.env.no_attention_modes)
-            IRC_log_likelihood_ranked.append(PF_IO['output']['particles_log_likelihoods'][generated_actions.index(list(action_seq))])
-        PF_posterior_ranked = np.array(PF_posterior_ranked)/sum(PF_posterior_ranked)
-        IRC_based_posterior_ranked = np.exp(np.array(IRC_log_likelihood_ranked))
-        IRC_based_posterior_ranked = IRC_based_posterior_ranked/np.sum(IRC_based_posterior_ranked)
-        sorted_ind = np.argsort(-1 * PF_posterior_ranked)
-        PF_posterior_ranked = PF_posterior_ranked[sorted_ind]
-        attention_seq_ranked = [list(attention_seq_ranked[ind]) for ind in sorted_ind]
-        action_seq_ranked = [list(action_seq_ranked[ind]) for ind in sorted_ind]
-        IRC_log_likelihood_ranked = np.array(IRC_log_likelihood_ranked)[sorted_ind]
-        IRC_based_posterior_ranked = IRC_based_posterior_ranked[sorted_ind]
+        particles_agents = PF_IO['output']['particles_agents']
+        generated_agents_actions = [tuple(list(generated_actions[ind]) + [particles_agents[ind]]) for ind in len(range(particles_agents))]
+        def find_posterior_wrt(latent_variable):
+            latent_variable_ranked, PF_posterior_ranked, temp_dict = [], [], {}
+            if latent_variable == 'attention':
+                latent_variable_hashed = [tuple(action_seq) for action_seq in generated_actions]
+                element_counts = Counter(latent_variable_hashed)
+                for latent_variable_instance, count in element_counts.items():
+                    PF_posterior_ranked.append(count)
+                    chosen_index = latent_variable_hashed.index(latent_variable_instance)
+                    temp_dict['actions'] = np.array(generated_actions[chosen_index])
+                    temp_dict['attentions'] = temp_dict['actions']%self.env.no_attention_modes
+                    latent_variable_ranked.append(temp_dict)
+            elif latent_variable == 'agent':
+                latent_variable_hashed = particles_agents
+                element_counts = Counter(latent_variable_hashed)
+                for latent_variable_instance, count in element_counts.items():
+                    PF_posterior_ranked.append(count)
+                    chosen_index = latent_variable_hashed.index(latent_variable_instance)
+                    latent_variable_ranked.append(particles_agents[chosen_index])
+            elif latent_variable == 'att_agent':
+                latent_variable_hashed = generated_agents_actions
+                element_counts = Counter(latent_variable_hashed)
+                for latent_variable_instance, count in element_counts.items():
+                    PF_posterior_ranked.append(count)
+                    chosen_index = latent_variable_hashed.index(latent_variable_instance)
+                    temp_dict['actions'] = np.array(generated_actions[chosen_index])
+                    temp_dict['attentions'] = temp_dict['actions']%self.env.no_attention_modes
+                    temp_dict['agent'] = particles_agents[chosen_index]
+                    latent_variable_ranked.append(temp_dict)
+            PF_posterior_ranked = np.array(PF_posterior_ranked)/sum(PF_posterior_ranked)
+            sorted_ind = np.argsort(-1 * PF_posterior_ranked)
+            PF_posterior_ranked = PF_posterior_ranked[sorted_ind]
+            latent_variable_ranked = [latent_variable_ranked[ind] for ind in sorted_ind]
+            return latent_variable_ranked, PF_posterior_ranked
+        latent_variables_list = ['attention', 'agent', 'att_agent']
         PF_IO['output']['sorted_results'] = {}
-        PF_IO['output']['sorted_results']['PF_posterior_ranked'] = PF_posterior_ranked
-        PF_IO['output']['sorted_results']['attention_seq_ranked'] = attention_seq_ranked
-        PF_IO['output']['sorted_results']['action_seq_ranked'] = action_seq_ranked
-        PF_IO['output']['sorted_results']['IRC_based_posterior_ranked'] = IRC_based_posterior_ranked
-        PF_IO['output']['sorted_results']['IRC_log_likelihood_ranked'] = IRC_log_likelihood_ranked
+        for latent_variable in latent_variables_list:
+            latent_variable_ranked, PF_posterior_ranked = self.find_posterior_wrt(latent_variable)
+            PF_IO['output']['sorted_results'][latent_variable] = {}
+            PF_IO['output']['sorted_results'][latent_variable][latent_variable + '_ranked'] = latent_variable_ranked
+            PF_IO['output']['sorted_results'][latent_variable]['PF_posterior_ranked'] = PF_posterior_ranked    
         return PF_IO
 
     def plot_generated_episode(self, file_name, likelihood_rank, nodes_from_zero = 40, time_steps_before_lick = 20):
