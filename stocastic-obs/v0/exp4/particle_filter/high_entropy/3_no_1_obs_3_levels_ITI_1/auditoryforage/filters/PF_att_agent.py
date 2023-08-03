@@ -291,27 +291,12 @@ class ParticleFilter():
         if latent_variable == 'attention':
             latent_variable_hashed = [tuple(action_seq) for action_seq in generated_actions]
             element_counts = Counter(latent_variable_hashed)
-
-            print(f'element counts was {element_counts}\n')
-
-
             for latent_variable_instance, count in element_counts.items():
                 PF_posterior_ranked.append(copy.deepcopy(count))
                 chosen_index = latent_variable_hashed.index(latent_variable_instance)
-
-                print(f'chose index was {chosen_index}\n')
-                print(f'action was {generated_actions[chosen_index]}\n')
-                print('\n')
-
-
                 temp_dict['actions'] = np.array(generated_actions[chosen_index])
                 temp_dict['attentions'] = temp_dict['actions']%self.env.no_attention_modes
-                
-                print(temp_dict['actions'])
-                
                 latent_variable_ranked.append(copy.deepcopy(temp_dict))
-
-                print(f'Printing at this point {latent_variable_ranked}')
         
         elif latent_variable == 'agent':
             latent_variable_hashed = particles_agents
@@ -333,16 +318,7 @@ class ParticleFilter():
         PF_posterior_ranked = np.array(PF_posterior_ranked)/sum(PF_posterior_ranked)
         sorted_ind = np.argsort(-1 * PF_posterior_ranked)
         PF_posterior_ranked = PF_posterior_ranked[sorted_ind]
-
-        if latent_variable == 'attention': 
-            print(latent_variable_ranked)
-
         latent_variable_ranked = [latent_variable_ranked[ind] for ind in sorted_ind]
-
-        if latent_variable == 'attention': 
-            print(sorted_ind)
-            print(latent_variable_ranked)
-        
         return latent_variable_ranked, PF_posterior_ranked
     
     def compute_posterior(self, PF_IO):
@@ -428,22 +404,14 @@ class PF_results_analyzer():
             plt.stem(self.PF_IO['output']['particles_log_likelihoods'])
             plt.show()
     
-    def plot_posterior(self):
-        PF_posterior_ranked = self.PF_IO['output']['sorted_results']['PF_posterior_ranked']
-        IRC_based_posterior_ranked = self.PF_IO['output']['sorted_results']['IRC_based_posterior_ranked']
-        plt.stem(PF_posterior_ranked)
-        plt.xlabel('Attention sequence')
-        plt.ylabel('PF posterior')
-        plt.show()
-        plt.stem(IRC_based_posterior_ranked)
-        plt.xlabel('Attention sequence')
-        plt.ylabel('IRC based posterior')
-        plt.show()
-        plt.scatter(PF_posterior_ranked, IRC_based_posterior_ranked)
-        plt.plot(PF_posterior_ranked, PF_posterior_ranked, 'r')
-        plt.xlabel('PF posterior ranked')
-        plt.ylabel('IRC based posterior ranked')
-        plt.show()
+    def plot_posterior(self):    
+        latent_variables_list = ['attention', 'agent', 'att_agent']
+        for variable in latent_variables_list:
+            PF_posterior = self.PF_IO['output']['sorted_results'][variable]['PF_posterior_ranked']
+            plt.stem(PF_posterior)
+            plt.xlabel(variable + ' sequence')
+            plt.ylabel(variable + '_PF_posterior_ranked')
+            plt.show()
     
     def plot_IRC_likelihood_across_particles(self):
         plt.stem(self.PF_IO['output']['sorted_results']['IRC_log_likelihood_ranked'])
@@ -492,7 +460,7 @@ class PF_results_analyzer():
         self.plot_actions()
         self.plot_beliefs()
         self.plot_posterior()
-        self.plot_IRC_likelihood_across_particles()
+        # self.plot_IRC_likelihood_across_particles()
         # self.check_for_different_trajectories()
         # self.plot_absolute_particle_log_likelihood()
         self.print_repetition_dicitonary()
