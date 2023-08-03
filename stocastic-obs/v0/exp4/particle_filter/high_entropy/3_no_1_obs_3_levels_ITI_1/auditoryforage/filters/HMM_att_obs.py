@@ -99,7 +99,7 @@ class HMM():
         attention_series_list = self.possible_attention_series()
         posterior_list = []
         for attention_series in attention_series_list:
-            posterior_list.append(self.compute_posterior_for_given_attention_series(attention_series))
+            posterior_list.append(copy.deepcopy(self.compute_posterior_for_given_attention_series(attention_series)))
         self.agent.algo.policy.set_training_mode(_to_restore_train)
         sorted_indices = list(np.argsort(-1 * np.array(posterior_list)))
         attention_series_list = [attention_series_list[ind] for ind in sorted_indices]
@@ -116,7 +116,7 @@ class HMM():
         obs_attention_series_list = self.possible_obs_attention_series()
         posterior_list = []
         for obs_attention_series in obs_attention_series_list:
-            posterior_list.append(self.compute_posterior_for_given_obs_attention_series(obs_attention_series))
+            posterior_list.append(copy.deepcopy(self.compute_posterior_for_given_obs_attention_series(obs_attention_series)))
         self.agent.algo.policy.set_training_mode(_to_restore_train)
         sorted_indices = list(np.argsort(-1 * np.array(posterior_list)))
         obs_attention_series_list = [obs_attention_series_list[ind] for ind in sorted_indices]
@@ -139,9 +139,9 @@ def plot_PF_HMM_comparison(PF_IO, HMM_IO):
         temp_dict['observations'] = []
         temp_dict['attentions'] = []
         for obs_attention_pair in obs_attention_series:
-            temp_dict['observations'].append([obs_attention_pair[0]])
-            temp_dict['attentions'].append(obs_attention_pair[1])
-        HMM_obs_attention_seq.append(temp_dict)
+            temp_dict['observations'].append(copy.deepcopy([obs_attention_pair[0]]))
+            temp_dict['attentions'].append(copy.deepcopy(obs_attention_pair[1]))
+        HMM_obs_attention_seq.append(copy.deepcopy(temp_dict))
     PF_obs_attention_seq_ranked = copy.deepcopy(PF_action_obs_seq_ranked)
     for dict_elt in PF_obs_attention_seq_ranked:
         dict_elt['attentions'] = list(dict_elt['attentions'])
@@ -152,8 +152,8 @@ def plot_PF_HMM_comparison(PF_IO, HMM_IO):
     HMM_posterior_arranged_wrt_PF_rank = []
     for PF_obs_attention_seq in PF_obs_attention_seq_ranked:
         HMM_rank = HMM_obs_attention_seq.index(PF_obs_attention_seq)
-        PF_rank_in_HMM.append(HMM_rank)
-        HMM_posterior_arranged_wrt_PF_rank.append(HMM_posterior_list[HMM_rank])
+        PF_rank_in_HMM.append(copy.deepcopy(HMM_rank))
+        HMM_posterior_arranged_wrt_PF_rank.append(copy.deepcopy(HMM_posterior_list[HMM_rank]))
     plt.scatter(PF_posterior_ranked, HMM_posterior_arranged_wrt_PF_rank)
     PF_exact_match = np.linspace(min(PF_posterior_ranked), max(PF_posterior_ranked),len(PF_posterior_ranked))
     plt.plot(PF_exact_match, PF_exact_match, 'r')

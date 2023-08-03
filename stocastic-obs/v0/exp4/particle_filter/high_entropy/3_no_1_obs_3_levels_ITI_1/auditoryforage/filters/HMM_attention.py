@@ -1,4 +1,4 @@
-import os
+import os, copy
 import numpy as np
 from itertools import product
 import matplotlib.pyplot as plt
@@ -94,7 +94,7 @@ class HMM():
         attention_series_list = self.possible_attention_series()
         posterior_list = []
         for attention_series in attention_series_list:
-            posterior_list.append(self.compute_posterior_for_given_attention_series(attention_series))
+            posterior_list.append(copy.deepcopy(self.compute_posterior_for_given_attention_series(attention_series)))
         self.agent.algo.policy.set_training_mode(_to_restore_train)
         sorted_indices = list(np.argsort(-1 * np.array(posterior_list)))
         attention_series_list = [attention_series_list[ind] for ind in sorted_indices]
@@ -115,8 +115,8 @@ def plot_PF_HMM_comparison(particle_filter_IO, HMM_IO):
     for PF_attention_seq in PF_attention_seq_ranked:
         PF_attention_seq = list(PF_attention_seq)
         HMM_rank = HMM_attention_series_list.index(PF_attention_seq)
-        PF_rank_in_HMM.append(HMM_rank)
-        HMM_posterior_arranged_wrt_PF_rank.append(HMM_attention_posterior_list[HMM_rank])
+        PF_rank_in_HMM.append(copy.deepcopy(HMM_rank))
+        HMM_posterior_arranged_wrt_PF_rank.append(copy.deepcopy(HMM_attention_posterior_list[HMM_rank]))
     plt.scatter(PF_posterior_ranked, HMM_posterior_arranged_wrt_PF_rank)
     PF_exact_match = np.linspace(min(PF_posterior_ranked), max(PF_posterior_ranked),len(PF_posterior_ranked))
     plt.plot(PF_exact_match, PF_exact_match, 'r')

@@ -150,7 +150,7 @@ class ParticleFilter():
                 for particle in range(no_particles):
                     if not overdue_status[particle]:
                         action, _ = particles_agents[particle].algo.predict(belief_list[particle][-1]) #C1
-                        action_list[particle].append(action.item())
+                        action_list[particle].append(copy.deepcopy(action.item()))
                         instant_action_probs = particles_agents[particle].agent_action_distribution(np.array([belief_list[particle][-1]]))[0]
                         if lick_actions[time] == 1:
                             if action >= env.no_attention_modes:
@@ -166,18 +166,18 @@ class ParticleFilter():
                             raise Exception("Lick actions can only be 0 or 1.")
 
                         # fixed
-                        instant_IRC_likelihood.append(particles_observation_probs[particle] * particle_action_prob)
-                        instant_PF_likelihood.append(np.sign(particle_action_prob))
+                        instant_IRC_likelihood.append(copy.deepcopy(particles_observation_probs[particle] * particle_action_prob))
+                        instant_PF_likelihood.append(copy.deepcopy(np.sign(particle_action_prob)))
 
 
                         _, attention_choice = env.dict_action_possible[int(action)]
                         
                         if time != len(lick_actions) - 1: 
                             observation = env.observe_step(attention_choice)[0] #C2
-                            observation_list[particle].append([observation])
+                            observation_list[particle].append(copy.deepcopy([observation]))
                             particles_observation_probs[particle] = observation_matrix[observation, env.state, attention_choice]
                             next_belief = env.update_belief(belief_list[particle][-1], action, observation)
-                            belief_list[particle].append(next_belief)
+                            belief_list[particle].append(copy.deepcopy(next_belief))
                             if next_belief is None:
                                 if particle_action_prob != 0:
                                     raise Exception('Error: Liklihood should have been zero when wrong belief update happens!')
@@ -245,12 +245,13 @@ class ParticleFilter():
             temp_dict['observations'] = np.array(observation_list[ind])
             temp_dict['q_probs'] = np.array(belief_list[ind])
             temp_dict['num_steps'] =  len(temp_dict['actions'])
-            generated_episodes.append(temp_dict)
+            generated_episodes.append(copy.deepcopy(temp_dict))
         particle_filter_output['generated_episodes'] = generated_episodes
         particle_filter_output['particles_log_likelihoods'] = particles_log_likelihoods[sorted_indices]
         particle_filter_output['sampling_count_tracker'] = sampling_count_tracker
         particle_filter_output['filter_specs'] = {'no_particles': no_particles, 'sampling_freq': sampling_freq}
-        particle_filter_output['particles_agents'] = [particles_agents[ind] for ind in sorted_indices]
+        # particle_filter_output['particles_agents'] = [particles_agents[ind] for ind in sorted_indices]
+        particle_filter_output['particles_agents'] = [agent_list.index(particles_agents[ind]) for ind in sorted_indices]
         PF_IO = self.package_PF_IO(particle_filter_output, state_list, lick_actions)
         if do_save: self.save_filter_output(PF_IO)
         return PF_IO
@@ -285,47 +286,73 @@ class ParticleFilter():
         with multiprocessing.Pool() as pool:
             pool.map(run_and_save_particle_filter, no_particles_sampling_freq_tuples_list) 
     
+    def find_posterior_wrt(self, latent_variable, generated_actions, particles_agents, generated_agents_actions):
+        latent_variable_ranked, PF_posterior_ranked, temp_dict = [], [], {}
+        if latent_variable == 'attention':
+            latent_variable_hashed = [tuple(action_seq) for action_seq in generated_actions]
+            element_counts = Counter(latent_variable_hashed)
+
+            print(f'element counts was {element_counts}\n')
+
+
+            for latent_variable_instance, count in element_counts.items():
+                PF_posterior_ranked.append(copy.deepcopy(count))
+                chosen_index = latent_variable_hashed.index(latent_variable_instance)
+
+                print(f'chose index was {chosen_index}\n')
+                print(f'action was {generated_actions[chosen_index]}\n')
+                print('\n')
+
+
+                temp_dict['actions'] = np.array(generated_actions[chosen_index])
+                temp_dict['attentions'] = temp_dict['actions']%self.env.no_attention_modes
+                
+                print(temp_dict['actions'])
+                
+                latent_variable_ranked.append(copy.deepcopy(temp_dict))
+
+                print(f'Printing at this point {latent_variable_ranked}')
+        
+        elif latent_variable == 'agent':
+            latent_variable_hashed = particles_agents
+            element_counts = Counter(latent_variable_hashed)
+            for latent_variable_instance, count in element_counts.items():
+                PF_posterior_ranked.append(copy.deepcopy(count))
+                chosen_index = latent_variable_hashed.index(latent_variable_instance)
+                latent_variable_ranked.append(copy.deepcopy(particles_agents[chosen_index]))
+        elif latent_variable == 'att_agent':
+            latent_variable_hashed = generated_agents_actions
+            element_counts = Counter(latent_variable_hashed)
+            for latent_variable_instance, count in element_counts.items():
+                PF_posterior_ranked.append(copy.deepcopy(count))
+                chosen_index = latent_variable_hashed.index(latent_variable_instance)
+                temp_dict['actions'] = np.array(generated_actions[chosen_index])
+                temp_dict['attentions'] = temp_dict['actions']%self.env.no_attention_modes
+                temp_dict['agent'] = particles_agents[chosen_index]
+                latent_variable_ranked.append(copy.deepcopy(temp_dict))
+        PF_posterior_ranked = np.array(PF_posterior_ranked)/sum(PF_posterior_ranked)
+        sorted_ind = np.argsort(-1 * PF_posterior_ranked)
+        PF_posterior_ranked = PF_posterior_ranked[sorted_ind]
+
+        if latent_variable == 'attention': 
+            print(latent_variable_ranked)
+
+        latent_variable_ranked = [latent_variable_ranked[ind] for ind in sorted_ind]
+
+        if latent_variable == 'attention': 
+            print(sorted_ind)
+            print(latent_variable_ranked)
+        
+        return latent_variable_ranked, PF_posterior_ranked
+    
     def compute_posterior(self, PF_IO):
         generated_actions = [list(generated_episode['actions']) for generated_episode in PF_IO['output']['generated_episodes']]
         particles_agents = PF_IO['output']['particles_agents']
-        generated_agents_actions = [tuple(list(generated_actions[ind]) + [particles_agents[ind]]) for ind in len(range(particles_agents))]
-        def find_posterior_wrt(latent_variable):
-            latent_variable_ranked, PF_posterior_ranked, temp_dict = [], [], {}
-            if latent_variable == 'attention':
-                latent_variable_hashed = [tuple(action_seq) for action_seq in generated_actions]
-                element_counts = Counter(latent_variable_hashed)
-                for latent_variable_instance, count in element_counts.items():
-                    PF_posterior_ranked.append(count)
-                    chosen_index = latent_variable_hashed.index(latent_variable_instance)
-                    temp_dict['actions'] = np.array(generated_actions[chosen_index])
-                    temp_dict['attentions'] = temp_dict['actions']%self.env.no_attention_modes
-                    latent_variable_ranked.append(temp_dict)
-            elif latent_variable == 'agent':
-                latent_variable_hashed = particles_agents
-                element_counts = Counter(latent_variable_hashed)
-                for latent_variable_instance, count in element_counts.items():
-                    PF_posterior_ranked.append(count)
-                    chosen_index = latent_variable_hashed.index(latent_variable_instance)
-                    latent_variable_ranked.append(particles_agents[chosen_index])
-            elif latent_variable == 'att_agent':
-                latent_variable_hashed = generated_agents_actions
-                element_counts = Counter(latent_variable_hashed)
-                for latent_variable_instance, count in element_counts.items():
-                    PF_posterior_ranked.append(count)
-                    chosen_index = latent_variable_hashed.index(latent_variable_instance)
-                    temp_dict['actions'] = np.array(generated_actions[chosen_index])
-                    temp_dict['attentions'] = temp_dict['actions']%self.env.no_attention_modes
-                    temp_dict['agent'] = particles_agents[chosen_index]
-                    latent_variable_ranked.append(temp_dict)
-            PF_posterior_ranked = np.array(PF_posterior_ranked)/sum(PF_posterior_ranked)
-            sorted_ind = np.argsort(-1 * PF_posterior_ranked)
-            PF_posterior_ranked = PF_posterior_ranked[sorted_ind]
-            latent_variable_ranked = [latent_variable_ranked[ind] for ind in sorted_ind]
-            return latent_variable_ranked, PF_posterior_ranked
+        generated_agents_actions = [tuple(list(generated_actions[ind]) + [particles_agents[ind]]) for ind in range(len(particles_agents))]
         latent_variables_list = ['attention', 'agent', 'att_agent']
         PF_IO['output']['sorted_results'] = {}
         for latent_variable in latent_variables_list:
-            latent_variable_ranked, PF_posterior_ranked = self.find_posterior_wrt(latent_variable)
+            latent_variable_ranked, PF_posterior_ranked = self.find_posterior_wrt(latent_variable, generated_actions, particles_agents, generated_agents_actions)
             PF_IO['output']['sorted_results'][latent_variable] = {}
             PF_IO['output']['sorted_results'][latent_variable][latent_variable + '_ranked'] = latent_variable_ranked
             PF_IO['output']['sorted_results'][latent_variable]['PF_posterior_ranked'] = PF_posterior_ranked    
@@ -448,7 +475,7 @@ class PF_results_analyzer():
             diff_in_actions = np.sum(np.abs(a-b))/len(a)
         if not did_it_converge:
             matching_indices.append(0)
-            matching_indices.append(ind)
+            matching_indices.append(copy.deepcopy(ind))
             print(f'\n Found at least two particles with different trajectories, namely particle {ind} and particle 0.')
             print(f'Rate of absolute difference in actions between them is {diff_in_actions} per time step.')
         return matching_indices

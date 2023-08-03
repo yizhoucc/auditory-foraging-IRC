@@ -136,7 +136,7 @@ class ParticleFilter():
                 for particle in range(no_particles):
                     if not overdue_status[particle]:
                         action, _ = agent.algo.predict(belief_list[particle][-1]) #C1
-                        action_list[particle].append(action.item())
+                        action_list[particle].append(copy.deepcopy(action.item()))
                         instant_action_probs = agent.agent_action_distribution(np.array([belief_list[particle][-1]]))[0]
                         if lick_actions[time] == 1:
                             if action >= env.no_attention_modes:
@@ -152,18 +152,18 @@ class ParticleFilter():
                             raise Exception("Lick actions can only be 0 or 1.")
 
                         # fixed
-                        instant_IRC_likelihood.append(particles_observation_probs[particle] * particle_action_prob)
-                        instant_PF_likelihood.append(np.sign(particle_action_prob))
+                        instant_IRC_likelihood.append(copy.deepcopy(particles_observation_probs[particle] * particle_action_prob))
+                        instant_PF_likelihood.append(copy.deepcopy(np.sign(particle_action_prob)))
 
 
                         _, attention_choice = env.dict_action_possible[int(action)]
                         
                         if time != len(lick_actions) - 1: 
                             observation = env.observe_step(attention_choice)[0] #C2
-                            observation_list[particle].append([observation])
+                            observation_list[particle].append(copy.deepcopy([observation]))
                             particles_observation_probs[particle] = observation_matrix[observation, env.state, attention_choice]
                             next_belief = env.update_belief(belief_list[particle][-1], action, observation)
-                            belief_list[particle].append(next_belief)
+                            belief_list[particle].append(copy.deepcopy(next_belief))
                             if next_belief is None:
                                 if particle_action_prob != 0:
                                     raise Exception('Error: Liklihood should have been zero when wrong belief update happens!')
@@ -227,7 +227,7 @@ class ParticleFilter():
             temp_dict['observations'] = np.array(observation_list[ind])
             temp_dict['q_probs'] = np.array(belief_list[ind])
             temp_dict['num_steps'] =  len(temp_dict['actions'])
-            generated_episodes.append(temp_dict)
+            generated_episodes.append(copy.deepcopy(temp_dict))
         particle_filter_output['generated_episodes'] = generated_episodes
         particle_filter_output['particles_log_likelihoods'] = particles_log_likelihoods[sorted_indices]
         particle_filter_output['sampling_count_tracker'] = sampling_count_tracker
@@ -271,10 +271,10 @@ class ParticleFilter():
         element_counts = Counter([tuple(action_seq) for action_seq in generated_actions])
         IRC_log_likelihood_ranked, PF_posterior_ranked, attention_seq_ranked, action_seq_ranked = [], [], [], []
         for action_seq, count in element_counts.items():
-            PF_posterior_ranked.append(count)
-            action_seq_ranked.append(np.array(action_seq))
-            attention_seq_ranked.append(np.array(action_seq)%self.env.no_attention_modes)
-            IRC_log_likelihood_ranked.append(PF_IO['output']['particles_log_likelihoods'][generated_actions.index(list(action_seq))])
+            PF_posterior_ranked.append(copy.deepcopy(count))
+            action_seq_ranked.append(copy.deepcopy(np.array(action_seq)))
+            attention_seq_ranked.append(copy.deepcopy(np.array(action_seq)%self.env.no_attention_modes))
+            IRC_log_likelihood_ranked.append(copy.deepcopy(PF_IO['output']['particles_log_likelihoods'][generated_actions.index(list(action_seq))]))
         PF_posterior_ranked = np.array(PF_posterior_ranked)/sum(PF_posterior_ranked)
         IRC_based_posterior_ranked = np.exp(np.array(IRC_log_likelihood_ranked))
         IRC_based_posterior_ranked = IRC_based_posterior_ranked/np.sum(IRC_based_posterior_ranked)
@@ -409,7 +409,7 @@ class PF_results_analyzer():
             diff_in_actions = np.sum(np.abs(a-b))/len(a)
         if not did_it_converge:
             matching_indices.append(0)
-            matching_indices.append(ind)
+            matching_indices.append(copy.deepcopy(ind))
             print(f'\n Found at least two particles with different trajectories, namely particle {ind} and particle 0.')
             print(f'Rate of absolute difference in actions between them is {diff_in_actions} per time step.')
         return matching_indices
