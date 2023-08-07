@@ -122,21 +122,25 @@ class ParticleFilter():
         env.state = state_list[0]
         observation = env.observe_step(0) #A1
         belief = env.init_belief(observation)
-        belief_list = [[belief] for _ in range(no_particles)]
+        
+        # belief_list = [[belief] for _ in range(no_particles)]
+        belief_list = [belief for _ in range(no_particles)]
+        
         observation = observation[0]
         particles_observation_probs = [1 for _ in range(no_particles)] #A1
         particles_agents = []
         for ind in range(len(agent_list)):
             particles_agents += no_particles_for_agents[ind] * [agent_list[ind]]
-        observation_list = [[[observation]] for _ in range(no_particles)]        
+        # observation_list = [[[observation]] for _ in range(no_particles)]        
         particles_distribution = 1/no_particles * np.ones(no_particles)
         particles_log_likelihoods = np.zeros(no_particles)
-        action_list = [[] for _ in range(no_particles)]
+        # action_list = [[] for _ in range(no_particles)]
         overdue_status = [False for _ in range(no_particles)]
         sampling_count_tracker = {} 
         
         for time in range(len(lick_actions)):
-            if verbose: print(time)
+            if verbose and time%100 == 0: 
+                print(time)
             if time != len(lick_actions) - 1: env.state = state_list[time + 1]
             step_particle = True
             sampling_count = 0
@@ -149,9 +153,16 @@ class ParticleFilter():
                 
                 for particle in range(no_particles):
                     if not overdue_status[particle]:
-                        action, _ = particles_agents[particle].algo.predict(belief_list[particle][-1]) #C1
-                        action_list[particle].append(copy.deepcopy(action.item()))
-                        instant_action_probs = particles_agents[particle].agent_action_distribution(np.array([belief_list[particle][-1]]))[0]
+                        
+                        # action, _ = particles_agents[particle].algo.predict(belief_list[particle][-1]) #C1
+                        action, _ = particles_agents[particle].algo.predict(belief_list[particle]) #C1
+                        
+                        
+                        # action_list[particle].append(copy.deepcopy(action.item()))
+                        
+                        # instant_action_probs = particles_agents[particle].agent_action_distribution(np.array([belief_list[particle][-1]]))[0]
+                        instant_action_probs = particles_agents[particle].agent_action_distribution(np.array([belief_list[particle]]))[0]
+                        
                         if lick_actions[time] == 1:
                             if action >= env.no_attention_modes:
                                 particle_action_prob = instant_action_probs[action]/sum(instant_action_probs[env.no_attention_modes:])
@@ -174,28 +185,38 @@ class ParticleFilter():
                         
                         if time != len(lick_actions) - 1: 
                             observation = env.observe_step(attention_choice)[0] #C2
-                            observation_list[particle].append(copy.deepcopy([observation]))
+                            # observation_list[particle].append(copy.deepcopy([observation]))
                             particles_observation_probs[particle] = observation_matrix[observation, env.state, attention_choice]
-                            next_belief = env.update_belief(belief_list[particle][-1], action, observation)
-                            belief_list[particle].append(copy.deepcopy(next_belief))
+
+                            # next_belief = env.update_belief(belief_list[particle][-1], action, observation)
+                            next_belief = env.update_belief(belief_list[particle], action, observation)
+
+                            # belief_list[particle].append(copy.deepcopy(next_belief))
+                            belief_list[particle] = copy.deepcopy(next_belief)
+                            
+                            
                             if next_belief is None:
                                 if particle_action_prob != 0:
                                     raise Exception('Error: Liklihood should have been zero when wrong belief update happens!')
                                 else:
                                     overdue_status[particle] = True
                     else:
-                        action_list[particle].append(None)
+                        # action_list[particle].append(None)
                         instant_IRC_likelihood.append(0)
                         instant_PF_likelihood.append(0)
                         if time != len(lick_actions) - 1:
-                            observation_list[particle].append([None])
-                            belief_list[particle].append(None) 
+                            # observation_list[particle].append([None])
+                            
+                            # belief_list[particle].append(None) 
+                            belief_list[particle] = None
                 
                 if sum(instant_PF_likelihood) == 0:
                     if verbose: print(f'Need to sample again for time {time}')
                     for particle_ind in range(len(belief_list)):
-                        action_list[particle_ind] = action_list[particle_ind][:-1]
-                        observation_list[particle_ind] = observation_list[particle_ind][:-1]
+                        # action_list[particle_ind] = action_list[particle_ind][:-1]
+                        # observation_list[particle_ind] = observation_list[particle_ind][:-1]
+
+                        raise Exception("Haven't fixed this properly. Need to store temporarily the previous belief for this.")
                         belief_list[particle_ind] = belief_list[particle_ind][:-1]
                 else:
                     step_particle = False
@@ -210,23 +231,23 @@ class ParticleFilter():
             if time%sampling_freq == 0 or time == len(lick_actions) - 1: #H1
                 overdue_status = [False for _ in range(no_particles)]
                 temp_particles_agents = [[] for _ in range(no_particles)]
-                temp_observation_list = [[] for _ in range(no_particles)]
+                # temp_observation_list = [[] for _ in range(no_particles)]
                 temp_belief_list = [[] for _ in range(no_particles)]
-                temp_action_list = [[] for _ in range(no_particles)]
+                # temp_action_list = [[] for _ in range(no_particles)]
                 temp_particles_log_likelihoods = [[] for _ in range(no_particles)]
                 temp_particles_observation_probs = [[] for _ in range(no_particles)]
                 for particle in range(no_particles):
                     chosen_particle = np.random.choice(no_particles, p = particles_distribution)
                     temp_particles_agents[particle] = particles_agents[chosen_particle]
-                    temp_observation_list[particle] = copy.deepcopy(observation_list[chosen_particle])
+                    # temp_observation_list[particle] = copy.deepcopy(observation_list[chosen_particle])
                     temp_belief_list[particle] = copy.deepcopy(belief_list[chosen_particle])
-                    temp_action_list[particle] = copy.deepcopy(action_list[chosen_particle])
+                    # temp_action_list[particle] = copy.deepcopy(action_list[chosen_particle])
                     temp_particles_log_likelihoods[particle] = particles_log_likelihoods[chosen_particle]
                     temp_particles_observation_probs[particle] = particles_observation_probs[chosen_particle]
                 particles_agents = temp_particles_agents
-                observation_list = copy.deepcopy(temp_observation_list)
+                # observation_list = copy.deepcopy(temp_observation_list)
                 belief_list = copy.deepcopy(temp_belief_list)
-                action_list = copy.deepcopy(temp_action_list)
+                # action_list = copy.deepcopy(temp_action_list)
                 particles_observation_probs = copy.deepcopy(temp_particles_observation_probs)
                 particles_log_likelihoods = np.array(temp_particles_log_likelihoods)
                 particles_distribution = 1/no_particles * np.ones(no_particles)
@@ -241,16 +262,15 @@ class ParticleFilter():
         for ind in sorted_indices:
             temp_dict = {}
             temp_dict['states'] = episode_states
-            temp_dict['actions'] = np.array(action_list[ind])
-            temp_dict['observations'] = np.array(observation_list[ind])
-            temp_dict['q_probs'] = np.array(belief_list[ind])
-            temp_dict['num_steps'] =  len(temp_dict['actions'])
+            # temp_dict['actions'] = np.array(action_list[ind])
+            # temp_dict['observations'] = np.array(observation_list[ind])
+            # temp_dict['q_probs'] = np.array(belief_list[ind])
+            # temp_dict['num_steps'] =  len(temp_dict['actions'])
             generated_episodes.append(copy.deepcopy(temp_dict))
         particle_filter_output['generated_episodes'] = generated_episodes
         particle_filter_output['particles_log_likelihoods'] = particles_log_likelihoods[sorted_indices]
         particle_filter_output['sampling_count_tracker'] = sampling_count_tracker
         particle_filter_output['filter_specs'] = {'no_particles': no_particles, 'sampling_freq': sampling_freq}
-        # particle_filter_output['particles_agents'] = [particles_agents[ind] for ind in sorted_indices]
         particle_filter_output['particles_agents'] = [agent_list.index(particles_agents[ind]) for ind in sorted_indices]
         PF_IO = self.package_PF_IO(particle_filter_output, state_list, lick_actions)
         if do_save: self.save_filter_output(PF_IO)
@@ -265,7 +285,7 @@ class ParticleFilter():
     def save_filter_output(self, PF_IO, end_index):
         no_particles = PF_IO['output']['filter_specs']['no_particles']
         sampling_freq = PF_IO['output']['filter_specs']['sampling_freq']
-        store_folder = 'store/filters/PF_att_agent/'
+        store_folder = 'store/filters/PF_agent_lite/'
         if not os.path.exists(store_folder): os.makedirs(store_folder)
         file_name = store_folder + f'PF_np_{no_particles}_sf_{sampling_freq}_ei_{end_index}_rn_{np.random.randint(0,100)}.pkl'
         save_pickle_file(PF_IO, file_name)
@@ -322,13 +342,20 @@ class ParticleFilter():
         return latent_variable_ranked, PF_posterior_ranked
     
     def compute_posterior(self, PF_IO):
-        generated_actions = [list(generated_episode['actions']) for generated_episode in PF_IO['output']['generated_episodes']]
+        # generated_actions = [list(generated_episode['actions']) for generated_episode in PF_IO['output']['generated_episodes']]
         particles_agents = PF_IO['output']['particles_agents']
-        generated_agents_actions = [tuple(list(generated_actions[ind]) + [particles_agents[ind]]) for ind in range(len(particles_agents))]
-        latent_variables_list = ['attention', 'agent', 'att_agent']
+        # generated_agents_actions = [tuple(list(generated_actions[ind]) + [particles_agents[ind]]) for ind in range(len(particles_agents))]
+        
+        # latent_variables_list = ['attention', 'agent', 'att_agent']
+        latent_variables_list = ['agent']
+        
+        
         PF_IO['output']['sorted_results'] = {}
         for latent_variable in latent_variables_list:
-            latent_variable_ranked, PF_posterior_ranked = self.find_posterior_wrt(latent_variable, generated_actions, particles_agents, generated_agents_actions)
+            
+            # latent_variable_ranked, PF_posterior_ranked = self.find_posterior_wrt(latent_variable, generated_actions, particles_agents, generated_agents_actions)
+            latent_variable_ranked, PF_posterior_ranked = self.find_posterior_wrt(latent_variable = latent_variable, generated_actions = None, particles_agents = particles_agents, generated_agents_actions = None)
+            
             PF_IO['output']['sorted_results'][latent_variable] = {}
             PF_IO['output']['sorted_results'][latent_variable][latent_variable + '_ranked'] = latent_variable_ranked
             PF_IO['output']['sorted_results'][latent_variable]['PF_posterior_ranked'] = PF_posterior_ranked    
@@ -405,7 +432,10 @@ class PF_results_analyzer():
             plt.show()
     
     def plot_posterior(self):    
-        latent_variables_list = ['attention', 'agent', 'att_agent']
+        
+        # latent_variables_list = ['attention', 'agent', 'att_agent']
+        latent_variables_list = ['agent']
+        
         for variable in latent_variables_list:
             PF_posterior = self.PF_IO['output']['sorted_results'][variable]['PF_posterior_ranked']
             if variable == 'agent':
@@ -461,8 +491,8 @@ class PF_results_analyzer():
         print(f'\n Avgerage attention error rate (abs) between generated episode likelihood_rank-{self.likelihood_rank} and true episode is {error_rate} per time step.')
     
     def analyze_results(self):
-        self.plot_actions()
-        self.plot_beliefs()
+        # self.plot_actions()
+        # self.plot_beliefs()
         self.plot_posterior()
         # self.plot_IRC_likelihood_across_particles()
         # self.check_for_different_trajectories()

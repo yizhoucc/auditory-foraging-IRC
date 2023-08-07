@@ -65,9 +65,12 @@ for ind in range(len(env_param_list)):
 
 ########################################################################
 
-from auditoryforage.filters.PF_att_agent import ParticleFilter
-end_index = 100
+from auditoryforage.filters.PF_agent_lite import ParticleFilter
+# from auditoryforage.filters.PF_att_agent import ParticleFilter
+
+end_index = 2000
 no_particles_list = [30000]
+
 sampling_freq_list = [1]
 particle_filter = ParticleFilter(agent_list, env, verbose = True)
 particle_filter.multiple_filtering(episode, no_particles_list, sampling_freq_list, end_index, req_output_posterior = True)
