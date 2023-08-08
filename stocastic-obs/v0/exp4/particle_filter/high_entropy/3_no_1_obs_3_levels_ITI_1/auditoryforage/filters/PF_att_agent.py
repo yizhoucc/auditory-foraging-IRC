@@ -15,7 +15,7 @@ import multiprocessing
 
 class ParticleFilter():
 
-    def __init__(self, agent_list, env, default_no_particles = 100, default_sampling_freq = 1, verbose = False):
+    def __init__(self, agent_list, env_param_list, env, true_params_folder_name = '', default_no_particles = 100, default_sampling_freq = 1, verbose = False):
         r"""Performs particle filter to generate attention and observation sequences.
 
         Args
@@ -34,6 +34,8 @@ class ParticleFilter():
         self.no_particles = default_no_particles
         self.sampling_freq = default_sampling_freq
         self.verbose = verbose
+        self.env_param_list = env_param_list
+        self.true_params_folder_name = true_params_folder_name
                 
     def generate_wrt_reference_episode(self, episode, no_particles = None, sampling_freq = None, end_index = None, do_save = True, req_output_posterior = False):
         r"""Performs particle filter to generate attention and observation sequences.
@@ -260,12 +262,15 @@ class ParticleFilter():
         input_time_series = {'state_list': input_state_list, 'lick_actions': input_lick_actions}
         input = {'root_episode': root_episode, 'input_time_series': input_time_series}
         PF_IO = {'input': input, 'output': particle_filter_output}
+        PF_IO['input']['input_env_params'] = {}
+        for ind in range(len(self.env_param_list)):
+            PF_IO['input']['input_env_params'][ind] = self.env_param_list[ind]
         return PF_IO
 
     def save_filter_output(self, PF_IO, end_index):
         no_particles = PF_IO['output']['filter_specs']['no_particles']
         sampling_freq = PF_IO['output']['filter_specs']['sampling_freq']
-        store_folder = 'store/filters/PF_att_agent/'
+        store_folder = 'store/filters/PF_att_agent/' + self.true_params_folder_name
         if not os.path.exists(store_folder): os.makedirs(store_folder)
         file_name = store_folder + f'PF_np_{no_particles}_sf_{sampling_freq}_ei_{end_index}_rn_{np.random.randint(0,100)}.pkl'
         save_pickle_file(PF_IO, file_name)
