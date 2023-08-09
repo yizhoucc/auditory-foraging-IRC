@@ -19,7 +19,7 @@ from auditoryforage.AF_env import AuditoryForaging
 ########################################################################
 
 env_param = [-3.0, 200.0, 13, 5, -5000, 0] #CHANGE
-true_params_folder_name = '1-13_5' #CHANGE
+true_params_folder_name = '1-13_5/' #CHANGE
 file_name = './auditoryforage/filters/ref_episode_13_5.pkl' #CHANGE
 
 ########################################################################
