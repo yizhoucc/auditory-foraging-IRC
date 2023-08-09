@@ -74,7 +74,12 @@ class DataToEpisode():
         self.reward_data = data_dict['RewardSize']
         self.animal_response_data = data_dict['AnimalResponse']
         # self.pupil_data = data_dict['Pupil']
-        self.ITI_duration =[round(self.one_second_in_preferred_units * time) for time in data_dict['ITIinseconds']] 
+
+        # Approximating all ITI time to just one time step.
+        # self.ITI_duration =[round(self.one_second_in_preferred_units * time) for time in data_dict['ITIinseconds']] 
+        self.ITI_duration =[1 for _ in data_dict['ITIinseconds']] 
+
+
         self.lick_wrt_trial_start_data = [round(self.one_second_in_preferred_units * time) if not np.isnan(time) else time for time in data_dict['LickwrtTrialStart']]
         self.noise_duration_data = [round(self.one_second_in_preferred_units * time) for time in data_dict['ToneCloudDurSec']]
     
@@ -117,15 +122,21 @@ class DataToEpisode():
                 self.episode['received_food'] += (self.lick_wrt_trial_start_data[ind] + self.no_penalty_nodes) * [0]
             else:
                 self.episode['states'] += [0 for _ in range(self.noise_duration_data[ind])]
-                self.episode['states'] += [1+i for i in range(self.no_signal_nodes)]
-                self.lick_choice_list += (self.lick_wrt_trial_start_data[ind]-1) * [0] + [1] + (self.noise_duration_data[ind] + self.no_signal_nodes - self.lick_wrt_trial_start_data[ind]) * [0]
-                self.episode['received_food'] += (self.lick_wrt_trial_start_data[ind]-1) * [0] + [self.reward_data[ind]] + (self.noise_duration_data[ind] + self.no_signal_nodes - self.lick_wrt_trial_start_data[ind]) * [0] # recieved food reward at the same time step of lick
+
+                # Having signal duration end as soon as correct lick is made.
+                # self.episode['states'] += [1+i for i in range(self.no_signal_nodes)]
+                # self.lick_choice_list += (self.lick_wrt_trial_start_data[ind]-1) * [0] + [1] + (self.noise_duration_data[ind] + self.no_signal_nodes - self.lick_wrt_trial_start_data[ind]) * [0]
+                # self.episode['received_food'] += (self.lick_wrt_trial_start_data[ind]-1) * [0] + [self.reward_data[ind]] + (self.noise_duration_data[ind] + self.no_signal_nodes - self.lick_wrt_trial_start_data[ind]) * [0] # recieved food reward at the same time step of lick
+                self.episode['states'] += [1+i for i in range(self.lick_wrt_trial_start_data[ind] - self.noise_duration_data[ind])]
+                self.lick_choice_list += (self.lick_wrt_trial_start_data[ind]-1) * [0] + [1]
+                self.episode['received_food'] += (self.lick_wrt_trial_start_data[ind]-1) * [0] + [self.reward_data[ind]] # recieved food reward at the same time step of lick
+        
         self.block_log_list[-1]['stop'] = len(self.episode['states'])
 
         #fake
         self.pupil_data = np.random.uniform(low=0.0, high=1.0, size=len(self.episode['states']))
+        
         self.attention_choice_list = np.digitize(self.pupil_data, np.linspace(np.min(self.pupil_data), np.max(self.pupil_data)+1e-10, num=self.no_attention_modes+1))-1
-
         self.episode['actions'] = [self.dict_action_meaning[(self.lick_choice_list[ind],self.attention_choice_list[ind])] for ind in range(len(self.lick_choice_list))]
         self.episode['observations'] = []
         for ind in range(len(self.episode['actions'])):
@@ -165,7 +176,7 @@ class DataToEpisode():
         return formatted_episode
 
     def chop_episode(self, episode, start, stop):
-        r"""Chop an episode to have values corresponding to indices from srat to stop (including).
+        r"""Chop an episode to have values corresponding to indices from start to stop (including).
 
         Args
         ----
