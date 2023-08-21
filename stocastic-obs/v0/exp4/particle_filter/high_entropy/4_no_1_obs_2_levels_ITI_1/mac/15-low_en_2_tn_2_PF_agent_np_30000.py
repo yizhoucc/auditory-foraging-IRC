@@ -53,11 +53,8 @@ for ind in range(len(env_param_list)):
 
 from auditoryforage.filters.PF_agent import ParticleFilter
 
-# end_index = None #CHANGE
-# no_particles_list = [30000] #CHANGE
-
-end_index = 2200 #CHANGE
-no_particles_list = [300000] #CHANGE
+end_index = None #CHANGE
+no_particles_list = [30000] #CHANGE
 
 sampling_freq_list = [1]
 particle_filter = ParticleFilter(agent_list, env_param_list, env, true_params_folder_name, verbose = True)
