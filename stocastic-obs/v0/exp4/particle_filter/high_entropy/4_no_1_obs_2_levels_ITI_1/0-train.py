@@ -14,7 +14,7 @@ manager = IRCManager(defaults=defaults)
 
 ##############################################################################
 
-env_param = [0, 350.0, 6.851177504050078, 1, -5000, 0]
+env_param = [0, 5000.0, .08, .25, -5000, 0]
 
 # change back to old no. of epochs
 num_epochs = 400
