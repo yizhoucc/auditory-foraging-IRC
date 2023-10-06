@@ -12,9 +12,9 @@ defaults:
     #   _target_: 'stable_baselines3.PPO'
     #   gamma: 0.99
     algo:
-      _target_: 'stable_baselines3.PPO'
+      _target_: 'stable_baselines3.DQN'
       gamma: 0.99
-      ent_coef: 0.01      
+      # ent_coef: 0.01   # Lokesh made this change for DQN case.    
     
     policy:
       _target_: 'MlpPolicy'

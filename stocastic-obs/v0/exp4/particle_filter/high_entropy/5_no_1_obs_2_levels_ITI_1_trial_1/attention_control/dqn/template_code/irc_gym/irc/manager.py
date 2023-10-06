@@ -77,14 +77,19 @@ class AgentManager(Manager):
             pass
         
         
-        # Lokesh made this change for high entropy case.
+        # # Lokesh made this change for DQN case.
+        # # Lokesh made this change for high entropy case.
+        # # algo = config.algo.instantiate(
+        # #     policy=policy, env=model, policy_kwargs=config.policy,
+        # #     device=self.device, seed=config.seed,
+        # # )
         # algo = config.algo.instantiate(
         #     policy=policy, env=model, policy_kwargs=config.policy,
-        #     device=self.device, seed=config.seed,
+        #     device=self.device, seed=config.seed, gamma=config.algo.gamma, ent_coef=config.algo.ent_coef
         # )
         algo = config.algo.instantiate(
             policy=policy, env=model, policy_kwargs=config.policy,
-            device=self.device, seed=config.seed, gamma=config.algo.gamma, ent_coef=config.algo.ent_coef
+            device=self.device, seed=config.seed,
         )
         
         
