@@ -14,7 +14,9 @@ defaults:
     algo:
       _target_: 'stable_baselines3.PPO'
       gamma: 0.99
-      ent_coef: 0.001      
+      # ent_coef: 0.001
+      #checking what happens for 0 entropy coefficient
+      ent_coef: 0      
     
     policy:
       _target_: 'MlpPolicy'
