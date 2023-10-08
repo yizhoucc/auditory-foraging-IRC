@@ -14,10 +14,10 @@ defaults:
     algo:
       _target_: 'stable_baselines3.PPO'
       # gamma: 0.99
-      # ent_coef: 0.01      
-      # changing gamma value
+      # ent_coef: 0.01
+      # changing gamma
       gamma: 1
-      ent_coef: 0.01      
+      ent_coef: 0.01            
     
     policy:
       _target_: 'MlpPolicy'
