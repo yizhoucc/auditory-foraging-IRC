@@ -275,7 +275,7 @@ class AuditoryForaging(Env):
         # Reward
         rw = self.find_reward(lick_choice, attention_choice)
         self.collected_reward += rw
-
+        
         # State transition
         self.transition_step(lick_choice)
 
