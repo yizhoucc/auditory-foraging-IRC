@@ -14,7 +14,7 @@ manager = IRCManager(defaults=defaults)
 
 ##############################################################################
 
-env_param = [0, 25.0, .08, .25, 0, 0]
+env_param = [0, 20, .08, .25, 0, 0]
 
 # change back to old no. of epochs
 num_epochs = 100
@@ -22,5 +22,4 @@ num_epochs = 100
 for seed in range(5):
     print(f'running seed {seed}')
     agent = manager.train_agent(env_param, num_epochs=num_epochs, seed = seed)
-
 
