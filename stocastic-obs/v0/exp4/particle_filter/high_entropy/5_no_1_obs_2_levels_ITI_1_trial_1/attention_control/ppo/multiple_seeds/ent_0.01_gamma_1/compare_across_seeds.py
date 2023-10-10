@@ -28,6 +28,7 @@ attention_cost_temp_list = [.25]
 penalty_cost_list = [0]
 iti_cost_list = [0]
 
+
 hit_count_list = []
 miss_count_list = []
 false_alarm_list = []
@@ -38,16 +39,16 @@ for lick_cost in lick_cost_list:
             for attention_cost_temp in attention_cost_temp_list:
                 for penalty_cost in penalty_cost_list:
                     for iti_cost in iti_cost_list:
+                        hit_count_list.append([])
+                        miss_count_list.append([])
+                        false_alarm_list.append([])
+                        env_param = [lick_cost, food_reward, attention_cost_coeff, attention_cost_temp, penalty_cost, iti_cost]
+                        env = AuditoryForaging(spec={'agent':{'lick_cost':env_param[0],'food_reward':env_param[1],'attention_cost_coeff':env_param[2], 'attention_cost_temp': env_param[3], 'penalty_cost': env_param[4], 'iti_cost': env_param[5]}})
                         for seed in seed_list:
-                            env_param = [lick_cost, food_reward, attention_cost_coeff, attention_cost_temp, penalty_cost, iti_cost]
-                            hit_count = 0
-                            miss_count = 0
-                            false_alarm_count = 0
-                            env = AuditoryForaging(spec={'agent':{'lick_cost':env_param[0],'food_reward':env_param[1],'attention_cost_coeff':env_param[2], 'attention_cost_temp': env_param[3], 'penalty_cost': env_param[4], 'iti_cost': env_param[5]}})
+                            hit_count, miss_count, false_alarm_count = 0, 0, 0
                             agent = manager.train_agent(env_param, num_epochs=num_epochs, seed = seed)
                             for episide_no in range(no_episodes):
-                                episode = agent.run_one_episode(env=env, num_steps=10000, q_states = [[i] for i in range(env.no_nodes)])
-                                # if episode['rewards'][-1] == food_reward:
+                                episode = agent.run_one_episode(env=env, num_steps=100000, q_states = [[i] for i in range(env.no_nodes)])
                                 if episode['rewards'][-1] > 0:
                                     hit_count += 1
                                 elif episode['states'][-1] > env.no_signal_nodes + 1:
@@ -56,9 +57,9 @@ for lick_cost in lick_cost_list:
                                     false_alarm_count += 1
                                 else:
                                     print("Error somewhere")
-                            hit_count_list.append(hit_count/no_episodes)
-                            miss_count_list.append(miss_count/no_episodes)
-                            false_alarm_list.append(false_alarm_count/no_episodes)
+                            hit_count_list[-1].append(hit_count/no_episodes)
+                            miss_count_list[-1].append(miss_count/no_episodes)
+                            false_alarm_list[-1].append(false_alarm_count/no_episodes)
 
 ############
 
