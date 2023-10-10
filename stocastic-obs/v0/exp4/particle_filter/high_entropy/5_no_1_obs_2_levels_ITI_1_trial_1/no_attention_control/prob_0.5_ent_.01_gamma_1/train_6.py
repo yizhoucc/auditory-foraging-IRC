@@ -19,5 +19,7 @@ env_param = [0, 300.0, .08, .25, 0, 0]
 # change back to old no. of epochs
 num_epochs = 400
 
-agent = manager.train_agent(env_param, num_epochs=num_epochs)
-agent, fig = manager.inspect_agent(env_param, figsize=(5, 2.5))
+for seed in range(5):
+    print(f'running seed {seed}')
+    agent = manager.train_agent(env_param, num_epochs=num_epochs, seed = seed)
+

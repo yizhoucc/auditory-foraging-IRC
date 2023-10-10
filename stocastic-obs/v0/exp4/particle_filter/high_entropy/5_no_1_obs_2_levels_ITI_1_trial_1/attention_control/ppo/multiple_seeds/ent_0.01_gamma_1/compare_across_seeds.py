@@ -19,8 +19,7 @@ from auditoryforage.AF_env import AuditoryForaging
 num_epochs = 100
 no_episodes = 1000
 lick_cost_list = [0]
-# food_reward_list = [10.0, 25.0, 50.0, 75.0, 100.0, 200.0, 300.0, 400.0, 500.0, 600.0, 1000.0]
-food_reward_list = [10.0]
+food_reward_list = [10.0, 25.0, 50.0, 75.0, 100.0, 200.0, 300.0, 400.0, 500.0, 600.0, 1000.0]
 seed_list = [0, 1, 2, 3, 4]
 
 attention_cost_coeff_list = [.08]
