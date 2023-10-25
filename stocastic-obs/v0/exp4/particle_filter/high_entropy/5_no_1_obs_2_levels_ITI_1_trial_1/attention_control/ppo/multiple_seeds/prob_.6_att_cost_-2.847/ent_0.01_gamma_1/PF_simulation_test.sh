@@ -1,0 +1,3 @@
+python generate_episodes_repo.py
+wait
+python PF_simulation_test

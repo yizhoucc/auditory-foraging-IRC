@@ -10,6 +10,7 @@ env = AuditoryForaging()
 filename = f'../data_files/orig/3_data_behavior.csv'
 hit_skip_trials = 15
 one_sec_in_node_units = 50
+food_reward_value = 100 #any positive value please.
 
 def make_episode(noise_dur, rt, outcome):
     # 0=hit, 1=miss,2-false alarm,3=Correct 
@@ -19,12 +20,15 @@ def make_episode(noise_dur, rt, outcome):
     if outcome == 0:
         episode['states'] = [[iti_node]] + [[0]] * round(noise_dur * one_sec_in_node_units) + [[1 + node] for node in range(round((rt - noise_dur) * one_sec_in_node_units))] + [[iti_node]]
         episode['actions'] = (len(episode['states'])-2) * [0] + [env.no_attention_modes]
+        episode['rewards'] = [0] * (len(episode['actions']) - 1) + [food_reward_value]
     elif outcome == 1:
         episode['states'] = [[iti_node]] + [[0]] * round(noise_dur * one_sec_in_node_units) + [[1 + node] for node in range(env.no_signal_nodes)] + [[iti_node]]
         episode['actions'] = (len(episode['states'])-1) * [0]
+        episode['rewards'] = [0] * len(episode['actions'])
     elif outcome == 2:
         episode['states'] = [[iti_node]] + [[0]] * round(rt * one_sec_in_node_units) + [[env.no_signal_nodes + 1]]
         episode['actions'] = (len(episode['states'])-2) * [0] + [env.no_attention_modes]
+        episode['rewards'] = [0] * len(episode['actions'])
     else:
         print('some mistake here!')
     episode['states'] = np.array(episode['states'])

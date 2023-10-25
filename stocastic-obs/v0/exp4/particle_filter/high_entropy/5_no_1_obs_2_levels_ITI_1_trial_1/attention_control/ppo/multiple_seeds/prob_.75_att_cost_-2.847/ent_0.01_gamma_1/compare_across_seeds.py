@@ -1,6 +1,7 @@
 import os
 import sys
 sys.path.append(f'{os.getcwd()}/irc_gym')
+import numpy as np
 
 from irc.manager import IRCManager
 
@@ -41,6 +42,8 @@ noise_time_before_lick_list = []
 signal_time_before_lick_list = []
 total_noise_time_list = []
 total_signal_time_list = []
+attention_time_points_list = []
+episode_length_list = []
 
 for lick_cost in lick_cost_list:
     for food_reward in food_reward_list:
@@ -55,6 +58,8 @@ for lick_cost in lick_cost_list:
                         signal_time_before_lick_list.append([])
                         total_noise_time_list.append([])
                         total_signal_time_list.append([])
+                        attention_time_points_list.append([])
+                        episode_length_list.append([])
                         env_param = [lick_cost, food_reward, attention_cost_coeff, attention_cost_temp, penalty_cost, iti_cost]
                         env = AuditoryForaging(spec={'agent':{'lick_cost':env_param[0],'food_reward':env_param[1],'attention_cost_coeff':env_param[2], 'attention_cost_temp': env_param[3], 'penalty_cost': env_param[4], 'iti_cost': env_param[5]}})
                         for seed in seed_list:
@@ -65,6 +70,8 @@ for lick_cost in lick_cost_list:
                             signal_time_before_lick = 0 
                             total_noise_time = 0 
                             total_signal_time = 0
+                            attention_time_points_across_episodes = []
+                            episode_length_across_episodes = []
                             agent = manager.train_agent(env_param, num_epochs=num_epochs, seed = seed)
                             for episide_no in range(no_episodes):
                                 episode = agent.run_one_episode(env=env, num_steps=100000, q_states = [[i] for i in range(env.no_nodes)])
@@ -80,6 +87,8 @@ for lick_cost in lick_cost_list:
                                     print("Error somewhere")
                                 total_signal_time += count_no_elements(episode['states'], 1, env.no_signal_nodes)
                                 total_noise_time += count_no_elements(episode['states'], 0, 0)
+                                attention_time_points_across_episodes.append(np.where(episode['actions'] % env.no_attention_modes > 0)[0])
+                                episode_length_across_episodes.append(len(episode['states']))
                             hit_count_list[-1].append(hit_count)
                             miss_count_list[-1].append(miss_count)
                             false_alarm_list[-1].append(false_alarm_count)
@@ -87,6 +96,8 @@ for lick_cost in lick_cost_list:
                             signal_time_before_lick_list[-1].append(signal_time_before_lick)
                             total_noise_time_list[-1].append(total_noise_time)
                             total_signal_time_list[-1].append(total_signal_time)
+                            attention_time_points_list[-1].append(attention_time_points_across_episodes)
+                            episode_length_list[-1].append(episode_length_across_episodes)
 
 ############
 
@@ -115,6 +126,8 @@ output['noise_time_before_lick_list'] = noise_time_before_lick_list
 output['signal_time_before_lick_list'] = signal_time_before_lick_list
 output['total_noise_time_list'] = total_noise_time_list
 output['total_signal_time_list'] = total_signal_time_list
+output['attention_time_points_list'] = attention_time_points_list
+output['episode_length_list'] = episode_length_list
 detection_measures['input'] = input
 detection_measures['output'] = output
 save_pickle_file(detection_measures, file_name)

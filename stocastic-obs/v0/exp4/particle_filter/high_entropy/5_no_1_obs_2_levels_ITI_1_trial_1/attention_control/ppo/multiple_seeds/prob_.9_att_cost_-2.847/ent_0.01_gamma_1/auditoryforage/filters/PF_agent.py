@@ -296,11 +296,17 @@ class ParticleFilter():
         save_pickle_file(PF_IO, file_name)
         print(f'Saved data to file {file_name}.')
 
-    def multiple_filtering(self, episode, no_particles_list, sampling_freq_list, end_index, req_output_posterior = False):
+    def multiple_filtering(self, episode, no_particles_list, sampling_freq_list, end_index, req_output_posterior = False, do_save = True):
         for no_particles in no_particles_list:
             for sampling_freq in sampling_freq_list:
                 print(f'Filter with no_particles = {no_particles} and sampling_freq = {sampling_freq} in action.')
-                _ = self.generate_wrt_reference_episode(episode, no_particles, sampling_freq, end_index, req_output_posterior = req_output_posterior)
+                if do_save:
+                    _ = self.generate_wrt_reference_episode(episode, no_particles, sampling_freq, end_index, req_output_posterior = req_output_posterior)
+                else:
+                    PF_IO = self.generate_wrt_reference_episode(episode, no_particles, sampling_freq, end_index, req_output_posterior = req_output_posterior, do_save = do_save)
+                    print('Terminating after outputing the first iteration result. Set do_save = True for full results.')
+                    return(PF_IO)
+
 
     def multiple_filtering_in_parallel(self, episode, no_particles_list, sampling_freq_list, end_index, req_output_posterior = False):
         def run_and_save_particle_filter(no_particles_sampling_freq_tuple):
