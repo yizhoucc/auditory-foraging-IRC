@@ -169,6 +169,10 @@ class AgentManager(Manager):
 
         # Lokesh temporary schedlung duct tape
         ent_coef_old = self.agent.algo.ent_coef
+
+        print(f'old entropy was {ent_coef_old}')
+        print(f'old entropy type was {type(ent_coef_old)}')
+
         self.agent.algo.ent_coef = 0
 
         self.agent.algo.learn(
