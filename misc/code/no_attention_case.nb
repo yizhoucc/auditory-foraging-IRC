@@ -1,0 +1,1132 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 13.2' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     48987,       1124]
+NotebookOptionsPosition[     46702,       1081]
+NotebookOutlinePosition[     47129,       1098]
+CellTagsIndexPosition[     47086,       1095]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell[BoxData[
+ RowBox[{"Manipulate", "[", 
+  RowBox[{
+   RowBox[{"Module", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"t", ",", "expr"}], "}"}], ",", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"expr", "[", "t_", "]"}], ":=", 
+       RowBox[{"Piecewise", "[", 
+        RowBox[{"{", 
+         RowBox[{
+          RowBox[{"{", 
+           RowBox[{
+            RowBox[{
+             RowBox[{"rFA", "*", 
+              RowBox[{
+               RowBox[{"(", 
+                RowBox[{"1", "-", "pt"}], ")"}], "^", "t"}]}], "+", 
+             RowBox[{"rFood", "*", 
+              RowBox[{"(", 
+               RowBox[{"1", "-", 
+                RowBox[{
+                 RowBox[{"(", 
+                  RowBox[{"1", "-", "pt"}], ")"}], "^", "t"}]}], ")"}]}]}], 
+            ",", 
+            RowBox[{"t", "<=", "noSigNodes"}]}], "}"}], ",", 
+          RowBox[{"{", 
+           RowBox[{
+            RowBox[{
+             RowBox[{"rFA", "*", 
+              RowBox[{
+               RowBox[{"(", 
+                RowBox[{"1", "-", "pt"}], ")"}], "^", "t"}]}], "+", 
+             RowBox[{"rFood", "*", 
+              RowBox[{"(", 
+               RowBox[{
+                RowBox[{
+                 RowBox[{"(", 
+                  RowBox[{"1", "-", "pt"}], ")"}], "^", 
+                 RowBox[{"(", 
+                  RowBox[{"t", "-", "noSigNodes"}], ")"}]}], "-", 
+                RowBox[{
+                 RowBox[{"(", 
+                  RowBox[{"1", "-", "pt"}], ")"}], "^", "t"}]}], ")"}]}], "+", 
+             RowBox[{"rMiss", "*", 
+              RowBox[{"(", 
+               RowBox[{"1", "-", 
+                RowBox[{
+                 RowBox[{"(", 
+                  RowBox[{"1", "-", "pt"}], ")"}], "^", 
+                 RowBox[{"(", 
+                  RowBox[{"t", "-", "noSigNodes"}], ")"}]}]}], ")"}]}]}], ",", 
+            RowBox[{"t", ">", "noSigNodes"}]}], "}"}]}], "}"}], "]"}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"Plot", "[", 
+       RowBox[{
+        RowBox[{"expr", "[", "t", "]"}], ",", 
+        RowBox[{"{", 
+         RowBox[{"t", ",", "1", ",", "100"}], "}"}], ",", 
+        RowBox[{"PlotLabel", "->", 
+         RowBox[{"\"\<Function: \>\"", "<>", 
+          RowBox[{"ToString", "[", 
+           RowBox[{"expr", "[", "t", "]"}], "]"}]}]}], ",", 
+        RowBox[{"(*", 
+         RowBox[{"Optional", ":", 
+          RowBox[{
+          "Display", " ", "the", " ", "function", " ", "in", " ", "the", " ", 
+           "plot"}]}], "*)"}], 
+        RowBox[{"AxesLabel", "->", 
+         RowBox[{"{", 
+          RowBox[{"\"\<t\>\"", ",", "\"\<Output\>\""}], "}"}]}], ",", 
+        RowBox[{"PlotRange", "->", "All"}]}], "]"}]}]}], "]"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"noSigNodes", ",", "50", ",", "\"\<noSigNodes\>\""}], "}"}], 
+     ",", "1", ",", "200", ",", "1"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"pt", ",", "0.012", ",", "\"\<pt\>\""}], "}"}], ",", "0", ",", 
+     "1", ",", "0.01"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"rFA", ",", 
+       RowBox[{"-", "5"}], ",", "\"\<rFA\>\""}], "}"}], ",", 
+     RowBox[{"-", "200"}], ",", "0", ",", "0.1"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"rFood", ",", "10", ",", "\"\<rFood\>\""}], "}"}], ",", "0", 
+     ",", "200", ",", "0.1"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"rMiss", ",", "0", ",", "\"\<rMiss\>\""}], "}"}], ",", 
+     RowBox[{"-", "10"}], ",", "0", ",", "0.1"}], "}"}]}], "]"}]], "Input",
+ CellChangeTimes->{{3.908582069350819*^9, 3.908582069352632*^9}, {
+   3.908582122326807*^9, 3.90858216324634*^9}, {3.9085825741193542`*^9, 
+   3.908582577293541*^9}, {3.9085826529211187`*^9, 3.908582663473596*^9}, {
+   3.9085830691678743`*^9, 3.908583093965899*^9}, {3.90864788902533*^9, 
+   3.908647889188088*^9}, {3.90864828839357*^9, 3.908648290089938*^9}, 
+   3.9086483666521063`*^9, 3.90864840450917*^9},
+ CellLabel->"In[19]:=",ExpressionUUID->"a9485daf-0cde-47e8-a2e4-8e2346fe058b"],
+
+Cell[BoxData[
+ TagBox[
+  StyleBox[
+   DynamicModuleBox[{$CellContext`noSigNodes$$ = 50, $CellContext`pt$$ = 
+    0.012, $CellContext`rFA$$ = -0.3, $CellContext`rFood$$ = 
+    0.37, $CellContext`rMiss$$ = 0, Typeset`show$$ = True, 
+    Typeset`bookmarkList$$ = {}, Typeset`bookmarkMode$$ = "Menu", 
+    Typeset`animator$$, Typeset`animvar$$ = 1, Typeset`name$$ = 
+    "\"untitled\"", Typeset`specs$$ = {{{
+       Hold[$CellContext`noSigNodes$$], 50, "noSigNodes"}, 1, 200, 1}, {{
+       Hold[$CellContext`pt$$], 0.012, "pt"}, 0, 1, 0.01}, {{
+       Hold[$CellContext`rFA$$], -5, "rFA"}, -200, 0, 0.1}, {{
+       Hold[$CellContext`rFood$$], 10, "rFood"}, 0, 200, 0.1}, {{
+       Hold[$CellContext`rMiss$$], 0, "rMiss"}, -10, 0, 0.1}}, 
+    Typeset`size$$ = {450., {162., 168.}}, Typeset`update$$ = 0, 
+    Typeset`initDone$$, Typeset`skipInitDone$$ = True}, 
+    DynamicBox[Manipulate`ManipulateBoxes[
+     1, StandardForm, 
+      "Variables" :> {$CellContext`noSigNodes$$ = 50, $CellContext`pt$$ = 
+        0.012, $CellContext`rFA$$ = -5, $CellContext`rFood$$ = 
+        10, $CellContext`rMiss$$ = 0}, "ControllerVariables" :> {}, 
+      "OtherVariables" :> {
+       Typeset`show$$, Typeset`bookmarkList$$, Typeset`bookmarkMode$$, 
+        Typeset`animator$$, Typeset`animvar$$, Typeset`name$$, 
+        Typeset`specs$$, Typeset`size$$, Typeset`update$$, Typeset`initDone$$,
+         Typeset`skipInitDone$$}, "Body" :> 
+      Module[{$CellContext`t$, $CellContext`expr$}, $CellContext`expr$[
+           Pattern[$CellContext`t$, 
+            Blank[]]] := 
+         Piecewise[{{$CellContext`rFA$$ (
+                1 - $CellContext`pt$$)^$CellContext`t$ + $CellContext`rFood$$ \
+(1 - (1 - $CellContext`pt$$)^$CellContext`t$), $CellContext`t$ <= \
+$CellContext`noSigNodes$$}, {$CellContext`rFA$$ (
+                1 - $CellContext`pt$$)^$CellContext`t$ + $CellContext`rFood$$ \
+((1 - $CellContext`pt$$)^($CellContext`t$ - $CellContext`noSigNodes$$) - (
+                1 - $CellContext`pt$$)^$CellContext`t$) + \
+$CellContext`rMiss$$ (
+               1 - (1 - $CellContext`pt$$)^($CellContext`t$ - \
+$CellContext`noSigNodes$$)), $CellContext`t$ > $CellContext`noSigNodes$$}}]; 
+        Plot[
+          $CellContext`expr$[$CellContext`t$], {$CellContext`t$, 1, 100}, 
+          PlotLabel -> "Function: " <> ToString[
+             $CellContext`expr$[$CellContext`t$]], 
+          AxesLabel -> {"t", "Output"}, PlotRange -> All]], 
+      "Specifications" :> {{{$CellContext`noSigNodes$$, 50, "noSigNodes"}, 1, 
+         200, 1}, {{$CellContext`pt$$, 0.012, "pt"}, 0, 1, 
+         0.01}, {{$CellContext`rFA$$, -5, "rFA"}, -200, 0, 
+         0.1}, {{$CellContext`rFood$$, 10, "rFood"}, 0, 200, 
+         0.1}, {{$CellContext`rMiss$$, 0, "rMiss"}, -10, 0, 0.1}}, 
+      "Options" :> {}, "DefaultOptions" :> {}],
+     ImageSizeCache->{504., {341., 349.}},
+     SingleEvaluation->True],
+    Deinitialization:>None,
+    DynamicModuleValues:>{},
+    SynchronousInitialization->True,
+    UndoTrackedVariables:>{Typeset`show$$, Typeset`bookmarkMode$$},
+    UnsavedVariables:>{Typeset`initDone$$},
+    UntrackedVariables:>{Typeset`size$$}], "Manipulate",
+   Deployed->True,
+   StripOnInput->False],
+  Manipulate`InterpretManipulate[1]]], "Output",
+ CellChangeTimes->{{3.908582163684718*^9, 3.9085821707170343`*^9}, {
+   3.9085822901788397`*^9, 3.908582292762393*^9}, {3.908582559053273*^9, 
+   3.9085826043300858`*^9}, {3.9085826641556273`*^9, 3.908582689494945*^9}, 
+   3.908582887683485*^9, 3.90858297269156*^9, 3.908583020340342*^9, {
+   3.908583071031241*^9, 3.908583094407302*^9}, 3.908583189453476*^9, 
+   3.908583287282711*^9, 3.908644237000697*^9, 3.908647906016457*^9, {
+   3.908648290448286*^9, 3.908648292237966*^9}, 3.908648366998736*^9, {
+   3.908648401104371*^9, 3.9086484090517597`*^9}, 3.908648652902154*^9},
+ CellLabel->"Out[19]=",ExpressionUUID->"40a583c4-d6ae-4dff-8b4d-8f305d6b7f50"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"Solve", "[", 
+  RowBox[{
+   RowBox[{"D", "[", 
+    RowBox[{
+     RowBox[{"Piecewise", "[", 
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"rFA", "*", 
+            RowBox[{
+             RowBox[{"(", 
+              RowBox[{"1", "-", "pt"}], ")"}], "^", "t"}]}], "+", 
+           RowBox[{"rFood", "*", 
+            RowBox[{"(", 
+             RowBox[{"1", "-", 
+              RowBox[{
+               RowBox[{"(", 
+                RowBox[{"1", "-", "pt"}], ")"}], "^", "t"}]}], ")"}]}]}], ",", 
+          RowBox[{"t", "<=", "noSigNodes"}]}], "}"}], ",", 
+        RowBox[{"{", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"rFA", "*", 
+            RowBox[{
+             RowBox[{"(", 
+              RowBox[{"1", "-", "pt"}], ")"}], "^", "t"}]}], "+", 
+           RowBox[{"rFood", "*", 
+            RowBox[{"(", 
+             RowBox[{
+              RowBox[{
+               RowBox[{"(", 
+                RowBox[{"1", "-", "pt"}], ")"}], "^", 
+               RowBox[{"(", 
+                RowBox[{"t", "-", "50"}], ")"}]}], "-", 
+              RowBox[{
+               RowBox[{"(", 
+                RowBox[{"1", "-", "pt"}], ")"}], "^", "t"}]}], ")"}]}], "+", 
+           RowBox[{"rMiss", "*", 
+            RowBox[{"(", 
+             RowBox[{"1", "-", 
+              RowBox[{
+               RowBox[{"(", 
+                RowBox[{"1", "-", "pt"}], ")"}], "^", 
+               RowBox[{"(", 
+                RowBox[{"t", "-", "50"}], ")"}]}]}], ")"}]}]}], ",", 
+          RowBox[{"t", ">", "noSigNodes"}]}], "}"}]}], "}"}], "]"}], ",", 
+     "t"}], "]"}], "==", "0"}], "]"}]], "Input",
+ CellChangeTimes->{{3.908582388798704*^9, 3.908582391686242*^9}, {
+  3.908582463729361*^9, 3.9085824850418043`*^9}},
+ CellLabel->"In[7]:=",ExpressionUUID->"fe3fd06c-cb28-47d5-b494-6ea6468f58a1"],
+
+Cell[BoxData["$Aborted"], "Output",
+ CellChangeTimes->{3.90858239193644*^9, 3.908582519142193*^9},
+ CellLabel->"Out[7]=",ExpressionUUID->"95f3e04a-7389-45b4-b715-54d3d6256da0"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"Solve", "[", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"D", "[", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"rFA", "*", 
+        RowBox[{
+         RowBox[{"(", 
+          RowBox[{"1", "-", "pt"}], ")"}], "^", "t"}]}], "+", 
+       RowBox[{"rFood", "*", 
+        RowBox[{"(", 
+         RowBox[{"1", "-", 
+          RowBox[{
+           RowBox[{"(", 
+            RowBox[{"1", "-", "pt"}], ")"}], "^", "t"}]}], ")"}]}]}], ",", 
+      "t"}], "]"}], "==", "0"}], ",", "t"}], "]"}]], "Input",
+ CellChangeTimes->{{3.908582512380978*^9, 3.908582531545466*^9}},
+ CellLabel->"In[9]:=",ExpressionUUID->"90b4351a-0edd-4a88-a517-cbc89cc1535f"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{"{", "}"}], "}"}]], "Output",
+ CellChangeTimes->{{3.908582521297517*^9, 3.908582531770949*^9}},
+ CellLabel->"Out[9]=",ExpressionUUID->"95c280ee-d4bc-443f-8847-6361af0d39e6"]
+}, Open  ]],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", 
+   RowBox[{
+    RowBox[{
+    "Unless", " ", "the", " ", "probability", " ", "of", " ", "transition", 
+     " ", "is", " ", "so", " ", "low"}], ",", " ", 
+    RowBox[{
+    "or", " ", "the", " ", "food", " ", "reward", " ", "is", " ", "so", " ", 
+     "low"}], ",", " ", 
+    RowBox[{
+     RowBox[{"optimal", " ", "to", " ", "lick", " ", "at", " ", "t"}], " ", 
+     "=", " ", 
+     RowBox[{"end", " ", "of", " ", "signal", " ", "nodes", " ", 
+      RowBox[{"(", 
+       RowBox[{"(", 
+        RowBox[{
+        "saw", " ", "this", " ", "too", " ", "from", " ", "trial", " ", 
+         RowBox[{"length", "!"}]}], ")"}], ")"}]}]}]}], "*)"}], 
+  "\[IndentingNewLine]", 
+  RowBox[{"(*", 
+   RowBox[{
+    RowBox[{"First", " ", "part", " ", 
+     RowBox[{"(", 
+      RowBox[{"t", "<", "noSignNodes"}], ")"}], " ", "seems", " ", "to", " ", 
+     "be", " ", "always", " ", "increasing"}], ",", " ", 
+    RowBox[{
+    "and", " ", "second", " ", "part", " ", "seems", " ", "to", " ", "change",
+      " ", "case", " ", "to", " ", "case", " ", "basis", " ", 
+     RowBox[{"(", 
+      RowBox[{"saw", " ", "both"}], ")"}]}]}], "*)"}]}]], "Input",
+ CellChangeTimes->{{3.908583249811409*^9, 3.908583373591955*^9}, {
+  3.908585722378311*^9, 
+  3.908585729578019*^9}},ExpressionUUID->"b489ce51-0993-47e6-b96e-\
+a53a433f62fc"],
+
+Cell[BoxData[
+ RowBox[{"(*", 
+  RowBox[{
+   RowBox[{"In", " ", "the", " ", "below", " ", "plot"}], ",", " ", 
+   RowBox[{
+    RowBox[{"when", " ", "t"}], " ", "=", " ", 
+    RowBox[{"sig_nodes", " ", "is", " ", "the", " ", "maxima"}]}], ",", " ", 
+   RowBox[{"the", " ", "false", " ", "alarm", " ", "prob", " ", 
+    RowBox[{"(", 
+     RowBox[{
+      RowBox[{"value", " ", "when", " ", "t"}], " ", "=", " ", "50"}], ")"}], 
+    " ", "does", " ", "not", " ", "change", " ", "with", " ", "food", " ", 
+    "reward", " ", "or", " ", "any", " ", "other", " ", 
+    RowBox[{"costs", ".", " ", "only"}], " ", "on", " ", "transition", " ", 
+    RowBox[{"prob", "!"}], " ", "just", " ", "as", " ", "we", " ", "saw", " ",
+     "in", " ", 
+    RowBox[{"plots", "."}]}]}], "*)"}]], "Input",
+ CellChangeTimes->{{3.908584642536853*^9, 3.908584713548897*^9}, {
+  3.908585073363451*^9, 
+  3.908585115888775*^9}},ExpressionUUID->"a0b18ecc-3b89-4638-91b4-\
+5dbf2dc4b8fb"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"Manipulate", "[", 
+  RowBox[{
+   RowBox[{"Module", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"t", ",", "expr"}], "}"}], ",", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"expr", "[", "t_", "]"}], ":=", 
+       RowBox[{"Piecewise", "[", 
+        RowBox[{"{", 
+         RowBox[{
+          RowBox[{"{", 
+           RowBox[{
+            RowBox[{
+             RowBox[{"(", 
+              RowBox[{"1", "-", "pt"}], ")"}], "^", "t"}], ",", 
+            RowBox[{"t", "<=", "noSigNodes"}]}], "}"}], ",", 
+          RowBox[{"{", 
+           RowBox[{
+            RowBox[{
+             RowBox[{"(", 
+              RowBox[{"1", "-", "pt"}], ")"}], "^", "t"}], ",", 
+            RowBox[{"t", ">", "noSigNodes"}]}], "}"}]}], "}"}], "]"}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"Plot", "[", 
+       RowBox[{
+        RowBox[{"expr", "[", "t", "]"}], ",", 
+        RowBox[{"{", 
+         RowBox[{"t", ",", "50", ",", "100"}], "}"}], ",", 
+        RowBox[{"PlotLabel", "->", 
+         RowBox[{"\"\<Function: \>\"", "<>", 
+          RowBox[{"ToString", "[", 
+           RowBox[{"expr", "[", "t", "]"}], "]"}]}]}], ",", 
+        RowBox[{"(*", 
+         RowBox[{"Optional", ":", 
+          RowBox[{
+          "Display", " ", "the", " ", "function", " ", "in", " ", "the", " ", 
+           "plot"}]}], "*)"}], 
+        RowBox[{"AxesLabel", "->", 
+         RowBox[{"{", 
+          RowBox[{"\"\<t\>\"", ",", "\"\<Output\>\""}], "}"}]}], ",", 
+        RowBox[{"PlotRange", "->", "All"}]}], "]"}]}]}], "]"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"noSigNodes", ",", "50", ",", "\"\<noSigNodes\>\""}], "}"}], 
+     ",", "1", ",", "200", ",", "1"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"pt", ",", "0.012", ",", "\"\<pt\>\""}], "}"}], ",", "0", ",", 
+     "1", ",", "0.01"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"rFA", ",", 
+       RowBox[{"-", "5"}], ",", "\"\<rFA\>\""}], "}"}], ",", 
+     RowBox[{"-", "200"}], ",", "0", ",", "0.1"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"rFood", ",", "10", ",", "\"\<rFood\>\""}], "}"}], ",", "0", 
+     ",", "200", ",", "0.1"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"rMiss", ",", "0", ",", "\"\<rMiss\>\""}], "}"}], ",", 
+     RowBox[{"-", "10"}], ",", "0", ",", "0.1"}], "}"}]}], "]"}]], "Input",
+ CellChangeTimes->{{3.908583677268448*^9, 3.908583701184046*^9}, {
+   3.9085837821348124`*^9, 3.908583782676607*^9}, {3.9085845165448112`*^9, 
+   3.9085845369684753`*^9}, {3.9085847760538073`*^9, 3.908584778403701*^9}, 
+   3.908644488308025*^9, 3.9086445358251963`*^9, 3.908647898500437*^9, 
+   3.908648252960375*^9},
+ CellLabel->"In[20]:=",ExpressionUUID->"6fe11d1c-ddac-4709-a3fc-51e066038027"],
+
+Cell[BoxData[
+ TagBox[
+  StyleBox[
+   DynamicModuleBox[{$CellContext`noSigNodes$$ = 50, $CellContext`pt$$ = 
+    0.012, $CellContext`rFA$$ = -70.9, $CellContext`rFood$$ = 
+    45.300000000000004`, $CellContext`rMiss$$ = 0, Typeset`show$$ = True, 
+    Typeset`bookmarkList$$ = {}, Typeset`bookmarkMode$$ = "Menu", 
+    Typeset`animator$$, Typeset`animvar$$ = 1, Typeset`name$$ = 
+    "\"untitled\"", Typeset`specs$$ = {{{
+       Hold[$CellContext`noSigNodes$$], 50, "noSigNodes"}, 1, 200, 1}, {{
+       Hold[$CellContext`pt$$], 0.012, "pt"}, 0, 1, 0.01}, {{
+       Hold[$CellContext`rFA$$], -5, "rFA"}, -200, 0, 0.1}, {{
+       Hold[$CellContext`rFood$$], 10, "rFood"}, 0, 200, 0.1}, {{
+       Hold[$CellContext`rMiss$$], 0, "rMiss"}, -10, 0, 0.1}}, 
+    Typeset`size$$ = {450., {160., 167.}}, Typeset`update$$ = 0, 
+    Typeset`initDone$$, Typeset`skipInitDone$$ = True}, 
+    DynamicBox[Manipulate`ManipulateBoxes[
+     1, StandardForm, 
+      "Variables" :> {$CellContext`noSigNodes$$ = 50, $CellContext`pt$$ = 
+        0.012, $CellContext`rFA$$ = -5, $CellContext`rFood$$ = 
+        10, $CellContext`rMiss$$ = 0}, "ControllerVariables" :> {}, 
+      "OtherVariables" :> {
+       Typeset`show$$, Typeset`bookmarkList$$, Typeset`bookmarkMode$$, 
+        Typeset`animator$$, Typeset`animvar$$, Typeset`name$$, 
+        Typeset`specs$$, Typeset`size$$, Typeset`update$$, Typeset`initDone$$,
+         Typeset`skipInitDone$$}, "Body" :> 
+      Module[{$CellContext`t$, $CellContext`expr$}, $CellContext`expr$[
+           Pattern[$CellContext`t$, 
+            Blank[]]] := 
+         Piecewise[{{(
+              1 - $CellContext`pt$$)^$CellContext`t$, $CellContext`t$ <= \
+$CellContext`noSigNodes$$}, {(
+              1 - $CellContext`pt$$)^$CellContext`t$, $CellContext`t$ > \
+$CellContext`noSigNodes$$}}]; Plot[
+          $CellContext`expr$[$CellContext`t$], {$CellContext`t$, 50, 100}, 
+          PlotLabel -> "Function: " <> ToString[
+             $CellContext`expr$[$CellContext`t$]], 
+          AxesLabel -> {"t", "Output"}, PlotRange -> All]], 
+      "Specifications" :> {{{$CellContext`noSigNodes$$, 50, "noSigNodes"}, 1, 
+         200, 1}, {{$CellContext`pt$$, 0.012, "pt"}, 0, 1, 
+         0.01}, {{$CellContext`rFA$$, -5, "rFA"}, -200, 0, 
+         0.1}, {{$CellContext`rFood$$, 10, "rFood"}, 0, 200, 
+         0.1}, {{$CellContext`rMiss$$, 0, "rMiss"}, -10, 0, 0.1}}, 
+      "Options" :> {}, "DefaultOptions" :> {}],
+     ImageSizeCache->{504., {326., 334.}},
+     SingleEvaluation->True],
+    Deinitialization:>None,
+    DynamicModuleValues:>{},
+    SynchronousInitialization->True,
+    UndoTrackedVariables:>{Typeset`show$$, Typeset`bookmarkMode$$},
+    UnsavedVariables:>{Typeset`initDone$$},
+    UntrackedVariables:>{Typeset`size$$}], "Manipulate",
+   Deployed->True,
+   StripOnInput->False],
+  Manipulate`InterpretManipulate[1]]], "Output",
+ CellChangeTimes->{{3.908583776462124*^9, 3.9085837831503057`*^9}, 
+   3.908584588390772*^9, {3.908584778700482*^9, 3.9085848244352617`*^9}, 
+   3.908644488692284*^9, 3.908644536179881*^9, 3.9086479114578533`*^9, {
+   3.90864796023734*^9, 3.9086479840046377`*^9}, {3.90864825778449*^9, 
+   3.9086482651076603`*^9}, {3.908648417191226*^9, 3.9086484246864347`*^9}},
+ CellLabel->"Out[20]=",ExpressionUUID->"52de248d-a650-49f8-a824-0864651a45cd"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"Manipulate", "[", 
+  RowBox[{
+   RowBox[{"Module", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"t", ",", "expr"}], "}"}], ",", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"expr", "[", "t_", "]"}], ":=", 
+       RowBox[{"Piecewise", "[", 
+        RowBox[{"{", 
+         RowBox[{
+          RowBox[{"{", 
+           RowBox[{
+            RowBox[{"(", 
+             RowBox[{"1", "-", 
+              RowBox[{
+               RowBox[{"(", 
+                RowBox[{"1", "-", "pt"}], ")"}], "^", "t"}]}], ")"}], ",", 
+            RowBox[{"t", "<=", "noSigNodes"}]}], "}"}], ",", 
+          RowBox[{"{", 
+           RowBox[{
+            RowBox[{"(", 
+             RowBox[{
+              RowBox[{
+               RowBox[{"(", 
+                RowBox[{"1", "-", "pt"}], ")"}], "^", 
+               RowBox[{"(", 
+                RowBox[{"t", "-", "noSigNodes"}], ")"}]}], "-", 
+              RowBox[{
+               RowBox[{"(", 
+                RowBox[{"1", "-", "pt"}], ")"}], "^", "t"}]}], ")"}], ",", 
+            RowBox[{"t", ">", "noSigNodes"}]}], "}"}]}], "}"}], "]"}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"Plot", "[", 
+       RowBox[{
+        RowBox[{"expr", "[", "t", "]"}], ",", 
+        RowBox[{"{", 
+         RowBox[{"t", ",", "50", ",", "100"}], "}"}], ",", 
+        RowBox[{"PlotLabel", "->", 
+         RowBox[{"\"\<Function: \>\"", "<>", 
+          RowBox[{"ToString", "[", 
+           RowBox[{"expr", "[", "t", "]"}], "]"}]}]}], ",", 
+        RowBox[{"(*", 
+         RowBox[{"Optional", ":", 
+          RowBox[{
+          "Display", " ", "the", " ", "function", " ", "in", " ", "the", " ", 
+           "plot"}]}], "*)"}], 
+        RowBox[{"AxesLabel", "->", 
+         RowBox[{"{", 
+          RowBox[{"\"\<t\>\"", ",", "\"\<Output\>\""}], "}"}]}], ",", 
+        RowBox[{"PlotRange", "->", "All"}]}], "]"}]}]}], "]"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"noSigNodes", ",", "50", ",", "\"\<noSigNodes\>\""}], "}"}], 
+     ",", "1", ",", "200", ",", "1"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"pt", ",", "0.012", ",", "\"\<pt\>\""}], "}"}], ",", "0", ",", 
+     "1", ",", "0.01"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"rFA", ",", 
+       RowBox[{"-", "5"}], ",", "\"\<rFA\>\""}], "}"}], ",", 
+     RowBox[{"-", "200"}], ",", "0", ",", "0.1"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"rFood", ",", "10", ",", "\"\<rFood\>\""}], "}"}], ",", "0", 
+     ",", "200", ",", "0.1"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"rMiss", ",", "0", ",", "\"\<rMiss\>\""}], "}"}], ",", 
+     RowBox[{"-", "10"}], ",", "0", ",", "0.1"}], "}"}]}], "]"}]], "Input",
+ CellChangeTimes->{{3.9086443796065493`*^9, 3.9086444199284477`*^9}, {
+   3.908644459362587*^9, 3.9086444830490294`*^9}, {3.9086445192014503`*^9, 
+   3.9086445312614613`*^9}, 3.908647902695698*^9, {3.908648161473712*^9, 
+   3.9086481615778027`*^9}},
+ CellLabel->"In[21]:=",ExpressionUUID->"96774a69-408b-4e66-b7b1-e5cd332f81db"],
+
+Cell[BoxData[
+ TagBox[
+  StyleBox[
+   DynamicModuleBox[{$CellContext`noSigNodes$$ = 50, $CellContext`pt$$ = 
+    0.012, $CellContext`rFA$$ = -5, $CellContext`rFood$$ = 
+    79.5, $CellContext`rMiss$$ = 0, Typeset`show$$ = True, 
+    Typeset`bookmarkList$$ = {}, Typeset`bookmarkMode$$ = "Menu", 
+    Typeset`animator$$, Typeset`animvar$$ = 1, Typeset`name$$ = 
+    "\"untitled\"", Typeset`specs$$ = {{{
+       Hold[$CellContext`noSigNodes$$], 50, "noSigNodes"}, 1, 200, 1}, {{
+       Hold[$CellContext`pt$$], 0.012, "pt"}, 0, 1, 0.01}, {{
+       Hold[$CellContext`rFA$$], -5, "rFA"}, -200, 0, 0.1}, {{
+       Hold[$CellContext`rFood$$], 10, "rFood"}, 0, 200, 0.1}, {{
+       Hold[$CellContext`rMiss$$], 0, "rMiss"}, -10, 0, 0.1}}, 
+    Typeset`size$$ = {450., {162., 169.}}, Typeset`update$$ = 0, 
+    Typeset`initDone$$, Typeset`skipInitDone$$ = True}, 
+    DynamicBox[Manipulate`ManipulateBoxes[
+     1, StandardForm, 
+      "Variables" :> {$CellContext`noSigNodes$$ = 50, $CellContext`pt$$ = 
+        0.012, $CellContext`rFA$$ = -5, $CellContext`rFood$$ = 
+        10, $CellContext`rMiss$$ = 0}, "ControllerVariables" :> {}, 
+      "OtherVariables" :> {
+       Typeset`show$$, Typeset`bookmarkList$$, Typeset`bookmarkMode$$, 
+        Typeset`animator$$, Typeset`animvar$$, Typeset`name$$, 
+        Typeset`specs$$, Typeset`size$$, Typeset`update$$, Typeset`initDone$$,
+         Typeset`skipInitDone$$}, "Body" :> 
+      Module[{$CellContext`t$, $CellContext`expr$}, $CellContext`expr$[
+           Pattern[$CellContext`t$, 
+            Blank[]]] := 
+         Piecewise[{{
+            1 - (1 - $CellContext`pt$$)^$CellContext`t$, $CellContext`t$ <= \
+$CellContext`noSigNodes$$}, {(
+               1 - $CellContext`pt$$)^($CellContext`t$ - \
+$CellContext`noSigNodes$$) - (
+              1 - $CellContext`pt$$)^$CellContext`t$, $CellContext`t$ > \
+$CellContext`noSigNodes$$}}]; Plot[
+          $CellContext`expr$[$CellContext`t$], {$CellContext`t$, 50, 100}, 
+          PlotLabel -> "Function: " <> ToString[
+             $CellContext`expr$[$CellContext`t$]], 
+          AxesLabel -> {"t", "Output"}, PlotRange -> All]], 
+      "Specifications" :> {{{$CellContext`noSigNodes$$, 50, "noSigNodes"}, 1, 
+         200, 1}, {{$CellContext`pt$$, 0.012, "pt"}, 0, 1, 
+         0.01}, {{$CellContext`rFA$$, -5, "rFA"}, -200, 0, 
+         0.1}, {{$CellContext`rFood$$, 10, "rFood"}, 0, 200, 
+         0.1}, {{$CellContext`rMiss$$, 0, "rMiss"}, -10, 0, 0.1}}, 
+      "Options" :> {}, "DefaultOptions" :> {}],
+     ImageSizeCache->{504., {301., 309.}},
+     SingleEvaluation->True],
+    Deinitialization:>None,
+    DynamicModuleValues:>{},
+    SynchronousInitialization->True,
+    UndoTrackedVariables:>{Typeset`show$$, Typeset`bookmarkMode$$},
+    UnsavedVariables:>{Typeset`initDone$$},
+    UntrackedVariables:>{Typeset`size$$}], "Manipulate",
+   Deployed->True,
+   StripOnInput->False],
+  Manipulate`InterpretManipulate[1]]], "Output",
+ CellChangeTimes->{
+  3.908644422626597*^9, {3.9086444596561003`*^9, 3.9086444834132357`*^9}, {
+   3.908644529016801*^9, 3.9086445316118*^9}, 3.908644833129537*^9, 
+   3.908647917322625*^9, 3.9086480286530123`*^9, 3.9086480930180492`*^9, {
+   3.908648162005904*^9, 3.908648163522848*^9}, {3.908648442072879*^9, 
+   3.9086484464403687`*^9}},
+ CellLabel->"Out[21]=",ExpressionUUID->"5a2e4c00-6f8b-4618-937a-da00b7941184"]
+}, Open  ]],
+
+Cell[BoxData[""], "Input",
+ CellChangeTimes->{
+  3.908584771866873*^9},ExpressionUUID->"fa54c2a6-d12d-4cf5-94c6-\
+e8f45a73080b"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", 
+   RowBox[{
+    RowBox[{"Basically", " ", "in", " ", "the", " ", "good", " ", "case"}], 
+    ",", " ", 
+    RowBox[{
+     RowBox[{
+     "your", " ", "FA", " ", "and", " ", "hit", " ", "is", " ", "a", " ", 
+      "fixed", " ", "non"}], "-", 
+     RowBox[{
+     "zero", " ", "values", " ", "miss", " ", "is", " ", "0.", " ", "In", " ",
+       "the", " ", "bad", " ", "case"}]}], ",", " ", 
+    RowBox[{
+    "miss", " ", "is", " ", "1", " ", "and", " ", "rest", " ", "all", " ", 
+     "are", " ", 
+     RowBox[{"0", "!"}], " ", "Wonderful", " ", 
+     RowBox[{"LOL", "."}]}]}], "*)"}], "\[IndentingNewLine]", 
+  RowBox[{"(*", 
+   RowBox[{
+    RowBox[{
+    "Now", " ", "ofc", " ", "bad", " ", "or", " ", "good", " ", "case", " ", 
+     "depends", " ", "on", " ", "all", " ", "parameters"}], ",", " ", 
+    RowBox[{
+    "however", " ", "the", " ", "optimum", " ", "t", " ", "in", " ", "good", 
+     " ", "case", " ", "is", " ", "noSignalNodes", " ", "and", " ", "the", 
+     " ", "optimal", " ", "t", " ", "in", " ", "bad", " ", "case", " ", "is", 
+     " ", "infinite"}], ",", " ", 
+    RowBox[{
+     RowBox[{"i", ".", "e", ".", " ", "do"}], " ", "not", " ", "ever", " ", 
+     RowBox[{"lick", "!!"}]}]}], "*)"}]}]], "Input",
+ CellChangeTimes->{{3.908585177887809*^9, 3.9085852223703613`*^9}, {
+  3.908585295583047*^9, 
+  3.908585351201338*^9}},ExpressionUUID->"e1dcb664-d69e-44bf-b8cf-\
+1009a615ac6f"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", 
+   RowBox[{
+    RowBox[{
+    "THINK", " ", "HOW", " ", "ALL", " ", "OF", " ", "THIS", " ", "EXTENDS", 
+     " ", "TO", " ", "WHEN", " ", "YOU", " ", "HAVE", " ", "SOME", " ", 
+     "CERTAINITY", " ", "IN", " ", "PROB", " ", "OF", " ", 
+     RowBox[{
+      RowBox[{"OBS", "!!"}], "!"}], " ", "LIKE", " ", 
+     RowBox[{"E", ".", "G", ".", " ", "WHEREVER"}], " ", 
+     RowBox[{"IT", "'"}], "S", " ", "NON", " ", 
+     RowBox[{"HIT", "/", "MISS"}], " ", "FOR", " ", "THE", " ", "ABOVE", " ", 
+     "CASE"}], ",", " ", 
+    RowBox[{
+     RowBox[{"IT", " ", "SHOULD", " ", "ALSO", " ", "BE", " ", "NON"}], "-", 
+     RowBox[{"ZERO", " ", "FOR", " ", "ATTENTION", " ", 
+      RowBox[{"CASE", "!!"}], " ", "CUZ", " ", 
+      RowBox[{"IT", "'"}], "S", " ", "MAX", " ", "OF", " ", "BOTH", " ", 
+      RowBox[{"CASES", "."}]}]}]}], " ", "*)"}], "\[IndentingNewLine]", 
+  RowBox[{"(*", 
+   RowBox[{
+    RowBox[{
+    "THIS", " ", "MEANS", " ", "THAT", " ", "FOR", " ", "THE", " ", 
+     "\"\<GOOD CASE\>\""}], ",", " ", 
+    RowBox[{
+    "EVEN", " ", "IF", " ", "WE", " ", "LET", " ", "ATTENTION", " ", "HAPPEN",
+      " ", 
+     RowBox[{"(", 
+      RowBox[{
+      "ASSUMING", " ", "LOW", " ", "ATTENTION", " ", "0", " ", "COST"}], 
+      ")"}]}], ",", " ", 
+    RowBox[{
+     RowBox[{
+     "WE", " ", "SHOULD", " ", "HAVE", " ", "MISS", " ", "AS", " ", "0.", " ",
+       "BECAUSE", " ", 
+      RowBox[{"THAT", "'"}], "S", " ", "THE", " ", "SOLUTION", " ", "EVEN", 
+      " ", "FOR", " ", "NO", " ", 
+      RowBox[{"ATTENTION", ".", " ", "LIKE"}], " ", "EVEN", " ", "WITH", " ", 
+      "NO", " ", "ATTENTION", " ", "WE", " ", "WERE", " ", "ABLE", " ", "TO", 
+      " ", "JUSTIFY", " ", "NON"}], "-", 
+     RowBox[{"ZERO", " ", "AMOUNT", " ", "OF", " ", "HIT", " ", 
+      RowBox[{"RATE", "."}]}]}]}], "*)"}], "\[IndentingNewLine]", 
+  RowBox[{"(*", " ", 
+   RowBox[{
+    RowBox[{
+    "THINK", " ", "ABOUT", " ", "HIGHER", " ", "FOOD", " ", "HIGHER", " ", 
+     "ATTENTION", " ", "JUSTIFIED", " ", 
+     RowBox[{"ARGUMENT", "!!"}], " ", "AND", " ", "WHEN", " ", "IT", " ", 
+     "FAILS"}], ",", " ", 
+    RowBox[{"IF", " ", 
+     RowBox[{"EVER", ".", " ", "LIKE"}], " ", "WITH", " ", "PENALTY", " ", 
+     "ANYTHING", " ", "CHANGES"}], ",", " ", 
+    RowBox[{
+     RowBox[{"ETC", ".", " ", "ACTUALLY"}], " ", "IT", " ", "NEED", " ", 
+     "NOT", " ", 
+     RowBox[{"FAIL", ".", " ", "IT"}], " ", "JUST", " ", "HAS", " ", "TO", 
+     " ", "BE", " ", "THAT", " ", "BOTH", " ", "HIT", " ", "RATE", " ", "AND",
+      " ", "FALSE", " ", "ALARM", " ", "RATE", " ", 
+     RowBox[{"INCREACES", "!"}]}]}], "*)"}], "\[IndentingNewLine]", 
+  RowBox[{"(*", 
+   RowBox[{
+    RowBox[{"ALSO", " ", "IN", " ", "ABOVE", " ", "BAD", " ", "CASE"}], ",", 
+    " ", 
+    RowBox[{"WHAT", " ", "CHANGES", " ", "WITH", " ", 
+     RowBox[{"ATTENTION", "?", " ", "DEFINTEILY"}], " ", "SOMEHTING", " ", 
+     "HAS", " ", "TO", " ", "CHANGE", " ", "SINCE", " ", "ATTENTION", " ", 
+     "1", " ", "EXTREME", " ", "CASE", " ", "WE", " ", "KNOW", " ", "THE", 
+     " ", 
+     RowBox[{"ANSWER", "!"}], " ", "may", " ", "be", " ", 
+     RowBox[{"that", "'"}], "s", " ", "where", " ", "the", " ", "magic", " ", 
+     "happens", " ", "LOL"}]}], "*)"}], "\[IndentingNewLine]", 
+  RowBox[{"(*", 
+   RowBox[{
+    RowBox[{
+    "CAN", " ", "WE", " ", "SOLVE", " ", "THE", " ", "CLOSED", " ", "FORM", 
+     " ", "BELLMAN", " ", 
+     RowBox[{"EQUATION", "?", " ", "MAYBE"}], " ", "FOR", " ", "SIMPLE", " ", 
+     "TWO", " ", "NODES"}], ",", " ", 
+    RowBox[{
+    "MAYBE", " ", "WE", " ", "CAN", " ", "DO", " ", "INTEGRATION", " ", "TO", 
+     " ", "SOLVE", " ", "THAT", 
+     RowBox[{"??", "?"}]}]}], "*)"}], "\[IndentingNewLine]", 
+  RowBox[{"(*", 
+   RowBox[{
+    RowBox[{
+    "Understand", " ", "what", " ", "an", " ", "observation", " ", "of", " ", 
+     "1", " ", "or", " ", "0", " ", "with", " ", "given", " ", "certainity", 
+     " ", "causes", " ", "to", " ", "the", " ", "belief", " ", 
+     RowBox[{"update", ".", " ", "what"}], " ", "does", " ", "it", " ", "say",
+      " ", "about", " ", "the", " ", "past"}], ",", " ", 
+    RowBox[{
+    "what", " ", "does", " ", "it", " ", "say", " ", "about", " ", "the", " ", 
+     RowBox[{"present", "?"}]}]}], "*)"}]}]], "Input",
+ CellChangeTimes->{{3.908585609583364*^9, 3.908585677674119*^9}, {
+  3.908586225135157*^9, 3.908586329630493*^9}, {3.908586679787725*^9, 
+  3.9085867294256153`*^9}, {3.908586817428081*^9, 3.908586891333736*^9}, {
+  3.90858704448475*^9, 3.908587063169186*^9}, {3.90858738097484*^9, 
+  3.908587440577718*^9}, {3.908591838173997*^9, 
+  3.908591876023266*^9}},ExpressionUUID->"63db9c83-84ab-4a29-ac27-\
+88811ea8f4c1"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", 
+   RowBox[{
+    RowBox[{
+    "In", " ", "the", " ", "full", " ", "fledged", " ", "experiment"}], ",", 
+    " ", 
+    RowBox[{
+    "looks", " ", "like", " ", "the", " ", "following", " ", "is", " ", "the",
+      " ", 
+     RowBox[{"behavior", ":", " ", 
+      RowBox[{
+      "When", " ", "the", " ", "noise", " ", "probability", " ", "is", " ", 
+       "below", " ", "a", " ", "certain", " ", "threshold"}]}]}], ",", " ", 
+    RowBox[{
+    "you", " ", "conitnue", " ", "to", " ", "keep", " ", "make", " ", "high", 
+     " ", "attention", " ", 
+     RowBox[{"observation", ".", " ", "When"}], " ", "the", " ", "noise", " ",
+      "probabilty", " ", "below", " ", "an", " ", "even", " ", "smaller", " ",
+      "threshold"}], ",", " ", 
+    RowBox[{"you", " ", 
+     RowBox[{"lick", "."}]}]}], "*)"}], "\[IndentingNewLine]", 
+  RowBox[{"(*", 
+   RowBox[{
+    RowBox[{
+    "Note", " ", "that", " ", "above", " ", "is", " ", "true", " ", "even", 
+     " ", "for", " ", "this", " ", "no", " ", "attention", " ", 
+     RowBox[{"case", ".", " ", "The"}], " ", "point", " ", "it", " ", 
+     "crosses", " ", "the", " ", "lick", " ", "threshold", " ", "turns", " ", 
+     "out", " ", "to", " ", "be", " ", "just", " ", "the", " ", "noSignal", 
+     " ", "nodes", " ", "if", " ", "good", " ", "case"}], ",", " ", 
+    RowBox[{"else", " ", 
+     RowBox[{"infinity", "."}]}]}], "*)"}], "\[IndentingNewLine]", 
+  RowBox[{"(*", 
+   RowBox[{
+    RowBox[{
+    "This", " ", "if", " ", "these", " ", "attention", " ", "and", " ", 
+     "lick", " ", "thresholds", " ", "are", " ", "related"}], ",", " ", 
+    RowBox[{"and", " ", "if", " ", "so", " ", 
+     RowBox[{"how", "?"}]}]}], "*)"}], "\[IndentingNewLine]", 
+  RowBox[{"(*", 
+   RowBox[{
+   "Higher", " ", "hit", " ", "rate", " ", "and", " ", "false", " ", "alarm", 
+    " ", "rate", " ", "can", " ", "happen", " ", "if", " ", "the", " ", 
+    "lick", " ", "threshold", " ", "gets", " ", "higher"}], "*)"}], 
+  "\[IndentingNewLine]", 
+  RowBox[{"(*", 
+   RowBox[{
+   "My", " ", "intuition", " ", "is", " ", "lick", " ", "threshold", " ", 
+    "is", " ", "probably", " ", "just", " ", "a", " ", "function", " ", "of", 
+    " ", "food", " ", "reward", " ", "and", " ", "penalty", " ", "cost"}], 
+   "*)"}], "\[IndentingNewLine]", 
+  RowBox[{"(*", 
+   RowBox[{
+   "Higher", " ", "hit", " ", "rate", " ", "can", " ", "happen", " ", "if", 
+    " ", "the", " ", "attention", " ", "threshold", " ", "gets", " ", 
+    "higher"}], "*)"}], "\[IndentingNewLine]", 
+  RowBox[{"(*", 
+   RowBox[{
+    RowBox[{
+    "My", " ", "intuition", " ", "is", " ", "attention", " ", "threshold", 
+     " ", "is", " ", "probably", " ", "just", " ", "a", " ", "function", " ", 
+     "of", " ", "attention", " ", 
+     RowBox[{"cost", ".", " ", "Ambitious"}], " ", "claim"}], " ", "-", " ", 
+    RowBox[{
+    "may", " ", "not", " ", "even", " ", "be", " ", "the", " ", "attention", 
+     " ", "certainity"}]}], "*)"}], "\[IndentingNewLine]", 
+  RowBox[{"(*", 
+   RowBox[{
+   "Maybe", " ", "the", " ", "rate", " ", "at", " ", "whcih", " ", "task", 
+    " ", "ends", " ", "increases", " ", "with", " ", "increase", " ", "in", 
+    " ", "attention", " ", 
+    RowBox[{"threshold", "?", " ", "Could"}], " ", "that", " ", "influence", 
+    " ", "miss", " ", "rate", " ", "and", " ", "therefored", " ", "decrease", 
+    " ", "false", " ", 
+    RowBox[{"alarm", "?"}]}], "*)"}], "\[IndentingNewLine]", 
+  RowBox[{"(*", 
+   RowBox[{
+    RowBox[{
+    "Note", " ", "that", " ", "the", " ", "way", " ", "the", " ", "noise", 
+     " ", "belief", " ", "is", " ", "updated", " ", "might", " ", "actually", 
+     " ", "be", " ", "pretty", " ", "simple"}], " ", "-", " ", 
+    RowBox[{
+    "looks", " ", "like", " ", "something", " ", "linear", " ", "in", " ", 
+     "either", " ", "direction", " ", "depending", " ", "on", " ", 
+     RowBox[{"observation", "."}]}]}], "*)"}], "\[IndentingNewLine]", 
+  RowBox[{"(*", 
+   RowBox[{
+   "Perhaps", " ", "attenion", " ", "cost", " ", "really", " ", "high", " ", 
+    "just", " ", "means", " ", "attention", " ", "threshold", " ", "is", " ", 
+    "below", " ", "the", " ", "lick", " ", 
+    RowBox[{"threshol", "!!"}]}], "*)"}], "\[IndentingNewLine]", 
+  "\[IndentingNewLine]", 
+  RowBox[{"(*", 
+   RowBox[{
+    RowBox[{
+    "Let", " ", "us", " ", "say", " ", "the", " ", "attention", " ", "cost", 
+     " ", "was", " ", "high"}], ",", " ", 
+    RowBox[{
+    "and", " ", "it", " ", "is", " ", "the", " ", "bad", " ", "case", " ", 
+     "scenarion", " ", "in", " ", "no", " ", "attenion", " ", "study", " ", 
+     RowBox[{
+      RowBox[{"(", 
+       RowBox[{
+       "cuz", " ", "good", " ", "would", " ", "mean", " ", "lick", " ", "by", 
+        " ", "signalNodes", " ", "even", " ", "if", " ", "no", " ", 
+        RowBox[{"attention", "."}]}], ")"}], ".", " ", "The"}], " ", 
+     "attention", " ", "threshold", " ", "is", " ", "quite", " ", "low"}], 
+    ",", " ", 
+    RowBox[{"but", " ", "not", " ", "below", " ", "the", " ", "lick", " ", 
+     RowBox[{
+      RowBox[{"(", 
+       RowBox[{
+        RowBox[{"i", ".", "e", ".", " ", "not"}], " ", "super", " ", "low"}], 
+       ")"}], ".", " ", "So"}]}], ",", " ", 
+    RowBox[{
+     RowBox[{"it", "'"}], "d", " ", "prolly", " ", "delay", " ", 
+     RowBox[{"it", "'"}], "s", " ", "lick", " ", "much", " ", "more", " ", 
+     "on", " ", "an", " ", 
+     RowBox[{"average", "?"}]}]}], "*)"}], "\[IndentingNewLine]", 
+  RowBox[{"(*", 
+   RowBox[{
+   "Could", " ", "experimentally", " ", "check", " ", "for", " ", "patterns", 
+    " ", "in", " ", "changes", " ", "of", " ", "the", " ", "two", " ", 
+    "thresholds", " ", "with", " ", 
+    RowBox[{"params", ".", " ", "see"}], " ", "when", " ", "one", " ", "is", 
+    " ", "constant", " ", "and", " ", "other", " ", 
+    RowBox[{"changes", "?"}]}], "*)"}]}]], "Input",
+ CellChangeTimes->{{3.908643811344928*^9, 3.9086438779190598`*^9}, {
+  3.908643923966845*^9, 3.908643970230537*^9}, {3.908644007308877*^9, 
+  3.908644118258008*^9}, {3.9086449651505632`*^9, 3.908645003221891*^9}, {
+  3.9086451211555*^9, 3.908645139892282*^9}, {3.908645258502542*^9, 
+  3.908645284273724*^9}, {3.908645437865758*^9, 3.9086454537050533`*^9}, {
+  3.9086455600582237`*^9, 3.908645640414459*^9}, {3.908646618785383*^9, 
+  3.908646643649438*^9}, {3.908646692240718*^9, 3.9086467112248993`*^9}, {
+  3.908646777715403*^9, 3.9086467963325*^9}, {3.908646871514641*^9, 
+  3.908646907576882*^9}, {3.908651724777573*^9, 
+  3.90865174167839*^9}},ExpressionUUID->"e8f565ed-a1f4-43ae-884b-\
+6e0bb3cb253e"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", 
+   RowBox[{
+    RowBox[{"For", " ", "the", " ", "good", " ", "case"}], ",", " ", 
+    RowBox[{
+    "miss", " ", "has", " ", "to", " ", "be", " ", "0", " ", "whether", " ", 
+     "you", " ", "pay", " ", "attention", " ", "or", " ", 
+     RowBox[{"not", ".", " ", "So"}]}], ",", " ", 
+    RowBox[{
+     RowBox[{"really", " ", "see", " ", "non"}], "-", 
+     RowBox[{"zero", " ", "probability", " ", "values"}]}], ",", " ", 
+    RowBox[{
+    "we", " ", "see", " ", "before", " ", "food", " ", "reward", " ", 
+     "values"}], ",", " ", 
+    RowBox[{"where", " ", "it", " ", "is", " ", "the", " ", "bad", " ", 
+     RowBox[{"case", "."}]}]}], " ", "*)"}], "\[IndentingNewLine]", 
+  RowBox[{"(*", 
+   RowBox[{
+    RowBox[{
+    "Given", " ", "the", " ", "argument", " ", "that", " ", "in", " ", "the", 
+     " ", "good", " ", "case", " ", "it", " ", "should", " ", "always", " ", 
+     "lick"}], ",", " ", 
+    RowBox[{
+     RowBox[{"i", ".", "e", ".", " ", "miss"}], " ", "should", " ", "be", " ",
+      "0", " ", "whether", " ", "there", " ", "is", " ", "attention", " ", 
+     "or", " ", "not"}], ",", " ", 
+    RowBox[{
+    "the", " ", "change", " ", "that", " ", "is", " ", "allowed", " ", "as", 
+     " ", "food", " ", "reward", " ", "increases", " ", "when", " ", 
+     "attention", " ", "is", " ", "allowed", " ", "is", " ", "higher", " ", 
+     "hit", " ", "rate", " ", "and", " ", "lower", " ", "false", " ", "alarm",
+      " ", "rate"}], ",", " ", 
+    RowBox[{
+    "because", " ", "miss", " ", "has", " ", "to", " ", "be", " ", "0", " ", 
+     RowBox[{"regardless", "."}]}]}], "*)"}], "\[IndentingNewLine]", 
+  RowBox[{"(*", 
+   RowBox[{
+    RowBox[{"Prediction", " ", "-", " ", 
+     RowBox[{
+     "\"\<in the bad case. when attention is allowed\n.\>\"", " ", "guessing",
+       " ", "both", " ", "hit", " ", "rate", " ", "and", " ", "FA", " ", 
+      "will", " ", 
+      RowBox[{"increase", ".", " ", 
+       RowBox[{"Here", "'"}]}], "s", " ", "the", " ", "more", " ", 
+      "intersting", " ", 
+      RowBox[{"guess", ".", " ", "If"}], " ", "attention", " ", "certainity", 
+      " ", "is", " ", "higher"}]}], ",", " ", 
+    RowBox[{
+    "the", " ", "increase", " ", "in", " ", "hit", " ", "rate", " ", "will", 
+     " ", "be", " ", "larger", " ", "for", " ", "unit", " ", "increase", " ", 
+     "in", " ", "food", " ", "reward"}], ",", " ", 
+    RowBox[{
+    "however", " ", "the", " ", "increase", " ", "in", " ", "FA", " ", "rate",
+      " ", "will", " ", "be", " ", "relatively", " ", 
+     RowBox[{"smaller", ".", " ", "Opposite"}], " ", "when", " ", 
+     "certainity", " ", "is", " ", 
+     RowBox[{"low", ".", " ", "This"}], " ", "is", " ", "because"}], ",", " ", 
+    RowBox[{"when", " ", "certainity", " ", "is", " ", "high"}], ",", " ", 
+    RowBox[{
+     RowBox[{"there", "'"}], "s", " ", "more", " ", "chance", " ", "of", " ", 
+     "bringing", " ", "noise", " ", "porb", " ", "down", " ", "faster", " ", 
+     "and", " ", "more", " ", 
+     RowBox[{"precisely", "?", " ", "So"}], " ", "increase", " ", "in", " ", 
+     "hit", " ", "would", " ", "be", " ", 
+     RowBox[{"large", "?", " ", "whereas"}], " ", "increase", " ", "in", " ", 
+     "FA", " ", "would", " ", "be", " ", 
+     RowBox[{"small", ".", 
+      RowBox[{"?", " ", 
+       RowBox[{"IDK", " ", "too", " ", "much", " ", 
+        RowBox[{"speculating", "?"}]}]}]}]}]}], "*)"}]}]], "Input",
+ CellChangeTimes->{{3.908649230959066*^9, 3.908649312352483*^9}, {
+  3.908651132182499*^9, 3.908651212641233*^9}, {3.908651542093257*^9, 
+  3.908651684387319*^9}, {3.9086517490878963`*^9, 3.908651750643775*^9}, {
+  3.908651784231164*^9, 
+  3.908651845120335*^9}},ExpressionUUID->"5c8ecc2a-6c98-4425-9397-\
+e8a2e6aa7a5b"],
+
+Cell[BoxData[
+ RowBox[{"(*", 
+  RowBox[{
+   RowBox[{"prediction", " ", "-", " ", 
+    RowBox[{
+    "attention", " ", "threshold", " ", "first", " ", "keeps", " ", 
+     "increasing", " ", "slowly", " ", "until", " ", "a", " ", "certain", " ",
+      "point"}]}], ",", " ", 
+   RowBox[{
+   "then", " ", "drastically", " ", "after", " ", "that", " ", "with", " ", 
+    "increase", " ", "in", " ", "food", " ", 
+    RowBox[{"reward", "?", " ", "Or"}], " ", "could", " ", "evn", " ", "be", 
+    " ", "linear"}], ",", " ", 
+   RowBox[{
+   "we", " ", "just", " ", "looked", " ", "at", " ", "extremems", " ", "in", 
+    " ", "previous", " ", 
+    RowBox[{"plots", ".", " ", "Simply"}], " ", "cuz", " ", "the", " ", 
+    "budget", " ", "for", " ", "attention", " ", "increases", " ", "with", 
+    " ", "icnrease", " ", "in", " ", "food", " ", 
+    RowBox[{"reward", ".", " ", "Like"}], " ", 
+    RowBox[{"it", "'"}], "s", " ", "worth", " ", 
+    RowBox[{"attending", ".", " ", "lick"}], " ", "threshold", " ", "first", 
+    " ", "stays", " ", "the", " ", "same", " ", "until", " ", "a", " ", 
+    RowBox[{"point", ".", " ", "This"}], " ", "is", " ", "because", " ", 
+    "this", " ", "is", " ", "the", " ", "region", " ", "where", " ", "the", 
+    " ", "cost", " ", "of", " ", "even", " ", "a", " ", "small", " ", 
+    "percentage", " ", "of", " ", "flase", " ", "alarm", " ", "is", " ", 
+    "more", " ", "than", " ", "the", " ", "food", " ", "reward", " ", "it", 
+    " ", "can", " ", "benifit", " ", 
+    RowBox[{"from", ".", " ", "This"}], " ", "was", " ", "derived", " ", 
+    "from", " ", "the", " ", "region", " ", "of", " ", "no", " ", 
+    "attention"}], ",", " ", 
+   RowBox[{"bad", " ", 
+    RowBox[{"case", ".", " ", "Then"}], " ", "after", " ", "a", " ", 
+    "certain", " ", "point"}], ",", " ", 
+   RowBox[{
+   "this", " ", "threshold", " ", "keeps", " ", "decreasing", " ", "because", 
+    " ", "the", " ", "higher", " ", "attention", " ", "now", " ", "gives", 
+    " ", "it", " ", "leeway", " ", "to", " ", "be", " ", "more", " ", 
+    "correct", " ", "in", " ", "its", " ", "guesses", " ", "as", " ", 
+    RowBox[{"well", "."}]}]}], "*)"}]], "Input",
+ CellChangeTimes->{{3.9086572432176027`*^9, 3.9086574290125923`*^9}, {
+  3.908658305562078*^9, 
+  3.908658364762833*^9}},ExpressionUUID->"0799f176-653b-4478-a558-\
+5687d3c9330a"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", 
+   RowBox[{
+    RowBox[{
+    "To", " ", "test", " ", "whether", " ", "the", " ", "hypothesis", " ", 
+     "of", " ", "two", " ", "thresholds", " ", "on", " ", "noise", " ", 
+     "porbability", " ", "is", " ", "true"}], ",", " ", 
+    RowBox[{
+    "you", " ", "can", " ", "look", " ", "at", " ", "the", " ", "fully", " ", 
+     "connected", " ", 
+     RowBox[{"experiment", "'"}], "s", " ", "weights", " ", "and", " ", "see",
+      " ", "if", " ", "most", " ", "are", " ", "0", " ", "and", " ", "what", 
+     " ", "the", " ", "thresolds", " ", "are", " ", 
+     RowBox[{"like", "!"}]}]}], "*)"}], "\[IndentingNewLine]", 
+  RowBox[{"(*", 
+   RowBox[{
+   "Also", " ", "write", " ", "up", " ", "code", " ", "for", " ", "finding", 
+    " ", "the", " ", "two", " ", "thresholds", " ", "emprically", " ", "and", 
+    " ", "see", " ", "how", " ", "it", " ", "changes", " ", "in", " ", "the", 
+    " ", "three", " ", "regimes", " ", "we", " ", "are", " ", 
+    RowBox[{"studying", ".", " ", "And"}], " ", "then", " ", "see", " ", "if",
+     " ", "your", " ", "prediciton", " ", "is", " ", 
+    RowBox[{"true", "."}]}], "*)"}]}]], "Input",
+ CellChangeTimes->{{3.9086586308573914`*^9, 
+  3.908658714484036*^9}},ExpressionUUID->"87f759c2-79b0-4703-ae76-\
+2f261b8c9c2f"]
+},
+WindowSize->{Full, Full},
+WindowMargins->{{4, Automatic}, {Automatic, 4}},
+Magnification:>1.25 Inherited,
+FrontEndVersion->"13.2 for Mac OS X ARM (64-bit) (January 30, 2023)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"1635df3e-0030-423a-92f8-52c589dd70b4"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[580, 22, 4063, 106, 194, "Input",ExpressionUUID->"a9485daf-0cde-47e8-a2e4-8e2346fe058b"],
+Cell[4646, 130, 3886, 69, 713, "Output",ExpressionUUID->"40a583c4-d6ae-4dff-8b4d-8f305d6b7f50"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[8569, 204, 1869, 52, 90, "Input",ExpressionUUID->"fe3fd06c-cb28-47d5-b494-6ea6468f58a1"],
+Cell[10441, 258, 176, 2, 42, "Output",ExpressionUUID->"95f3e04a-7389-45b4-b715-54d3d6256da0"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[10654, 265, 649, 19, 37, "Input",ExpressionUUID->"90b4351a-0edd-4a88-a517-cbc89cc1535f"],
+Cell[11306, 286, 212, 4, 42, "Output",ExpressionUUID->"95c280ee-d4bc-443f-8847-6361af0d39e6"]
+}, Open  ]],
+Cell[11533, 293, 1345, 34, 116, "Input",ExpressionUUID->"b489ce51-0993-47e6-b96e-a53a433f62fc"],
+Cell[12881, 329, 954, 20, 90, "Input",ExpressionUUID->"a0b18ecc-3b89-4638-91b4-5dbf2dc4b8fb"],
+Cell[CellGroupData[{
+Cell[13860, 353, 2840, 75, 116, "Input",ExpressionUUID->"6fe11d1c-ddac-4709-a3fc-51e066038027"],
+Cell[16703, 430, 3295, 60, 683, "Output",ExpressionUUID->"52de248d-a650-49f8-a824-0864651a45cd"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[20035, 495, 3109, 83, 142, "Input",ExpressionUUID->"96774a69-408b-4e66-b7b1-e5cd332f81db"],
+Cell[23147, 580, 3346, 63, 633, "Output",ExpressionUUID->"5a2e4c00-6f8b-4618-937a-da00b7941184"]
+}, Open  ]],
+Cell[26508, 646, 128, 3, 37, "Input",ExpressionUUID->"fa54c2a6-d12d-4cf5-94c6-e8f45a73080b"],
+Cell[26639, 651, 1439, 34, 142, "Input",ExpressionUUID->"e1dcb664-d69e-44bf-b8cf-1009a615ac6f"],
+Cell[28081, 687, 4683, 100, 324, "Input",ExpressionUUID->"63db9c83-84ab-4a29-ac27-88811ea8f4c1"],
+Cell[32767, 789, 6549, 138, 558, "Input",ExpressionUUID->"e8f565ed-a1f4-43ae-884b-6e0bb3cb253e"],
+Cell[39319, 929, 3736, 76, 298, "Input",ExpressionUUID->"5c8ecc2a-6c98-4425-9397-e8a2e6aa7a5b"],
+Cell[43058, 1007, 2338, 44, 220, "Input",ExpressionUUID->"0799f176-653b-4478-a558-5687d3c9330a"],
+Cell[45399, 1053, 1299, 26, 116, "Input",ExpressionUUID->"87f759c2-79b0-4703-ae76-2f261b8c9c2f"]
+}
+]
+*)
+
