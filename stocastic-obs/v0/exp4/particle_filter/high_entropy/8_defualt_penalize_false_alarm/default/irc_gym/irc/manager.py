@@ -86,6 +86,11 @@ class AgentManager(Manager):
         #     policy=policy, env=model, policy_kwargs=config.policy,
         #     device=self.device, seed=config.seed, gamma=config.algo.gamma, ent_coef=config.algo.ent_coef
         # )
+        # custom_policy_arch = []
+        # algo = config.algo.instantiate(
+        #     policy=policy, env=model, policy_kwargs={"net_arch": custom_policy_arch},
+        #     device=self.device, seed=config.seed, gamma=config.algo.gamma, ent_coef=config.algo.ent_coef, learning_rate=config.algo.learning_rate
+        # )
         
         
         
@@ -426,6 +431,88 @@ class IRCManager:
         config = self.agent_manager.get_config({'env_param': env_param, 'seed': seed})
         self.agent_manager.process(config, num_epochs=num_epochs, **kwargs)
         return self.agent_manager.agent
+
+
+
+#Lokesh added this to access the weights and biases
+    def agent_trained_wegihts_biases(self,
+        env_param: list[float] = None,
+        seed: Optional[int] = None,
+    ):
+        r"""Inspects one agent.
+
+        This method generates a figure composed of the training progress of the
+        agent, optimization progress of distributions estimation. It can be ran
+        while the agent is being trained.
+
+        Args
+        ----
+        env_param, seed:
+            Environment parameters and seed of an agent, see `train_agent` for
+            more details.
+        figsize:
+            Size of the summary figure.
+
+        """
+        if seed is None:
+            # if agent seed is not specified, find the most trained one
+
+            
+            
+            # Lokesh added for scheduling - cond is kind of like what is being read from saved file, which has info only about env_param and seed
+            # cond = self.agent_manager.get_config({'env_param': env_param})
+            cond = {}
+            cond['env_param'] = self.agent_manager.get_config({'env_param': env_param})['env_param']
+            cond['seed'] = self.agent_manager.get_config({'env_param': env_param})['seed']
+
+
+            
+            cond.pop('seed')
+            keys = list(self.agent_manager.completed(cond=cond))
+            random.shuffle(keys)
+            max_epoch, best_key = 0, None
+            for key in keys:
+                if self.agent_manager.stats[key]['epoch']>max_epoch:
+                    max_epoch = self.agent_manager.stats[key]['epoch']
+                    best_key = key
+            if best_key is None:
+                raise RuntimeError(
+                    f"No checkpoint found for environment parameter {cond.env_param}."
+                )
+            else:
+                print(f"Fetching the most trained agent so far (epoch {max_epoch}).")
+                config = self.agent_manager.configs[best_key]
+
+
+
+
+                # Lokesh added for scheduling - since cond had info only about env_param and seed, after finding best key we need to add other things to config file from defaults yaml.
+                config['env'] = self.agent_manager.get_config({'env_param': env_param})['env']
+                config['model'] = self.agent_manager.get_config({'env_param': env_param})['model']
+                config['policy'] = self.agent_manager.get_config({'env_param': env_param})['policy']
+                config['algo'] = self.agent_manager.get_config({'env_param': env_param})['algo']
+
+
+
+
+        else:
+            config = self.agent_manager.get_config({'env_param': env_param, 'seed': seed})
+            key = self.agent_manager.configs.get_key(config)
+            if key is None:
+                raise RuntimeError(
+                    f"No checkpoint found for environment parameter {config.env_param} and seed "
+                    f"{config.seed}."
+                )
+        self.agent_manager.setup(config)
+        self.agent_manager.load_ckpt()
+
+        weights_bias_dict = {}
+        weights_bias_dict['action_net_weight'] = self.agent_manager.ckpt['agent_state']['policy_state']['action_net.weight'][0]
+        weights_bias_dict['action_net_bias'] = self.agent_manager.ckpt['agent_state']['policy_state']['action_net.bias'][0]
+        weights_bias_dict['value_net_weight'] = self.agent_manager.ckpt['agent_state']['policy_state']['value_net.weight'][0]
+        weights_bias_dict['value_net_bias'] = self.agent_manager.ckpt['agent_state']['policy_state']['value_net.bias'][0]
+        return weights_bias_dict
+    
 
     def inspect_agent(self,
         env_param: list[float] = None,
