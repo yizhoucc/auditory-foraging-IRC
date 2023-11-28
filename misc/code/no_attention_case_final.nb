@@ -1,0 +1,387 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 13.2' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     15647,        379]
+NotebookOptionsPosition[     15135,        361]
+NotebookOutlinePosition[     15562,        378]
+CellTagsIndexPosition[     15519,        375]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell[BoxData[
+ RowBox[{"Manipulate", "[", 
+  RowBox[{
+   RowBox[{"Module", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+      "t", ",", "totReward", ",", " ", "faReward", ",", " ", "foodReward", 
+       ",", " ", "missReward"}], "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"faReward", "[", "t_", "]"}], ":=", 
+       RowBox[{"Piecewise", "[", 
+        RowBox[{"{", 
+         RowBox[{
+          RowBox[{"{", 
+           RowBox[{"rFA", ",", 
+            RowBox[{"t", "==", "0"}]}], "}"}], ",", 
+          RowBox[{"{", 
+           RowBox[{
+            RowBox[{"rFA", "*", 
+             RowBox[{
+              RowBox[{"(", 
+               RowBox[{"1", "-", "p"}], ")"}], "^", "t"}]}], ",", 
+            RowBox[{"1", "<=", "t", "<=", 
+             RowBox[{"(", 
+              RowBox[{"noSigNodes", "-", "1"}], ")"}]}]}], "}"}], ",", 
+          RowBox[{"{", 
+           RowBox[{
+            RowBox[{"rFA", "*", 
+             RowBox[{
+              RowBox[{"(", 
+               RowBox[{"1", "-", "p"}], ")"}], "^", "t"}]}], ",", 
+            RowBox[{"t", ">", 
+             RowBox[{"(", 
+              RowBox[{"noSigNodes", "-", "1"}], ")"}]}]}], "}"}]}], "}"}], 
+        "]"}]}], ";", "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{"foodReward", "[", "t_", "]"}], ":=", 
+       RowBox[{"Piecewise", "[", 
+        RowBox[{"{", 
+         RowBox[{
+          RowBox[{"{", 
+           RowBox[{"0", ",", 
+            RowBox[{"t", "==", "0"}]}], "}"}], ",", 
+          RowBox[{"{", 
+           RowBox[{
+            RowBox[{"rFood", "*", 
+             RowBox[{"(", 
+              RowBox[{"1", "-", 
+               SuperscriptBox[
+                RowBox[{"(", 
+                 RowBox[{"1", "-", "p"}], ")"}], "t"]}], ")"}]}], ",", 
+            RowBox[{"1", "<=", "t", "<=", 
+             RowBox[{"(", 
+              RowBox[{"noSigNodes", "-", "1"}], ")"}]}]}], "}"}], ",", 
+          "\[IndentingNewLine]", 
+          RowBox[{"{", 
+           RowBox[{
+            RowBox[{"rFood", "*", 
+             SuperscriptBox[
+              RowBox[{"(", 
+               RowBox[{"1", "-", "p"}], ")"}], 
+              RowBox[{"t", "-", 
+               RowBox[{"(", 
+                RowBox[{"noSigNodes", "-", "1"}], ")"}]}]], "*", 
+             RowBox[{"(", 
+              RowBox[{"1", "-", 
+               SuperscriptBox[
+                RowBox[{"(", 
+                 RowBox[{"1", "-", "p"}], ")"}], 
+                RowBox[{"(", 
+                 RowBox[{"noSigNodes", "-", "1"}], ")"}]]}], ")"}]}], ",", 
+            RowBox[{"t", ">", 
+             RowBox[{"(", 
+              RowBox[{"noSigNodes", "-", "1"}], ")"}]}]}], "}"}]}], "}"}], 
+        "]"}]}], ";", "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{"missReward", "[", "t_", "]"}], ":=", 
+       RowBox[{"Piecewise", "[", 
+        RowBox[{"{", 
+         RowBox[{
+          RowBox[{"{", 
+           RowBox[{"0", ",", 
+            RowBox[{"t", "==", "0"}]}], "}"}], ",", 
+          RowBox[{"{", 
+           RowBox[{"0", ",", 
+            RowBox[{"1", "<=", "t", "<=", 
+             RowBox[{"(", 
+              RowBox[{"noSigNodes", "-", "1"}], ")"}]}]}], "}"}], ",", 
+          "\[IndentingNewLine]", 
+          RowBox[{"{", 
+           RowBox[{
+            RowBox[{"rMiss", "*", 
+             RowBox[{"(", 
+              RowBox[{"1", "-", 
+               SuperscriptBox[
+                RowBox[{"(", 
+                 RowBox[{"1", "-", "p"}], ")"}], 
+                RowBox[{"t", "-", 
+                 RowBox[{"(", 
+                  RowBox[{"noSigNodes", "-", "1"}], ")"}]}]]}], ")"}]}], ",", 
+            
+            RowBox[{"t", ">", 
+             RowBox[{"(", 
+              RowBox[{"noSigNodes", "-", "1"}], ")"}]}]}], "}"}]}], "}"}], 
+        "]"}]}], ";", "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{"totReward", "[", "t_", "]"}], ":=", 
+       RowBox[{"Piecewise", "[", 
+        RowBox[{"{", 
+         RowBox[{
+          RowBox[{"{", 
+           RowBox[{"rFA", ",", 
+            RowBox[{"t", "==", "0"}]}], "}"}], ",", 
+          RowBox[{"{", 
+           RowBox[{
+            RowBox[{
+             RowBox[{"rFA", "*", 
+              RowBox[{
+               RowBox[{"(", 
+                RowBox[{"1", "-", "p"}], ")"}], "^", "t"}]}], "+", 
+             RowBox[{"rFood", "*", 
+              RowBox[{"(", 
+               RowBox[{"1", "-", 
+                SuperscriptBox[
+                 RowBox[{"(", 
+                  RowBox[{"1", "-", "p"}], ")"}], "t"]}], ")"}]}]}], ",", 
+            RowBox[{"1", "<=", "t", "<=", 
+             RowBox[{"(", 
+              RowBox[{"noSigNodes", "-", "1"}], ")"}]}]}], "}"}], ",", 
+          "\[IndentingNewLine]", 
+          RowBox[{"{", 
+           RowBox[{
+            RowBox[{
+             RowBox[{"rFA", "*", 
+              RowBox[{
+               RowBox[{"(", 
+                RowBox[{"1", "-", "p"}], ")"}], "^", "t"}]}], "+", 
+             RowBox[{"rFood", "*", 
+              SuperscriptBox[
+               RowBox[{"(", 
+                RowBox[{"1", "-", "p"}], ")"}], 
+               RowBox[{"t", "-", 
+                RowBox[{"(", 
+                 RowBox[{"noSigNodes", "-", "1"}], ")"}]}]], "*", 
+              RowBox[{"(", 
+               RowBox[{"1", "-", 
+                SuperscriptBox[
+                 RowBox[{"(", 
+                  RowBox[{"1", "-", "p"}], ")"}], 
+                 RowBox[{"(", 
+                  RowBox[{"noSigNodes", "-", "1"}], ")"}]]}], ")"}]}], "+", 
+             RowBox[{"rMiss", "*", 
+              RowBox[{"(", 
+               RowBox[{"1", "-", 
+                SuperscriptBox[
+                 RowBox[{"(", 
+                  RowBox[{"1", "-", "p"}], ")"}], 
+                 RowBox[{"t", "-", 
+                  RowBox[{"(", 
+                   RowBox[{"noSigNodes", "-", "1"}], ")"}]}]]}], ")"}]}]}], 
+            ",", 
+            RowBox[{"t", ">", 
+             RowBox[{"(", 
+              RowBox[{"noSigNodes", "-", "1"}], ")"}]}]}], "}"}]}], "}"}], 
+        "]"}]}], ";", "\[IndentingNewLine]", 
+      RowBox[{"Plot", "[", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{
+          RowBox[{"faReward", "[", "t", "]"}], ",", 
+          RowBox[{"foodReward", "[", "t", "]"}], ",", " ", 
+          RowBox[{"missReward", "[", "t", "]"}], ",", 
+          RowBox[{"totReward", "[", "t", "]"}]}], "}"}], ",", 
+        RowBox[{"{", 
+         RowBox[{"t", ",", "0", ",", "100"}], "}"}], ",", 
+        RowBox[{"AxesLabel", "->", 
+         RowBox[{"{", 
+          RowBox[{"\"\<t\>\"", ",", "\"\<Output\>\""}], "}"}]}], ",", 
+        RowBox[{"PlotLegends", "->", 
+         RowBox[{"{", 
+          RowBox[{
+          "\"\<False alarm reward\>\"", ",", "\"\<Food reward\>\"", ",", 
+           "\"\<Miss reward\>\"", ",", "\"\<Total reward\>\""}], "}"}]}], ",", 
+        RowBox[{"PlotRange", "->", "All"}]}], "]"}]}]}], "]"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"noSigNodes", ",", "50", ",", "\"\<noSigNodes\>\""}], "}"}], 
+     ",", "1", ",", "200", ",", "1"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"p", ",", "0.012", ",", "\"\<Transition prob.\>\""}], "}"}], 
+     ",", "0", ",", "1", ",", "0.001"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"rFA", ",", 
+       RowBox[{"-", "0.15"}], ",", "\"\<rFA\>\""}], "}"}], ",", 
+     RowBox[{"-", "200"}], ",", "0", ",", "0.001"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"rFood", ",", "0.125", ",", "\"\<rFood\>\""}], "}"}], ",", "0", 
+     ",", "200", ",", "0.001"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"rMiss", ",", "0", ",", "\"\<rMiss\>\""}], "}"}], ",", 
+     RowBox[{"-", "10"}], ",", "0", ",", "0.1"}], "}"}]}], "]"}]], "Input",
+ CellChangeTimes->{{3.908582069350819*^9, 3.908582069352632*^9}, {
+   3.908582122326807*^9, 3.90858216324634*^9}, {3.9085825741193542`*^9, 
+   3.908582577293541*^9}, {3.9085826529211187`*^9, 3.908582663473596*^9}, {
+   3.9085830691678743`*^9, 3.908583093965899*^9}, {3.90864788902533*^9, 
+   3.908647889188088*^9}, {3.90864828839357*^9, 3.908648290089938*^9}, 
+   3.9086483666521063`*^9, 3.90864840450917*^9, 3.908755919521077*^9, {
+   3.9087559575619087`*^9, 3.9087560086978693`*^9}, {3.9087560769525013`*^9, 
+   3.908756077056553*^9}, {3.908762452916431*^9, 3.908762453372793*^9}, {
+   3.90906437665401*^9, 3.9090644011029778`*^9}, 3.909064443702858*^9, 
+   3.9090646290555553`*^9, 3.9090711757403107`*^9, {3.909071269272772*^9, 
+   3.9090712727604227`*^9}, 3.9090714353661747`*^9, 3.909072080603373*^9, {
+   3.909073289684144*^9, 3.9090733841959753`*^9}, 3.909073419079117*^9, {
+   3.909073467648988*^9, 3.909073467811599*^9}, {3.9090735883141537`*^9, 
+   3.909073588765438*^9}, {3.909073876573592*^9, 3.909073907098607*^9}, {
+   3.909074009255275*^9, 3.909074037680468*^9}, {3.9090741115830297`*^9, 
+   3.909074119390901*^9}, {3.909074152463418*^9, 3.9090741819588346`*^9}, 
+   3.9090742530475492`*^9, {3.909074423871773*^9, 3.9090746586405277`*^9}, {
+   3.909074851832353*^9, 3.90907493872128*^9}},
+ CellLabel->
+  "In[129]:=",ExpressionUUID->"e102a59f-5d55-4389-b0cb-844daecafef6"],
+
+Cell[BoxData[
+ TagBox[
+  StyleBox[
+   DynamicModuleBox[{$CellContext`noSigNodes$$ = 50, $CellContext`p$$ = 
+    0.012, $CellContext`rFA$$ = -0.32399999999998386`, $CellContext`rFood$$ = 
+    0.165, $CellContext`rMiss$$ = 0, Typeset`show$$ = True, 
+    Typeset`bookmarkList$$ = {}, Typeset`bookmarkMode$$ = "Menu", 
+    Typeset`animator$$, Typeset`animvar$$ = 1, Typeset`name$$ = 
+    "\"untitled\"", Typeset`specs$$ = {{{
+       Hold[$CellContext`noSigNodes$$], 50, "noSigNodes"}, 1, 200, 1}, {{
+       Hold[$CellContext`p$$], 0.012, "Transition prob."}, 0, 1, 0.001}, {{
+       Hold[$CellContext`rFA$$], -0.15, "rFA"}, -200, 0, 0.001}, {{
+       Hold[$CellContext`rFood$$], 0.125, "rFood"}, 0, 200, 0.001}, {{
+       Hold[$CellContext`rMiss$$], 0, "rMiss"}, -10, 0, 0.1}}, 
+    Typeset`size$$ = {643., {138., 144.}}, Typeset`update$$ = 0, 
+    Typeset`initDone$$, Typeset`skipInitDone$$ = True}, 
+    DynamicBox[Manipulate`ManipulateBoxes[
+     1, StandardForm, 
+      "Variables" :> {$CellContext`noSigNodes$$ = 50, $CellContext`p$$ = 
+        0.012, $CellContext`rFA$$ = -0.15, $CellContext`rFood$$ = 
+        0.125, $CellContext`rMiss$$ = 0}, "ControllerVariables" :> {}, 
+      "OtherVariables" :> {
+       Typeset`show$$, Typeset`bookmarkList$$, Typeset`bookmarkMode$$, 
+        Typeset`animator$$, Typeset`animvar$$, Typeset`name$$, 
+        Typeset`specs$$, Typeset`size$$, Typeset`update$$, Typeset`initDone$$,
+         Typeset`skipInitDone$$}, "Body" :> 
+      Module[{$CellContext`t$, $CellContext`totReward$, \
+$CellContext`faReward$, $CellContext`foodReward$, $CellContext`missReward$}, \
+$CellContext`faReward$[
+           Pattern[$CellContext`t$, 
+            Blank[]]] := 
+         Piecewise[{{$CellContext`rFA$$, $CellContext`t$ == 
+             0}, {$CellContext`rFA$$ (1 - $CellContext`p$$)^$CellContext`t$, 
+             1 <= $CellContext`t$ <= $CellContext`noSigNodes$$ - 
+              1}, {$CellContext`rFA$$ (
+               1 - $CellContext`p$$)^$CellContext`t$, $CellContext`t$ > \
+$CellContext`noSigNodes$$ - 1}}]; $CellContext`foodReward$[
+           Pattern[$CellContext`t$, 
+            Blank[]]] := 
+         Piecewise[{{
+            0, $CellContext`t$ == 
+             0}, {$CellContext`rFood$$ (
+              1 - (1 - $CellContext`p$$)^$CellContext`t$), 
+             1 <= $CellContext`t$ <= $CellContext`noSigNodes$$ - 
+              1}, {$CellContext`rFood$$ (
+               1 - $CellContext`p$$)^($CellContext`t$ - \
+($CellContext`noSigNodes$$ - 1)) (
+              1 - (1 - $CellContext`p$$)^($CellContext`noSigNodes$$ - 
+               1)), $CellContext`t$ > $CellContext`noSigNodes$$ - 
+              1}}]; $CellContext`missReward$[
+           Pattern[$CellContext`t$, 
+            Blank[]]] := 
+         Piecewise[{{0, $CellContext`t$ == 0}, {
+            0, 1 <= $CellContext`t$ <= $CellContext`noSigNodes$$ - 
+              1}, {$CellContext`rMiss$$ (
+              1 - (1 - $CellContext`p$$)^($CellContext`t$ - \
+($CellContext`noSigNodes$$ - 
+               1))), $CellContext`t$ > $CellContext`noSigNodes$$ - 
+              1}}]; $CellContext`totReward$[
+           Pattern[$CellContext`t$, 
+            Blank[]]] := 
+         Piecewise[{{$CellContext`rFA$$, $CellContext`t$ == 
+             0}, {$CellContext`rFA$$ (
+                1 - $CellContext`p$$)^$CellContext`t$ + $CellContext`rFood$$ (
+               1 - (1 - $CellContext`p$$)^$CellContext`t$), 
+             1 <= $CellContext`t$ <= $CellContext`noSigNodes$$ - 
+              1}, {$CellContext`rFA$$ (
+                1 - $CellContext`p$$)^$CellContext`t$ + $CellContext`rFood$$ (
+                1 - $CellContext`p$$)^($CellContext`t$ - \
+($CellContext`noSigNodes$$ - 1)) (
+               1 - (1 - $CellContext`p$$)^($CellContext`noSigNodes$$ - 
+                1)) + $CellContext`rMiss$$ (
+               1 - (1 - $CellContext`p$$)^($CellContext`t$ - \
+($CellContext`noSigNodes$$ - 
+                1))), $CellContext`t$ > $CellContext`noSigNodes$$ - 1}}]; 
+        Plot[{
+           $CellContext`faReward$[$CellContext`t$], 
+           $CellContext`foodReward$[$CellContext`t$], 
+           $CellContext`missReward$[$CellContext`t$], 
+           $CellContext`totReward$[$CellContext`t$]}, {$CellContext`t$, 0, 
+           100}, AxesLabel -> {"t", "Output"}, 
+          PlotLegends -> {
+           "False alarm reward", "Food reward", "Miss reward", 
+            "Total reward"}, PlotRange -> All]], 
+      "Specifications" :> {{{$CellContext`noSigNodes$$, 50, "noSigNodes"}, 1, 
+         200, 1}, {{$CellContext`p$$, 0.012, "Transition prob."}, 0, 1, 
+         0.001}, {{$CellContext`rFA$$, -0.15, "rFA"}, -200, 0, 
+         0.001}, {{$CellContext`rFood$$, 0.125, "rFood"}, 0, 200, 
+         0.001}, {{$CellContext`rMiss$$, 0, "rMiss"}, -10, 0, 0.1}}, 
+      "Options" :> {}, "DefaultOptions" :> {}],
+     ImageSizeCache->{697., {277., 284.}},
+     SingleEvaluation->True],
+    Deinitialization:>None,
+    DynamicModuleValues:>{},
+    SynchronousInitialization->True,
+    UndoTrackedVariables:>{Typeset`show$$, Typeset`bookmarkMode$$},
+    UnsavedVariables:>{Typeset`initDone$$},
+    UntrackedVariables:>{Typeset`size$$}], "Manipulate",
+   Deployed->True,
+   StripOnInput->False],
+  Manipulate`InterpretManipulate[1]]], "Output",
+ CellChangeTimes->{{3.9090749365586557`*^9, 3.909074954204074*^9}},
+ CellLabel->
+  "Out[129]=",ExpressionUUID->"9da64262-dbad-4a2a-b38c-728d82be4206"]
+}, Open  ]]
+},
+WindowSize->{Full, Full},
+WindowMargins->{{4, Automatic}, {Automatic, 4}},
+Magnification:>1.25 Inherited,
+FrontEndVersion->"13.2 for Mac OS X ARM (64-bit) (January 30, 2023)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"1635df3e-0030-423a-92f8-52c589dd70b4"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[580, 22, 9145, 231, 378, "Input",ExpressionUUID->"e102a59f-5d55-4389-b0cb-844daecafef6"],
+Cell[9728, 255, 5391, 103, 584, "Output",ExpressionUUID->"9da64262-dbad-4a2a-b38c-728d82be4206"]
+}, Open  ]]
+}
+]
+*)
+

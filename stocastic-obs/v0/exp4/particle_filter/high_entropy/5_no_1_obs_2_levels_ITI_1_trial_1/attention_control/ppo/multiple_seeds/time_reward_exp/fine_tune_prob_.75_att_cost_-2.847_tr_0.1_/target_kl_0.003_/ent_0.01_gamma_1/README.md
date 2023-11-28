@@ -1,0 +1,1 @@
+Same as 4_no_1_obs_2_levels_ITI_1, except we train just for a single trial.

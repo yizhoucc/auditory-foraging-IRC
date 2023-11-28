@@ -1,0 +1,53 @@
+defaults:
+  agent:
+    env:
+      _target_: null
+    env_param: null
+    seed: 0
+    model:
+      _target_: irc.model.SamplingBeliefModel
+    algo:
+      _target_: 'stable_baselines3.PPO'
+      # Default
+      # gamma: 0.99
+      # ent_coef: 0.0
+      # clip_range: 0.2
+      # learning_rate: 0.0003
+      gamma: 0.99
+      ent_coef: 0
+      clip_range: 0.2
+      learning_rate: 0.0003
+    
+    policy:
+      _target_: 'MlpPolicy'
+    learn:
+      total_timesteps: 10000
+  likelihood:
+    agent_key: null
+    episode_key: null
+    seed: 0
+
+sweep:
+  agent_seeds: [0, 1, 2]
+  belief_seeds: [0, 1, 2, 3, 4, 5, 6, 7]
+
+runtime:
+  store_dir: store
+  verbose: 1
+  agent:
+    eval_interval: 2
+    save_interval: 1
+    device: cpu
+    eval_config:
+      num_episodes: 12
+      num_steps: 100000
+    to_check_env: false
+  likelihood: {}
+
+warning:
+  optimality: 0.8
+
+sampling_belief_model:
+  action_depend: false
+  dist_config: {}
+  est_config: {}

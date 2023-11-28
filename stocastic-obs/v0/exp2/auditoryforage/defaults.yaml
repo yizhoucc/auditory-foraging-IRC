@@ -1,0 +1,14 @@
+auditory_foraging_v1:
+  experiment:
+    prob_01: 0.5
+    no_signal_nodes: 4
+    no_penalty_nodes: 1
+    no_ITI_nodes: 1
+  agent:
+    lick_cost: -1.0
+    food_reward: 3.0
+    attention_cost_coeff: 1
+    attention_cost_temp: 1
+    no_attention_modes: 6
+    penalty_cost: -8.0
+    iti_cost: -4.0
