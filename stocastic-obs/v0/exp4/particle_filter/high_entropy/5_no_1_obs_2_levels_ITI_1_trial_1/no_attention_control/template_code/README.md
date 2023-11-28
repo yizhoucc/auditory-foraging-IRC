@@ -1,1 +1,0 @@
-Same as attention_control folder, i.e. we train just for a single trial, except now we don't really have a control over attention. It's fixed observation probability.
