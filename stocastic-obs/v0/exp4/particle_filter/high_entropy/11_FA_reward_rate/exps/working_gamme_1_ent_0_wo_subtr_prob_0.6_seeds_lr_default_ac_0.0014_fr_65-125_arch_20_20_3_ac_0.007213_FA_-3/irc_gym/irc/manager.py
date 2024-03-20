@@ -734,16 +734,16 @@ class IRCManager:
             # if agent seed is not specified, find the most trained one
 
             
-            
-            # Lokesh added for scheduling - cond is kind of like what is being read from saved file, which has info only about env_param and seed
-            # cond = self.agent_manager.get_config({'env_param': env_param})
-            cond = {}
-            cond['env_param'] = self.agent_manager.get_config({'env_param': env_param})['env_param']
-            cond['seed'] = self.agent_manager.get_config({'env_param': env_param})['seed']
+            cond = self.agent_manager.get_config({'env_param': env_param})
+            # # Lokesh added for scheduling - cond is kind of like what is being read from saved file, which has info only about env_param and seed
+            # cond = {}
+            # cond['env_param'] = self.agent_manager.get_config({'env_param': env_param})['env_param']
+            # cond['seed'] = self.agent_manager.get_config({'env_param': env_param})['seed']
+            # cond.pop('seed')
 
 
             
-            cond.pop('seed')
+            
             keys = list(self.agent_manager.completed(cond=cond))
             random.shuffle(keys)
             max_epoch, best_key = 0, None
@@ -762,17 +762,27 @@ class IRCManager:
 
 
 
-                # Lokesh added for scheduling - since cond had info only about env_param and seed, after finding best key we need to add other things to config file from defaults yaml.
-                config['env'] = self.agent_manager.get_config({'env_param': env_param})['env']
-                config['model'] = self.agent_manager.get_config({'env_param': env_param})['model']
-                config['policy'] = self.agent_manager.get_config({'env_param': env_param})['policy']
-                config['algo'] = self.agent_manager.get_config({'env_param': env_param})['algo']
+                # # Lokesh added for scheduling - since cond had info only about env_param and seed, after finding best key we need to add other things to config file from defaults yaml.
+                # config['env'] = self.agent_manager.get_config({'env_param': env_param})['env']
+                # config['model'] = self.agent_manager.get_config({'env_param': env_param})['model']
+                # config['policy'] = self.agent_manager.get_config({'env_param': env_param})['policy']
+                # config['algo'] = self.agent_manager.get_config({'env_param': env_param})['algo']
 
 
 
 
         else:
             config = self.agent_manager.get_config({'env_param': env_param, 'seed': seed})
+
+            # # Lokesh added for scheduling - since cond had info only about env_param and seed, after finding best key we need to add other things to config file from defaults yaml.
+            # print(f'initial config looking for {config}')
+            # config.pop('env')
+            # config.pop('model')
+            # config.pop('policy')
+            # config.pop('algo')
+            # config.pop('learn')
+            # print(f'later config looking for {config}')
+
             key = self.agent_manager.configs.get_key(config)
             if key is None:
                 raise RuntimeError(

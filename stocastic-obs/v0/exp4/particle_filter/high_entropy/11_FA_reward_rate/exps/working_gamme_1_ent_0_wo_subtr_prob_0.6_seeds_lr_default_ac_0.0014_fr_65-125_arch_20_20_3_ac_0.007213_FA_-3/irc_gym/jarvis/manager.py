@@ -142,13 +142,15 @@ class Manager:
 
         
         
-        # Lokesh added for scheduling - reducing the config information just to seed and env_param (ignoring env, model, policy, algo, etc.)
-        # to create the unique key which is then used for saving the trained model.
-        # key = self.configs.add(self.config)
-        config_reduced = {}
-        config_reduced['env_param'] = self.config['env_param']
-        config_reduced['seed'] = self.config['seed']
-        key = self.configs.add(config_reduced)
+        key = self.configs.add(self.config)
+        # # Lokesh added for scheduling - reducing the config information just to seed and env_param (ignoring env, model, policy, algo, etc.)
+        # # to create the unique key which is then used for saving the trained model.
+        # # Added epoch to it
+        # config_reduced = {}
+        # config_reduced['env_param'] = self.config['env_param']
+        # config_reduced['seed'] = self.config['seed']
+        # print(f'config saved is {config_reduced}')
+        # key = self.configs.add(config_reduced)
         
 
 
@@ -173,12 +175,12 @@ class Manager:
 
 
 
-        # Lokesh added for scheduling - identifying the saved modell only using seed and env_param (ignoring env, model, policy, algo, etc.)
-        # key = self.configs.get_key(self.config)
-        config_reduced = {}
-        config_reduced['env_param'] = self.config['env_param']
-        config_reduced['seed'] = self.config['seed']
-        key = self.configs.get_key(config_reduced)
+        key = self.configs.get_key(self.config)
+        # # Lokesh added for scheduling - identifying the saved modell only using seed and env_param (ignoring env, model, policy, algo, etc.)
+        # config_reduced = {}
+        # config_reduced['env_param'] = self.config['env_param']
+        # config_reduced['seed'] = self.config['seed']
+        # key = self.configs.get_key(config_reduced)
 
 
 
