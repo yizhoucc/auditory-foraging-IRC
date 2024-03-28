@@ -1,7 +1,9 @@
 auditory_foraging_v1:
   experiment:
-    prob_01: 0.004
-    no_signal_nodes: 150
+    # prob_01: 0.004
+    # no_signal_nodes: 150
+    prob_01: 0.024
+    no_signal_nodes: 25
     no_penalty_nodes: 1
     # no_ITI_nodes: 150
     no_ITI_nodes: 1

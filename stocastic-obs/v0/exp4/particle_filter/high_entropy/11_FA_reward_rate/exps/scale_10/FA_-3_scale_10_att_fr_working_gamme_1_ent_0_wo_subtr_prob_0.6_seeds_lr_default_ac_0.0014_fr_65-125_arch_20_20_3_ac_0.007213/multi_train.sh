@@ -3,7 +3,7 @@
 
 # food_reward_list=(0 0.2 0.4 0.6 0.8 1)
 # food_reward_list=(0.03125 0.0625 0.09375 0.125 0.15625 0.1875 0.21875 0.25)
-food_reward_list=(600 700 800 900 1000 1100 1200)
+food_reward_list=(100 200 300 400 500 600)
 # food_reward_list=(0.03125)
 # att_coeff=0.00149215543
 # att_coeff=0.007213
