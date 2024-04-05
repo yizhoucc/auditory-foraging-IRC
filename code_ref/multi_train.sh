@@ -7,16 +7,9 @@ att_temp=0.25
 penalty_cost=-30
 time_in_game_reward=0
 no_episodes=1000
-
-# start_num_epochs=10
-# step_num_epochs=10
-# num_epochs=1000
-
-start_num_epochs=1
-step_num_epochs=1
-num_epochs=3
-
-
+start_num_epochs=10
+step_num_epochs=10
+num_epochs=1000
 num_seeds=5
 
 
