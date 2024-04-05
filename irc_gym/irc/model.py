@@ -75,12 +75,13 @@ class BaseBeliefModel(GymEnv):
         A list of seeds, potentially used by vectorized environments.
 
         """
-        self.rng = np.random.default_rng(seed)
-        if self.api=='v26':
-            self.env.reset(seed=seed)
-            return [seed]
-        else:
-            return self.env.seed(seed)
+        # self.rng = np.random.default_rng(seed)
+        # if self.api=='v26':
+        #     self.env.reset(seed=seed)
+        #     return [seed]
+        # else:
+        #     return self.env.seed(seed)
+        return seed
 
     def state_dict(self) -> dict:
         r"""Returns state dictionary."""

@@ -11,3 +11,4 @@
 *.key
 *.json
 >>>>>>> refs/remotes/origin/main
+*.pyc
