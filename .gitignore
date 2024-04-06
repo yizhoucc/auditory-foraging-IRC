@@ -4,11 +4,7 @@
 *.pkl
 *.csv
 *.mat
-<<<<<<< HEAD
-*.json
-*.key
-=======
 *.key
 *.json
->>>>>>> refs/remotes/origin/main
 *.pyc
+*.zip

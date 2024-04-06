@@ -4,6 +4,10 @@ import numpy as np
 from gym import Env
 from gym.spaces import Discrete, MultiDiscrete
 from typing import Optional, Union
+import os
+import sys
+sys.path.append(f'{os.getcwd()}/irc_gym')
+
 from jarvis.config import Config
 from .alias import RandGen
 
