@@ -1,6 +1,6 @@
 #!/bin/zsh
 
-food_reward_list=(1000 1100 1200 1300 1400 1500)
+food_reward_list=(555 777 999 1111 1333 1500)
 att_coeff=0.087213
 att_temp=0.25
 penalty_cost=-30
