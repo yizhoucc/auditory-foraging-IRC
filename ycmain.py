@@ -2,7 +2,7 @@ import os
 import sys
 sys.path.append(f'{os.getcwd()}/irc_gym')
 from auditoryforage.AF_env import AuditoryForaging as AF
-
+from auditoryforage.AF_env import AuditoryForagingReward as AFR
 from stable_baselines3 import PPO
 
 food_reward_list = [1000, 1100, 1200, 1300, 1400, 1500]
@@ -13,8 +13,20 @@ time_in_game_reward = 0.
 num_epochs = 11
 seed_value = 1
 
-for food_reward in food_reward_list:
-    task=AF()
-    task.food_reward=food_reward
-    model = PPO('MlpPolicy', task, verbose=1)
-    model.learn(total_timesteps=100)
+# for food_reward in food_reward_list:
+#     task=AF()
+#     task.food_reward=food_reward
+#     model = PPO('MlpPolicy', task, verbose=1)
+#     model.learn(total_timesteps=100)
+
+
+
+task=AFR()
+task.food_reward_list=food_reward_list
+model = PPO('MlpPolicy', task, verbose=1, device='cpu')
+model.learn(total_timesteps=100)
+
+
+# from gym.spaces import Discrete, MultiDiscrete, Box
+# MultiDiscrete([4,5])
+# MultiDiscrete([4])
