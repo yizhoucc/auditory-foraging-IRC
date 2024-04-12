@@ -200,7 +200,6 @@ class AuditoryForaging(Env):
             iti_cost_value = self.iti_cost
         else:
             iti_cost_value = 0
-
         # ADDING TIME COST HERE, SHOULD CODE THIS MORE ELEGANTLY LATER!!!!!
         # rw = food_reward_value + attention_cost_value + lick_cost_value + penalty_cost_value + iti_cost_value
 
@@ -562,7 +561,7 @@ class AuditoryForagingReward(AuditoryForaging):
 
         """
         super().__init__()
-        self.food_reward_list=None # need to fill from outside
+        self.food_reward_list=[1000, 1100, 1200, 1300, 1400, 1500] # need to fill from outside
         self.observation_space = (MultiDiscrete(
             [len(self.dict_observation_possible), 5] ))
 
@@ -623,3 +622,28 @@ class AuditoryForagingReward(AuditoryForaging):
         self.time += 1
 
         return obs, rw, done, info
+    
+    def update_belief(self, previous_belief, action, observation):
+        """
+        Updating belief, given previous belief, new observation, and past action.
+        """
+
+        # lick_choice, attention_choice = self.dict_action_possible[int(action)]
+        lick_choice, attention_choice = action
+
+        transition_matrix = self.find_transition_matrix()
+        observation_matrix = self.find_observation_matrix()
+        new_belief = np.zeros(self.no_nodes)
+
+        for state in range(self.no_nodes):
+            # note the transpose below, because of the way we made transition_matrix: (current state, next state, action)
+            new_belief[state] = observation_matrix[observation[0], state, int(attention_choice)] * np.reshape(
+                np.transpose(transition_matrix[:, state, int(lick_choice)]), (1, self.no_nodes)) @ previous_belief
+
+        if np.sum(new_belief) == 0:
+            # print('Error: Mistake in belief update as all probabilities are coming out to be 0 somehow. Returned None!')
+            new_belief = None
+        else:
+            new_belief = new_belief/np.sum(new_belief)  # Normalization
+
+        return new_belief
