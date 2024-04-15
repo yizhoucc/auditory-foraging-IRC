@@ -8,8 +8,8 @@ time_in_game_reward=0
 no_episodes=1000
 start_num_epochs=10
 step_num_epochs=10
-num_epochs=55
-num_seeds=9
+num_epochs=12
+num_seeds=1
 
 for ((inter_num_epochs = $start_num_epochs; inter_num_epochs <= ${num_epochs}; inter_num_epochs+= $step_num_epochs)); do 
     for ((seed_value = 0; seed_value < ${num_seeds}; seed_value++)); do 

@@ -623,12 +623,107 @@ class AuditoryForagingReward(AuditoryForaging):
 
         return obs, rw, done, info
     
+    def init_belief(self, observation):
+        r"""Initializes belief with observation.
+
+        Args
+        ----
+        observation:
+            Initial observation at the start of an episode, may not be provided
+            by the current environment.
+
+        Returns
+        -------
+        belief:
+            A belief vector compatible with the given observation.
+
+        """
+        if observation[0] not in range(len(self.observation_possible)):
+            raise NotImplementedError(
+                "Only the example environment is implemented.")
+        belief = np.zeros(shape=self.no_nodes)
+
+        if observation[0] not in range(2):
+
+            # for episodic
+            # belief[observation[0]+self.no_signal_nodes-1] = 1
+            if observation[0] == self.observation_possible[-2]:
+                belief[self.no_signal_nodes+1:self.no_signal_nodes +
+                       1+self.no_penalty_nodes] = 1/self.no_penalty_nodes
+            elif observation[0] == self.observation_possible[-1]:
+                belief[self.no_signal_nodes+1 +
+                       self.no_penalty_nodes:self.no_nodes] = 1/self.no_ITI_nodes
+
+        else:
+            certainity_sum = np.sum(self.obs_certainity_possible)
+            if observation[0] == 0:
+                normalization = (1 - self.no_signal_nodes) * certainity_sum + \
+                    self.no_signal_nodes * self.no_attention_modes
+                belief[0] = certainity_sum/normalization
+                belief[1:self.no_signal_nodes +
+                       1] = (self.no_attention_modes - certainity_sum)/normalization
+            elif observation[0] == 1:
+                normalization = (self.no_signal_nodes - 1) * \
+                    certainity_sum + self.no_attention_modes
+                belief[0] = (self.no_attention_modes -
+                             certainity_sum)/normalization
+                belief[1:self.no_signal_nodes+1] = certainity_sum/normalization
+        return belief
+
+    def init_belief(self, observation):
+        r"""Initializes belief with observation.
+
+        Args
+        ----
+        observation:
+            Initial observation at the start of an episode, may not be provided
+            by the current environment.
+
+        Returns
+        -------
+        belief:
+            A belief vector compatible with the given observation.
+
+        """
+        if observation[0] not in range(len(self.observation_possible)):
+            raise NotImplementedError(
+                "Only the example environment is implemented.")
+        belief = np.zeros(shape=self.no_nodes)
+
+        if observation[0] not in range(2):
+
+            # for episodic
+            # belief[observation[0]+self.no_signal_nodes-1] = 1
+            if observation[0] == self.observation_possible[-2]:
+                belief[self.no_signal_nodes+1:self.no_signal_nodes +
+                       1+self.no_penalty_nodes] = 1/self.no_penalty_nodes
+            elif observation[0] == self.observation_possible[-1]:
+                belief[self.no_signal_nodes+1 +
+                       self.no_penalty_nodes:self.no_nodes] = 1/self.no_ITI_nodes
+
+        else:
+            certainity_sum = np.sum(self.obs_certainity_possible)
+            if observation[0] == 0:
+                normalization = (1 - self.no_signal_nodes) * certainity_sum + \
+                    self.no_signal_nodes * self.no_attention_modes
+                belief[0] = certainity_sum/normalization
+                belief[1:self.no_signal_nodes +
+                       1] = (self.no_attention_modes - certainity_sum)/normalization
+            elif observation[0] == 1:
+                normalization = (self.no_signal_nodes - 1) * \
+                    certainity_sum + self.no_attention_modes
+                belief[0] = (self.no_attention_modes -
+                             certainity_sum)/normalization
+                belief[1:self.no_signal_nodes+1] = certainity_sum/normalization
+        return np.concatenate([belief, [self.food_reward]])
+    
     def update_belief(self, previous_belief, action, observation):
         """
         Updating belief, given previous belief, new observation, and past action.
         """
 
         # lick_choice, attention_choice = self.dict_action_possible[int(action)]
+        previous_belief=previous_belief[:-1] # remove the food reward dim
         lick_choice, attention_choice = action
 
         transition_matrix = self.find_transition_matrix()
@@ -646,4 +741,94 @@ class AuditoryForagingReward(AuditoryForaging):
         else:
             new_belief = new_belief/np.sum(new_belief)  # Normalization
 
-        return new_belief
+        return  np.concatenate([new_belief, [self.food_reward]])
+    
+
+class AuditoryForagingReward2(AuditoryForaging):
+    ''' add reward into belief, mainly the belief init and update functions '''
+
+    def __init__(self,
+                 *,
+                 spec: Optional[dict] = None,
+                 rng: Union[RandGen, int, None] = None,
+                 ):
+
+        super().__init__()
+        self.food_reward_list=[1000, 1100, 1200, 1300, 1400, 1500] # default here, can be assigned from outside
+
+    def reset(self):
+        """
+        randomly choose a reward condition to train.
+        in belief, reset if called, then belief init is called.
+        """
+        self.state = self.no_signal_nodes + self.no_penalty_nodes + 1
+        self.time = 1
+        self.food_reward_idx=random.choice(list(range(len(self.food_reward_list))))
+        self.food_reward=self.food_reward_list[self.food_reward_idx]
+        obs = self.observe_step(0)
+        return obs
+
+
+    def init_belief(self, observation):
+        """
+        the only change is concat the reward info into the return
+        """
+        if observation[0] not in range(len(self.observation_possible)):
+            raise NotImplementedError(
+                "Only the example environment is implemented.")
+        belief = np.zeros(shape=self.no_nodes)
+
+        if observation[0] not in range(2):
+
+            # for episodic
+            # belief[observation[0]+self.no_signal_nodes-1] = 1
+            if observation[0] == self.observation_possible[-2]:
+                belief[self.no_signal_nodes+1:self.no_signal_nodes +
+                       1+self.no_penalty_nodes] = 1/self.no_penalty_nodes
+            elif observation[0] == self.observation_possible[-1]:
+                belief[self.no_signal_nodes+1 +
+                       self.no_penalty_nodes:self.no_nodes] = 1/self.no_ITI_nodes
+
+        else:
+            certainity_sum = np.sum(self.obs_certainity_possible)
+            if observation[0] == 0:
+                normalization = (1 - self.no_signal_nodes) * certainity_sum + \
+                    self.no_signal_nodes * self.no_attention_modes
+                belief[0] = certainity_sum/normalization
+                belief[1:self.no_signal_nodes +
+                       1] = (self.no_attention_modes - certainity_sum)/normalization
+            elif observation[0] == 1:
+                normalization = (self.no_signal_nodes - 1) * \
+                    certainity_sum + self.no_attention_modes
+                belief[0] = (self.no_attention_modes -
+                             certainity_sum)/normalization
+                belief[1:self.no_signal_nodes+1] = certainity_sum/normalization
+        return np.concatenate([belief, [self.food_reward_idx/len(self.food_reward_list)]])
+    
+    def update_belief(self, previous_belief, action, observation):
+        """
+        the only change is concat the reward info into the return
+        """
+
+        # lick_choice, attention_choice = self.dict_action_possible[int(action)]
+        previous_belief=previous_belief[:-1] # remove the food reward dim
+        lick_choice, attention_choice = action
+
+        transition_matrix = self.find_transition_matrix()
+        observation_matrix = self.find_observation_matrix()
+        new_belief = np.zeros(self.no_nodes)
+
+        for state in range(self.no_nodes):
+            # note the transpose below, because of the way we made transition_matrix: (current state, next state, action)
+            new_belief[state] = observation_matrix[observation[0], state, int(attention_choice)] * np.reshape(
+                np.transpose(transition_matrix[:, state, int(lick_choice)]), (1, self.no_nodes)) @ previous_belief
+
+        if np.sum(new_belief) == 0:
+            # print('Error: Mistake in belief update as all probabilities are coming out to be 0 somehow. Returned None!')
+            new_belief = None
+        else:
+            new_belief = new_belief/np.sum(new_belief)  # Normalization
+
+        return  np.concatenate([new_belief, [self.food_reward_idx/len(self.food_reward_list)]])
+    
+    
