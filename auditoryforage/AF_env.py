@@ -79,9 +79,12 @@ class AuditoryForaging(Env):
         # Lokesh removed fully observable case
         # self.obs_certainity_possible = 1/(2*(self.no_attention_modes-1)) * np.arange(self.no_attention_modes) + 0.5
         # self.obs_certainity_possible = 0.48/(self.no_attention_modes-1) * np.arange(self.no_attention_modes) + 0.5
+        # self.obs_certainity_possible = 0.1 / \
+        #     (self.no_attention_modes-1) * \
+        #     np.arange(self.no_attention_modes) + 0.6
         self.obs_certainity_possible = 0.1 / \
             (self.no_attention_modes-1) * \
-            np.arange(self.no_attention_modes) + 0.6
+            np.arange(self.no_attention_modes) + 0.5 # change 15th
 
         # self.attention_cost = np.array([0,self.high_attention_cost])
         self.penalty_cost = self.spec.agent.penalty_cost
@@ -753,7 +756,7 @@ class AuditoryForagingReward2(AuditoryForaging):
                  rng: Union[RandGen, int, None] = None,
                  ):
 
-        super().__init__()
+        super().__init__(spec=spec,rng=rng)
         self.food_reward_list=[1000, 1100, 1200, 1300, 1400, 1500] # default here, can be assigned from outside
 
     def reset(self):

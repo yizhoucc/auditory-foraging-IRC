@@ -84,15 +84,19 @@ for lick_cost in lick_cost_list:
                                 hit_count = 0 
                                 miss_count = 0 
                                 false_alarm_count = 0 
-                                noise_time_before_lick = 0 
-                                signal_time_before_lick = 0 
-                                total_noise_time = 0 
-                                total_signal_time = 0
+
+                                noise_time_before_lick = 0  # trial onset --> lick (if false alarm)
+                                signal_time_before_lick = 0 # signal onset --> lick (if hit trial)
+                                total_noise_time = 0 # how many noise ts
+                                total_signal_time = 0 # how may singal ts in a trial
+
                                 total_reward = 0
-                                attention_time_points_across_episodes = []
-                                episode_length_across_episodes = []
-                                hit_reaction_time_across_episodes = []
-                                fa_reaction_time_across_episodes = []
+
+                                attention_time_points_across_episodes = [] # [[high attention ts, trial 1], [...trial 2],...]
+                                episode_length_across_episodes = [] # [len of trial 1,...trial 2,...]
+                                hit_reaction_time_across_episodes = [] # [int]
+                                fa_reaction_time_across_episodes = [] # [int]
+
                                 agent = manager.train_agent(env_param, num_epochs=num_epochs, seed = seed)
                                 for episide_no in range(no_episodes):
                                     episode = agent.run_one_episode(env=env, num_steps=100000, q_states = [[i] for i in range(env.no_nodes)])
