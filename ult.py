@@ -99,8 +99,8 @@ def run_one_episode(task, taskbelief, agent,
     t = 0
     while True:
 
-        action, _ = agent.predict(belief, deterministic=True)
-
+        # action, _ = agent.predict(belief, deterministic=True)
+        action, _ = agent.predict(belief)
         action = action
 
         actions.append(action)
