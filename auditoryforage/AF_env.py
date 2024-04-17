@@ -207,7 +207,7 @@ class AuditoryForaging(Env):
         # rw = food_reward_value + attention_cost_value + lick_cost_value + penalty_cost_value + iti_cost_value
 
         # rw = food_reward_value + attention_cost_value + lick_cost_value + penalty_cost_value + iti_cost_value + self.time_in_game_reward
-        rw = food_reward_value/self.time + attention_cost_value + lick_cost_value + \
+        rw = food_reward_value/self.time + attention_cost_value*5 + lick_cost_value + \
             penalty_cost_value + iti_cost_value + self.time_in_game_reward
 
         return rw

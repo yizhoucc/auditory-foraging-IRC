@@ -99,8 +99,8 @@ def run_one_episode(task, taskbelief, agent,
     t = 0
     while True:
 
-        # action, _ = agent.predict(belief, deterministic=True)
-        action, _ = agent.predict(belief)
+        action, _ = agent.predict(belief, deterministic=True)
+        # action, _ = agent.predict(belief)
         action = action
 
         actions.append(action)
@@ -197,6 +197,19 @@ def offset_to_first(data):
                    for inner_list in data]
     return offset_data
 
+def find_gap(arr):
+    '''find gap in binary arr (for each row)'''
+    gap_lengths = []
+    for row in arr:
+        count = 0
+        for value in row:
+            if value == 0:
+                count += 1
+            elif value == 1:
+                if count > 0:
+                    gap_lengths.append(count)
+                    count = 0
+    return np.array(gap_lengths)
 
 def gap_histogram_all_rows(arr):
     gap_lengths = []
@@ -322,12 +335,20 @@ def find_activation(agent, belief):
 
     return policy_net_3_results
 
-def plot_hit_miss_FA(x_axis_list, hit_count_list, miss_count_list, false_alarm_list, title = ''):
+def plot_hit_miss_FA(food_reward_list, hit_count_list, miss_count_list, false_alarm_list, title = ''):
+    '''modified to probability'''
     plt.figure()
-    plt.plot(x_axis_list, hit_count_list, '-*g')
-    plt.plot(x_axis_list, miss_count_list, '-*b')
-    plt.plot(x_axis_list, false_alarm_list, '-*r')
+    hit_count_list,miss_count_list,false_alarm_list=np.array(hit_count_list),np.array(miss_count_list),np.array(false_alarm_list)
+    hit_prob=[hit_count_list[i]/(hit_count_list[i]+miss_count_list[i]+false_alarm_list[i]) for i in range(len(hit_count_list))]
+    miss_prob=[miss_count_list[i]/(hit_count_list[i]+miss_count_list[i]+false_alarm_list[i]) for i in range(len(hit_count_list))]
+    fa_prob=[false_alarm_list[i]/(hit_count_list[i]+miss_count_list[i]+false_alarm_list[i]) for i in range(len(hit_count_list))]
+    
+    plt.plot(food_reward_list, hit_prob, '-*g')
+    plt.plot(food_reward_list, miss_prob, '-*b')
+    plt.plot(food_reward_list, fa_prob, '-*r')
     plt.legend(['hit', 'miss', 'false alarm'])
     plt.xlabel('food reward')
+    plt.ylabel('probability')
+    plt.xticks(food_reward_list,food_reward_list)
     plt.title(title)
     plt.show()
