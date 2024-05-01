@@ -1,6 +1,17 @@
 import numpy as np
 import torch
 from matplotlib import pyplot as plt
+from collections import OrderedDict
+
+
+plt.rcParams['axes.unicode_minus'] = False
+plt.rcParams['svg.fonttype'] = 'none'
+plt.rcParams['mathtext.default'] = 'regular'
+cmaps = OrderedDict()
+cmaps['Qualitative'] = ['Pastel1', 'Pastel2', 'Paired', 'Accent',
+                        'Dark2', 'Set1', 'Set2', 'Set3',
+                        'tab10', 'tab20', 'tab20b', 'tab20c']
+
 
 plt.rcParams.update({
     'font.size': 15, 'lines.linewidth': 2,
@@ -9,6 +20,15 @@ plt.rcParams.update({
     'savefig.dpi': 1200,
 })
 
+
+def quicksave(name, fig=None):
+    if not fig:
+        plt.savefig('/data/figures/{}.svg'.format(name),
+                    dpi='figure', format='svg', bbox_inches="tight")
+    else:
+        fig.savefig('/data/figures/{}.svg'.format(name),
+                    dpi='figure', format='svg', bbox_inches="tight")
+        
 
 def process_one_episode(episode, task):
     '''process the episode data into result lists'''
@@ -138,6 +158,7 @@ def run_one_episode(task, taskbelief, agent,
     return episode
 
 
+
 def find_activation(agent, belief):
     features = torch.tensor(belief, dtype=torch.float32)
     with torch.no_grad():
@@ -241,9 +262,13 @@ def plot_over_episodes(data, title, plot_no_episodes=100):
         plt.show()
 
         plot_data = data[:plot_no_episodes]
+        trial_lens=[len(a) for a in data]
+        sortidx=np.argsort(trial_lens)
         plt.figure()
+        # c=plt.imshow(pad_zero_attention(plot_data)[sortidx], cmap='viridis',
+        #            aspect='auto', interpolation='none')
         c=plt.imshow(pad_zero_attention(plot_data), cmap='viridis',
-                   aspect='auto', interpolation='none')
+                        aspect='auto', interpolation='none')
         plt.colorbar(c)
         plt.xlabel('time in trial')
         plt.ylabel('episode no.')
@@ -349,6 +374,53 @@ def plot_hit_miss_FA(food_reward_list, hit_count_list, miss_count_list, false_al
     plt.legend(['hit', 'miss', 'false alarm'])
     plt.xlabel('food reward')
     plt.ylabel('probability')
-    plt.xticks(food_reward_list,food_reward_list)
+    plt.xticks(food_reward_list, [f'{a:.0f}' for a in food_reward_list])
     plt.title(title)
     plt.show()
+
+def plot_hit_miss(food_reward_list, hit_count_list, miss_count_list, title = ''):
+    '''hit and miss, no fa'''
+    plt.figure()
+    hit_count_list,miss_count_list=np.array(hit_count_list),np.array(miss_count_list)
+    hit_prob=[hit_count_list[i]/(hit_count_list[i]+miss_count_list[i]) for i in range(len(hit_count_list))]
+    miss_prob=[miss_count_list[i]/(hit_count_list[i]+miss_count_list[i]) for i in range(len(hit_count_list))]
+    plt.plot(food_reward_list, hit_prob, '-*g')
+    plt.plot(food_reward_list, miss_prob, '-*b')
+    plt.legend(['hit', 'miss', 'false alarm'])
+    plt.xlabel('food reward')
+    plt.ylabel('probability')
+    plt.xticks(food_reward_list, [f'{a:.0f}' for a in food_reward_list])
+    plt.title(title)
+    plt.show()
+
+
+def plot_hit_fa(food_reward_list, hit_count_list, false_alarm_list, title = ''):
+    '''hit and fa'''
+    plt.figure()
+    hit_count_list,false_alarm_list=np.array(hit_count_list), np.array(false_alarm_list)
+    hit_prob=[hit_count_list[i]/(hit_count_list[i]+false_alarm_list[i]) for i in range(len(hit_count_list))]
+    fa_prob=[false_alarm_list[i]/(hit_count_list[i]+false_alarm_list[i]) for i in range(len(hit_count_list))]
+    
+    plt.plot(food_reward_list, hit_prob, '-*g')
+    plt.plot(food_reward_list, fa_prob, '-*r')
+    plt.legend(['hit', 'false alarm'])
+    plt.xlabel('food reward')
+    plt.ylabel('probability')
+    plt.xticks(food_reward_list, [f'{a:.0f}' for a in food_reward_list])
+    plt.title(title)
+    plt.show()
+
+def count_less_equal_index(lst):
+    '''count number of trial end at i'''
+    result = []
+    for i in range(max(lst)):
+        count = sum(1 for x in lst if x == i)
+        result.append(count)
+    return np.array(result)
+
+
+from scipy.signal import savgol_filter
+
+def smooth_list(lst, window_size=3, polynomial_order=1):
+    '''smoothing'''
+    return savgol_filter(lst, window_size, polynomial_order)
