@@ -424,3 +424,38 @@ from scipy.signal import savgol_filter
 def smooth_list(lst, window_size=3, polynomial_order=1):
     '''smoothing'''
     return savgol_filter(lst, window_size, polynomial_order)
+
+
+def previous_block_gap(lst):
+    '''we define block as continus int. this function finds the gap of each item's block to previous block end'''
+    res=[0]
+    r=0
+    for i in lst:
+        if i==r+1: # continues in block
+            res.append(res[-1]) # the answer should be the same as begining of the block
+        else: # not in block. r is previous block end
+            res.append(i-r)
+        r=i
+    return res[1:]
+
+def previous_item_gap(lst, remove_first=True):
+    '''we define block as continus int. this function finds the gap of each item to previous item. '''
+    if remove_first: # remove begining of trial as an attention
+        return np.diff(lst)
+    return np.diff(np.append([0], lst))
+
+def previous_block_size(lst):
+    '''we define block as continus int. this function finds the previous block size'''
+    block_starts = [i for i in range(len(lst)) if i == 0 or lst[i] != lst[i-1] + 1]
+    block_sizes = []
+    for i in range(len(lst)):
+        current_block_index = next((index for index in block_starts[::-1] if index <= i), None)
+        if current_block_index is not None:
+            prev_block_index = next((index for index in block_starts[::-1] if index < current_block_index), None)
+            if prev_block_index is not None:
+                block_sizes.append(current_block_index - prev_block_index)
+            else:
+                block_sizes.append(current_block_index + 1)  # If no previous block found, length is up to current block start.
+        else:
+            block_sizes.append(0)  # If not in any block, length is 0.
+    return block_sizes
