@@ -187,6 +187,25 @@ def get_att_lick_probs(episode,agent):
     attention_prob = [(1/(1+np.exp(-2 * elt))) for elt in attention_feature]
     return attention_prob, lick_prob
 
+def get_att_lick_probs_new(episode,agent):
+    '''new function from lokesh on may 2nd'''
+    lick_prob = []
+    attention_prob = []
+    time = []
+    noise_prob = []
+
+    start_time = 1
+
+    for ind in range(start_time, len(episode['beliefs'][:-1])):
+        belief = episode['beliefs'][:-1][ind]
+        activation = find_activation(agent, belief).numpy()
+        lick_prob.append((1/(1+np.exp(-2 * activation[0]))))
+        attention_prob.append((1/(1+np.exp(-2 * activation[1]))))
+        noise_prob.append(belief[0])
+        time.append(ind)
+    
+    return attention_prob, lick_prob, noise_prob, time
+
 
 def pad_lists(list_of_lists):
     max_length = max(len(lst) for lst in list_of_lists)

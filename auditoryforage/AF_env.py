@@ -85,6 +85,9 @@ class AuditoryForaging(Env):
         self.obs_certainity_possible = 0.1 / \
             (self.no_attention_modes-1) * \
             np.arange(self.no_attention_modes) + 0.5 # change 15th
+        self.obs_certainity_possible = 0.1 / \
+            (self.no_attention_modes-1) * \
+            np.arange(self.no_attention_modes) + 0.6 # change may 1st, compare to 0.5
 
         # self.attention_cost = np.array([0,self.high_attention_cost])
         self.penalty_cost = self.spec.agent.penalty_cost
