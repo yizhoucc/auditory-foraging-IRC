@@ -1,5 +1,17 @@
-# intructions
+# AF project
 
+# about this branch
+for testing purpose mainly. has some plotting functions.
+the structure is train then analysis.
+
+# recent update (code)
+5.6 udpate: 
+sync the notebooks. now just need to copy the training config cell from train to anaylysis, to generate plots.
+
+# recent update (plot and idea)
+please refer to latex
+
+# intructions
 - run ./multi_train.sh.  
     - this file has 2 parts. 
         - 1, it trains 5 agent under different food reward.
