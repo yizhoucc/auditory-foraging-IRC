@@ -1,9 +1,23 @@
 import numpy as np
 import torch
 from matplotlib import pyplot as plt
-from collections import OrderedDict
+from collections import OrderedDict, defaultdict
+import seaborn as sns
+
+# ---notification------
+import requests
+import configparser
+config = configparser.ConfigParser()
+config.read_file(open('privateconfig'))
+token=config['Notification']['token']
+
+def notify(msg='plots ready', group='lab',title='plot'):
+    notification="https://api.day.app/{}/{}/{}?group={}".format(token,title, msg, group)
+    requests.get(notification)
 
 
+
+# ---plot configs------
 plt.rcParams['axes.unicode_minus'] = False
 plt.rcParams['svg.fonttype'] = 'none'
 plt.rcParams['mathtext.default'] = 'regular'
