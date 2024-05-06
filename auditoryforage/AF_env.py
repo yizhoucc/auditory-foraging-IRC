@@ -85,9 +85,6 @@ class AuditoryForaging(Env):
         self.obs_certainity_possible = 0.1 / \
             (self.no_attention_modes-1) * \
             np.arange(self.no_attention_modes) + 0.5 # change 15th
-        self.obs_certainity_possible = 0.1 / \
-            (self.no_attention_modes-1) * \
-            np.arange(self.no_attention_modes) + 0.6 # change may 1st, compare to 0.5
 
         # self.attention_cost = np.array([0,self.high_attention_cost])
         self.penalty_cost = self.spec.agent.penalty_cost
@@ -760,16 +757,19 @@ class AuditoryForagingReward2(AuditoryForaging):
                  ):
 
         super().__init__(spec=spec,rng=rng)
-        self.food_reward_list=[1000, 1100, 1200, 1300, 1400, 1500] # default here, can be assigned from outside
+        self.food_reward_list=None # need to be assigned from outside
 
-    def reset(self):
+    def reset(self, food_reward_idx=None):
         """
         randomly choose a reward condition to train.
         in belief, reset if called, then belief init is called.
         """
         self.state = self.no_signal_nodes + self.no_penalty_nodes + 1
         self.time = 1
-        self.food_reward_idx=random.choice(list(range(len(self.food_reward_list))))
+        if food_reward_idx:
+            self.food_reward_idx=food_reward_idx
+        else:
+            self.food_reward_idx=random.choice(list(range(len(self.food_reward_list))))
         self.food_reward=self.food_reward_list[self.food_reward_idx]
         obs = self.observe_step(0)
         return obs
@@ -809,7 +809,7 @@ class AuditoryForagingReward2(AuditoryForaging):
                 belief[0] = (self.no_attention_modes -
                              certainity_sum)/normalization
                 belief[1:self.no_signal_nodes+1] = certainity_sum/normalization
-        return np.concatenate([belief, [self.food_reward_idx/len(self.food_reward_list)]])
+        return  np.concatenate([belief, [self.food_reward_idx/(len(self.food_reward_list)-1)]])
     
     def update_belief(self, previous_belief, action, observation):
         """
@@ -835,6 +835,6 @@ class AuditoryForagingReward2(AuditoryForaging):
         else:
             new_belief = new_belief/np.sum(new_belief)  # Normalization
 
-        return  np.concatenate([new_belief, [self.food_reward_idx/len(self.food_reward_list)]])
+        return  np.concatenate([new_belief, [self.food_reward_idx/(len(self.food_reward_list)-1)]])
     
     
