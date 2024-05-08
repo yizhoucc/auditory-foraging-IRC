@@ -109,7 +109,7 @@ def count_no_elements(np_array, min_allowed, max_allowed):
 
 
 def run_one_episode(task, taskbelief, agent,
-                    num_steps=1000):
+                    num_steps=1000, deterministic=True):
     '''modified run one ep function.'''
     q_states = [[i] for i in range(task.no_nodes)]
 
@@ -133,7 +133,7 @@ def run_one_episode(task, taskbelief, agent,
     t = 0
     while True:
 
-        action, _ = agent.predict(belief, deterministic=True)
+        action, _ = agent.predict(belief, deterministic=deterministic)
         # action, _ = agent.predict(belief)
         action = action
 
