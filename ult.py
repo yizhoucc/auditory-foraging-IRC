@@ -3,7 +3,7 @@ import torch
 from matplotlib import pyplot as plt
 from collections import OrderedDict, defaultdict
 import seaborn as sns
-
+import os
 # ---notification------
 import requests
 import configparser
@@ -21,6 +21,7 @@ def notify(msg='plots ready', group='lab',title='plot'):
 plt.rcParams['axes.unicode_minus'] = False
 plt.rcParams['svg.fonttype'] = 'none'
 plt.rcParams['mathtext.default'] = 'regular'
+plt.rcParams['pdf.fonttype'] = 42
 cmaps = OrderedDict()
 cmaps['Qualitative'] = ['Pastel1', 'Pastel2', 'Paired', 'Accent',
                         'Dark2', 'Set1', 'Set2', 'Set3',
@@ -35,13 +36,16 @@ plt.rcParams.update({
 })
 
 
-def quicksave(name, fig=None):
+def quicksave(name, modelname='noinfo', fig=None):
+    directory=f'fig/{modelname}'
+    if not os.path.exists(directory):
+        os.makedirs(directory)
     if not fig:
-        plt.savefig('/data/figures/{}.svg'.format(name),
-                    dpi='figure', format='svg', bbox_inches="tight")
+        plt.savefig(f'{directory}/{name}.pdf',
+                    dpi='figure', format='pdf', bbox_inches="tight")
     else:
-        fig.savefig('/data/figures/{}.svg'.format(name),
-                    dpi='figure', format='svg', bbox_inches="tight")
+        fig.savefig(f'{directory}/{name}.pdf',
+                    dpi='figure', format='pdf', bbox_inches="tight")
         
 
 def process_one_episode(episode, task):
@@ -122,7 +126,7 @@ def run_one_episode(task, taskbelief, agent,
         _q_states, _q_probs = [], []
     except:
         get_queries = None
-
+    task.reset()
     belief, info = taskbelief.reset(task, return_info=True)
     states.append(info['state'])
     observations.append(info['observation'])
@@ -188,39 +192,6 @@ def find_activation(agent, belief):
     return policy_net_3_results
 
 
-def get_att_lick_probs(episode,agent):
-    '''add agent arg'''
-    activations_list = []
-    for belief in episode['beliefs'][:-1]:  # Last belief is not used for action
-        activations_list.append(find_activation(agent, belief).numpy())
-    lick_feature = [activations_list[ind][0]
-                    for ind in range(len(activations_list))]
-    attention_feature = [activations_list[ind][1]
-                         for ind in range(len(activations_list))]
-    lick_prob = [(1/(1+np.exp(-2 * elt))) for elt in lick_feature]
-    attention_prob = [(1/(1+np.exp(-2 * elt))) for elt in attention_feature]
-    return attention_prob, lick_prob
-
-def get_att_lick_probs_new(episode,agent):
-    '''new function from lokesh on may 2nd'''
-    lick_prob = []
-    attention_prob = []
-    time = []
-    noise_prob = []
-
-    start_time = 1
-
-    for ind in range(start_time, len(episode['beliefs'][:-1])):
-        belief = episode['beliefs'][:-1][ind]
-        activation = find_activation(agent, belief).numpy()
-        lick_prob.append((1/(1+np.exp(-2 * activation[0]))))
-        attention_prob.append((1/(1+np.exp(-2 * activation[1]))))
-        noise_prob.append(belief[0])
-        time.append(ind)
-    
-    return attention_prob, lick_prob, noise_prob, time
-
-
 def pad_lists(list_of_lists):
     max_length = max(len(lst) for lst in list_of_lists)
     padded_lists = [lst + [0] * (max_length - len(lst))
@@ -239,7 +210,10 @@ def pad_zero_lick(data):
 
 def pad_zero_attention(data):
     num_rows = len(data)
-    num_cols = max(max(arr) for arr in data if len(arr) != 0) + 1
+    num_cols=50
+    try:
+        num_cols = max(max(arr) for arr in data if arr is not None and len(arr) != 0) + 1
+    except: pass
     grid = np.zeros((num_rows, num_cols))
     for i, arr in enumerate(data):
         grid[i, arr] = 1
@@ -395,7 +369,7 @@ def find_activation(agent, belief):
 
 def plot_hit_miss_FA(food_reward_list, hit_count_list, miss_count_list, false_alarm_list, title = ''):
     '''modified to probability'''
-    plt.figure()
+    f=plt.figure()
     hit_count_list,miss_count_list,false_alarm_list=np.array(hit_count_list),np.array(miss_count_list),np.array(false_alarm_list)
     hit_prob=[hit_count_list[i]/(hit_count_list[i]+miss_count_list[i]+false_alarm_list[i]) for i in range(len(hit_count_list))]
     miss_prob=[miss_count_list[i]/(hit_count_list[i]+miss_count_list[i]+false_alarm_list[i]) for i in range(len(hit_count_list))]
@@ -410,6 +384,7 @@ def plot_hit_miss_FA(food_reward_list, hit_count_list, miss_count_list, false_al
     plt.xticks(food_reward_list, [f'{a:.0f}' for a in food_reward_list])
     plt.title(title)
     plt.show()
+    return f
 
 def plot_hit_miss(food_reward_list, hit_count_list, miss_count_list, title = ''):
     '''hit and miss, no fa'''
@@ -492,3 +467,57 @@ def previous_block_size(lst):
         else:
             block_sizes.append(0)  # If not in any block, length is 0.
     return block_sizes
+
+
+
+
+def compute_action_probs(belief, agent):
+    def find_lick_prob(pi):
+        prob_val = 0
+        prob_val += find_action_comb_probs(lick_choice = 1, att_choice = 0, pi = pi)
+        prob_val += find_action_comb_probs(lick_choice = 1, att_choice = 1, pi = pi)
+        return prob_val
+
+    def find_att_prob(pi):
+        prob_val = 0
+        prob_val += find_action_comb_probs(lick_choice = 0, att_choice = 1, pi = pi)
+        prob_val += find_action_comb_probs(lick_choice = 1, att_choice = 1, pi = pi)
+        return prob_val
+
+    def find_action_comb_probs(lick_choice, att_choice, pi):
+        return np.exp(pi.log_prob(torch.tensor([np.array([lick_choice, att_choice])], dtype=torch.long, device='cpu')).item())
+
+    pi = agent.policy.get_distribution(torch.tensor(belief)[None].to('cpu'))
+    lick_prob = find_lick_prob(pi)
+    att_prob = find_att_prob(pi)
+    return lick_prob, att_prob
+
+def compute_action_probs(belief, agent):
+    '''same function rewrite just for clarity'''
+    pi = agent.policy.get_distribution(torch.tensor(belief)[None].to('cpu'))
+    nolicknoatt=np.exp(pi.log_prob(torch.tensor([np.array([0, 0])], dtype=torch.long, device='cpu')).item())
+    nolickatt=np.exp(pi.log_prob(torch.tensor([np.array([0, 1])], dtype=torch.long, device='cpu')).item())
+    licknoatt=np.exp(pi.log_prob(torch.tensor([np.array([1, 0])], dtype=torch.long, device='cpu')).item())
+    lickatt=np.exp(pi.log_prob(torch.tensor([np.array([1, 1])], dtype=torch.long, device='cpu')).item())
+    lick_prob=licknoatt+lickatt
+    att_prob=nolickatt+lickatt
+    return lick_prob, att_prob
+
+def get_att_lick_probs_new(episode, agent):
+    '''new from lokesh may 6th'''
+    lick_probs = []
+    att_probs = []
+    time = []
+    noise_probs = []
+    start_time = 1
+
+    for ind in range(start_time, len(episode['beliefs'][:-1])): #Last belief is not used for action
+        belief = episode['beliefs'][:-1][ind]
+        lick_prob, att_prob = compute_action_probs(belief, agent)
+        lick_probs.append(lick_prob)
+        att_probs.append(att_prob)
+        noise_probs.append(belief[0])
+        time.append(ind)
+
+    return att_probs, lick_probs, noise_probs, time
+

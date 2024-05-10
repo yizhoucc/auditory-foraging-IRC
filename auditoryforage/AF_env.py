@@ -169,7 +169,7 @@ class AuditoryForaging(Env):
 
         self.state, = state_tuple
 
-    def find_reward(self, lick_choice, attention_choice):
+    def find_reward_(self, lick_choice, attention_choice):
         """
         Computes the reward, given the choice of licking and the amount of attention.
         """
@@ -211,6 +211,35 @@ class AuditoryForaging(Env):
             penalty_cost_value + iti_cost_value + self.time_in_game_reward
 
         return rw
+
+    def find_reward(self, lick_choice, attention_choice):
+        """
+        Computes the reward, given the choice of licking and the amount of attention.
+        new function may 9th. just to use the attentino coef as the attention cost. low attentinon has no cost.
+        """
+
+        lick_cost_value = lick_choice * self.lick_cost
+        attention_cost_value=attention_choice*self.attention_cost_coeff
+        if self.state >= 1 and self.state <= self.no_signal_nodes and lick_choice == 1:
+            food_reward_value = self.food_reward
+        else:
+            food_reward_value = 0
+
+        if self.state == 0 and lick_choice == 1:
+            penalty_cost_value = self.penalty_cost
+        else:
+            penalty_cost_value = 0
+
+        if self.state == self.no_signal_nodes + 2:
+            iti_cost_value = self.iti_cost
+        else:
+            iti_cost_value = 0
+ 
+        rw = food_reward_value/self.time + attention_cost_value*5 + lick_cost_value + \
+            penalty_cost_value + iti_cost_value + self.time_in_game_reward
+
+        return rw
+
 
     def transition_step(self, lick_choice):
         """
@@ -837,4 +866,9 @@ class AuditoryForagingReward2(AuditoryForaging):
 
         return  np.concatenate([new_belief, [self.food_reward_idx/(len(self.food_reward_list)-1)]])
     
-    
+
+
+def compute_autocorrelation(sequence):
+    autocorr = np.correlate(sequence, sequence, mode='full')
+    autocorr /= np.max(autocorr)
+    return autocorr
