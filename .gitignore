@@ -12,3 +12,5 @@ wandb/
 runs/
 privateconfig
 fig/
+.*
+

@@ -235,7 +235,7 @@ class AuditoryForaging(Env):
         else:
             iti_cost_value = 0
  
-        rw = food_reward_value/self.time + attention_cost_value*5 + lick_cost_value + \
+        rw = food_reward_value/self.time + attention_cost_value + lick_cost_value + \
             penalty_cost_value + iti_cost_value + self.time_in_game_reward
 
         return rw
@@ -377,9 +377,9 @@ class AuditoryForaging(Env):
         Printing trajectory
         """
 
-        print(f"Current State : {current_state}\nLick Choice : {lick_choice}\nAttention Choice : {
-              attention_choice}\nReward Received: {rw}\nNext State: {self.state}\nNext Observation: {self.observation_possible[obs]}")
-        print(f"Total Reward : {self.collected_reward}")
+        # print(f"Current State : {current_state}\nLick Choice : {lick_choice}\nAttention Choice : {
+        #       attention_choice}\nReward Received: {rw}\nNext State: {self.state}\nNext Observation: {self.observation_possible[obs]}")
+        # print(f"Total Reward : {self.collected_reward}")
         print(
             "=============================================================================")
 
