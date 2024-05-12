@@ -127,6 +127,7 @@ def run_one_episode(task, taskbelief, agent,
     except:
         get_queries = None
     task.reset()
+    p1p2=task.obs_certainity_possible
     belief, info = taskbelief.reset(task, return_info=True)
     states.append(info['state'])
     observations.append(info['observation'])
@@ -162,6 +163,7 @@ def run_one_episode(task, taskbelief, agent,
         'states': np.array(states),  # [0, t]
         'observations': np.array(observations),  # [0, t]
         'beliefs': np.array(beliefs),  # [0, t]
+        'p1p2':p1p2
     }
 
     if get_queries is not None:
@@ -520,4 +522,12 @@ def get_att_lick_probs_new(episode, agent):
         time.append(ind)
 
     return att_probs, lick_probs, noise_probs, time
+
+
+
+def compute_autocorrelation(sequence):
+    autocorr = np.correlate(sequence, sequence, mode='full')
+    autocorr /= np.max(autocorr)
+    return autocorr
+
 
