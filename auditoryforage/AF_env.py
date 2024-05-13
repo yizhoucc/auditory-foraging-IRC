@@ -784,7 +784,7 @@ class AuditoryForagingReward2(AuditoryForaging):
                  spec: Optional[dict] = None,
                  rng: Union[RandGen, int, None] = None,
                  ):
-
+        
         super().__init__(spec=spec,rng=rng)
         self.food_reward_list=None # need to be assigned from outside
 
@@ -971,7 +971,7 @@ class AF2p(AuditoryForaging):
             new_belief[state] = observation_matrix[observation[0], state, int(attention_choice)] * np.reshape(
                 np.transpose(transition_matrix[:, state, int(lick_choice)]), (1, self.no_nodes)) @ previous_belief
             
-        # print(new_belief)
+        print(new_belief)
         if np.sum(new_belief) == 0:
             # print('Error: Mistake in belief update as all probabilities are coming out to be 0 somehow. Returned None!')
             new_belief = None
