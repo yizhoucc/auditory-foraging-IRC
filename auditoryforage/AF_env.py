@@ -881,7 +881,9 @@ class AuditoryForagingReward2(AuditoryForaging):
 
 class AF2p(AuditoryForaging):
     ''' add reward into belief, mainly the belief init and update functions
-     for comparing p1p2 '''
+     for comparing p1p2 
+     varying p1 only.
+     '''
 
     def __init__(self,
                  *,
@@ -903,11 +905,9 @@ class AF2p(AuditoryForaging):
             self.food_reward_idx=food_reward_idx
         else:
             self.food_reward_idx=random.choice(list(range(len(self.food_reward_list))))
-        self.p1=np.random.choice(np.arange(0.5,0.7,0.05))
-        p2=0
-        while p2<=self.p1:
-            p2=np.random.choice(np.arange(0.55,0.8,0.05))
-        self.p2=p2
+        self.p1id=np.random.choice([0,1,2,3])
+        self.p1=(np.array([.5,.6,.7,.8]))[self.p1id]
+        self.p2=0.9
         self.obs_certainity_possible=np.array([self.p1, self.p2])
         self.food_reward=self.food_reward_list[self.food_reward_idx]
         obs = self.observe_step(0)
@@ -924,7 +924,6 @@ class AF2p(AuditoryForaging):
         belief = np.zeros(shape=self.no_nodes)
 
         if observation[0] not in range(2):
-
             # for episodic
             # belief[observation[0]+self.no_signal_nodes-1] = 1
             if observation[0] == self.observation_possible[-2]:
@@ -948,7 +947,7 @@ class AF2p(AuditoryForaging):
                 belief[0] = (self.no_attention_modes -
                              certainity_sum)/normalization
                 belief[1:self.no_signal_nodes+1] = certainity_sum/normalization
-        return  np.concatenate([belief, [self.food_reward_idx/(len(self.food_reward_list)-1)], [self.p1,self.p2]])
+        return  np.concatenate([belief, [self.food_reward_idx/(len(self.food_reward_list)-1), self.p1id]])
     
     def update_belief(self, previous_belief, action, observation):
         """
@@ -957,7 +956,7 @@ class AF2p(AuditoryForaging):
         """
 
         # lick_choice, attention_choice = self.dict_action_possible[int(action)]
-        previous_belief=previous_belief[:-3] # remove the food reward dim
+        previous_belief=previous_belief[:-2] # remove the food reward dim
         lick_choice, attention_choice = action
 
         transition_matrix = self.find_transition_matrix()
@@ -978,8 +977,8 @@ class AF2p(AuditoryForaging):
             new_belief = None
         else:
             new_belief = new_belief/np.sum(new_belief)  # Normalization
-        # print(new_belief)
-        return  np.concatenate([new_belief, [self.food_reward_idx/(len(self.food_reward_list)-1)],[self.p1,self.p2]])
+        
+        return  np.concatenate([new_belief, [self.food_reward_idx/(len(self.food_reward_list)-1),self.p1id]])
     
 
 
