@@ -1,20 +1,23 @@
+from scipy.signal import savgol_filter
 import numpy as np
 import torch
 from matplotlib import pyplot as plt
 from collections import OrderedDict, defaultdict
 import seaborn as sns
 import os
+import pickle
 # ---notification------
 import requests
 import configparser
 config = configparser.ConfigParser()
 config.read_file(open('privateconfig'))
-token=config['Notification']['token']
+token = config['Notification']['token']
 
-def notify(msg='plots ready', group='lab',title='plot'):
-    notification="https://api.day.app/{}/{}/{}?group={}".format(token,title, msg, group)
+
+def notify(msg='plots ready', group='lab', title='plot'):
+    notification = "https://api.day.app/{}/{}/{}?group={}".format(
+        token, title, msg, group)
     requests.get(notification)
-
 
 
 # ---plot configs------
@@ -37,7 +40,7 @@ plt.rcParams.update({
 
 
 def quicksave(name, modelname='noinfo', fig=None):
-    directory=f'fig/{modelname}'
+    directory = f'fig/{modelname}'
     if not os.path.exists(directory):
         os.makedirs(directory)
     if not fig:
@@ -46,7 +49,7 @@ def quicksave(name, modelname='noinfo', fig=None):
     else:
         fig.savefig(f'{directory}/{name}.pdf',
                     dpi='figure', format='pdf', bbox_inches="tight")
-        
+
 
 def process_one_episode(episode, task):
     '''process the episode data into result lists'''
@@ -127,7 +130,7 @@ def run_one_episode(task, taskbelief, agent,
     except:
         get_queries = None
     task.reset()
-    p1p2=task.obs_certainity_possible
+    p1p2 = task.obs_certainity_possible
     belief, info = taskbelief.reset(task, return_info=True)
     states.append(info['state'])
     observations.append(info['observation'])
@@ -163,7 +166,7 @@ def run_one_episode(task, taskbelief, agent,
         'states': np.array(states),  # [0, t]
         'observations': np.array(observations),  # [0, t]
         'beliefs': np.array(beliefs),  # [0, t]
-        'p1p2':p1p2
+        'p1p2': p1p2
     }
 
     if get_queries is not None:
@@ -176,7 +179,6 @@ def run_one_episode(task, taskbelief, agent,
         episode['q_probs'] = np.array(_q_probs)  # (num_queries, t+1)
 
     return episode
-
 
 
 def find_activation(agent, belief):
@@ -212,10 +214,12 @@ def pad_zero_lick(data):
 
 def pad_zero_attention(data):
     num_rows = len(data)
-    num_cols=50
+    num_cols = 50
     try:
-        num_cols = max(max(arr) for arr in data if arr is not None and len(arr) != 0) + 1
-    except: pass
+        num_cols = max(max(arr)
+                       for arr in data if arr is not None and len(arr) != 0) + 1
+    except:
+        pass
     grid = np.zeros((num_rows, num_cols))
     for i, arr in enumerate(data):
         grid[i, arr] = 1
@@ -226,6 +230,7 @@ def offset_to_first(data):
     offset_data = [[x - min(inner_list) for x in inner_list]
                    for inner_list in data]
     return offset_data
+
 
 def find_gap(arr):
     '''find gap in binary arr (for each row)'''
@@ -240,6 +245,7 @@ def find_gap(arr):
                     gap_lengths.append(count)
                     count = 0
     return np.array(gap_lengths)
+
 
 def gap_histogram_all_rows(arr):
     gap_lengths = []
@@ -271,13 +277,13 @@ def plot_over_episodes(data, title, plot_no_episodes=100):
         plt.show()
 
         plot_data = data[:plot_no_episodes]
-        trial_lens=[len(a) for a in data]
-        sortidx=np.argsort(trial_lens)
+        trial_lens = [len(a) for a in data]
+        sortidx = np.argsort(trial_lens)
         plt.figure()
         # c=plt.imshow(pad_zero_attention(plot_data)[sortidx], cmap='viridis',
         #            aspect='auto', interpolation='none')
-        c=plt.imshow(pad_zero_attention(plot_data), cmap='viridis',
-                        aspect='auto', interpolation='none')
+        c = plt.imshow(pad_zero_attention(plot_data), cmap='viridis',
+                       aspect='auto', interpolation='none')
         plt.colorbar(c)
         plt.xlabel('time in trial')
         plt.ylabel('episode no.')
@@ -294,8 +300,8 @@ def plot_over_episodes(data, title, plot_no_episodes=100):
 
         plot_data = offset_to_first(data[:plot_no_episodes])
         plt.figure()
-        c=plt.imshow(pad_zero_attention(plot_data), cmap='viridis',
-                   aspect='auto', interpolation='none')
+        c = plt.imshow(pad_zero_attention(plot_data), cmap='viridis',
+                       aspect='auto', interpolation='none')
         plt.colorbar(c)
         plt.xlabel('time in trial')
         plt.ylabel('episode no.')
@@ -329,8 +335,8 @@ def plot_over_episodes(data, title, plot_no_episodes=100):
 
         plot_data = data[:plot_no_episodes]
         plt.figure()
-        c=plt.imshow(pad_zero_lick(plot_data), cmap='viridis',
-                   aspect='auto', interpolation='none')
+        c = plt.imshow(pad_zero_lick(plot_data), cmap='viridis',
+                       aspect='auto', interpolation='none')
         plt.colorbar(c)
         plt.xlabel('time in trial')
         plt.ylabel('episode no.')
@@ -348,8 +354,8 @@ def plot_over_episodes(data, title, plot_no_episodes=100):
 
         plot_data = data[:plot_no_episodes]
         plt.figure()
-        c=plt.imshow(pad_lists(plot_data), cmap='viridis',
-                   aspect='auto', interpolation='none')
+        c = plt.imshow(pad_lists(plot_data), cmap='viridis',
+                       aspect='auto', interpolation='none')
         plt.colorbar(c)
         plt.xlabel('time in trial')
         plt.ylabel('episode no.')
@@ -357,26 +363,34 @@ def plot_over_episodes(data, title, plot_no_episodes=100):
         plt.show()
 
 
-
 def find_activation(agent, belief):
     '''modified, with only 3 activations instead of 4'''
     features = torch.tensor(belief, dtype=torch.float32)
     with torch.no_grad():
-        policy_net_0_results = agent.policy.mlp_extractor.policy_net[0](features)
-        policy_net_1_results = agent.policy.mlp_extractor.policy_net[1](policy_net_0_results)
-        policy_net_2_results = agent.policy.mlp_extractor.policy_net[2](policy_net_1_results)
-        policy_net_3_results = agent.policy.mlp_extractor.policy_net[3](policy_net_2_results)
+        policy_net_0_results = agent.policy.mlp_extractor.policy_net[0](
+            features)
+        policy_net_1_results = agent.policy.mlp_extractor.policy_net[1](
+            policy_net_0_results)
+        policy_net_2_results = agent.policy.mlp_extractor.policy_net[2](
+            policy_net_1_results)
+        policy_net_3_results = agent.policy.mlp_extractor.policy_net[3](
+            policy_net_2_results)
 
     return policy_net_3_results
 
-def plot_hit_miss_FA(food_reward_list, hit_count_list, miss_count_list, false_alarm_list, title = ''):
+
+def plot_hit_miss_FA(food_reward_list, hit_count_list, miss_count_list, false_alarm_list, title=''):
     '''modified to probability'''
-    f=plt.figure()
-    hit_count_list,miss_count_list,false_alarm_list=np.array(hit_count_list),np.array(miss_count_list),np.array(false_alarm_list)
-    hit_prob=[hit_count_list[i]/(hit_count_list[i]+miss_count_list[i]+false_alarm_list[i]) for i in range(len(hit_count_list))]
-    miss_prob=[miss_count_list[i]/(hit_count_list[i]+miss_count_list[i]+false_alarm_list[i]) for i in range(len(hit_count_list))]
-    fa_prob=[false_alarm_list[i]/(hit_count_list[i]+miss_count_list[i]+false_alarm_list[i]) for i in range(len(hit_count_list))]
-    
+    f = plt.figure()
+    hit_count_list, miss_count_list, false_alarm_list = np.array(
+        hit_count_list), np.array(miss_count_list), np.array(false_alarm_list)
+    hit_prob = [hit_count_list[i]/(hit_count_list[i]+miss_count_list[i] +
+                                   false_alarm_list[i]) for i in range(len(hit_count_list))]
+    miss_prob = [miss_count_list[i]/(hit_count_list[i]+miss_count_list[i] +
+                                     false_alarm_list[i]) for i in range(len(hit_count_list))]
+    fa_prob = [false_alarm_list[i]/(hit_count_list[i]+miss_count_list[i] +
+                                    false_alarm_list[i]) for i in range(len(hit_count_list))]
+
     plt.plot(food_reward_list, hit_prob, '-*g')
     plt.plot(food_reward_list, miss_prob, '-*b')
     plt.plot(food_reward_list, fa_prob, '-*r')
@@ -388,12 +402,16 @@ def plot_hit_miss_FA(food_reward_list, hit_count_list, miss_count_list, false_al
     plt.show()
     return f
 
-def plot_hit_miss(food_reward_list, hit_count_list, miss_count_list, title = ''):
+
+def plot_hit_miss(food_reward_list, hit_count_list, miss_count_list, title=''):
     '''hit and miss, no fa'''
     plt.figure()
-    hit_count_list,miss_count_list=np.array(hit_count_list),np.array(miss_count_list)
-    hit_prob=[hit_count_list[i]/(hit_count_list[i]+miss_count_list[i]) for i in range(len(hit_count_list))]
-    miss_prob=[miss_count_list[i]/(hit_count_list[i]+miss_count_list[i]) for i in range(len(hit_count_list))]
+    hit_count_list, miss_count_list = np.array(
+        hit_count_list), np.array(miss_count_list)
+    hit_prob = [hit_count_list[i]/(hit_count_list[i]+miss_count_list[i])
+                for i in range(len(hit_count_list))]
+    miss_prob = [miss_count_list[i]/(hit_count_list[i]+miss_count_list[i])
+                 for i in range(len(hit_count_list))]
     plt.plot(food_reward_list, hit_prob, '-*g')
     plt.plot(food_reward_list, miss_prob, '-*b')
     plt.legend(['hit', 'miss', 'false alarm'])
@@ -404,13 +422,16 @@ def plot_hit_miss(food_reward_list, hit_count_list, miss_count_list, title = '')
     plt.show()
 
 
-def plot_hit_fa(food_reward_list, hit_count_list, false_alarm_list, title = ''):
+def plot_hit_fa(food_reward_list, hit_count_list, false_alarm_list, title=''):
     '''hit and fa'''
     plt.figure()
-    hit_count_list,false_alarm_list=np.array(hit_count_list), np.array(false_alarm_list)
-    hit_prob=[hit_count_list[i]/(hit_count_list[i]+false_alarm_list[i]) for i in range(len(hit_count_list))]
-    fa_prob=[false_alarm_list[i]/(hit_count_list[i]+false_alarm_list[i]) for i in range(len(hit_count_list))]
-    
+    hit_count_list, false_alarm_list = np.array(
+        hit_count_list), np.array(false_alarm_list)
+    hit_prob = [hit_count_list[i]/(hit_count_list[i]+false_alarm_list[i])
+                for i in range(len(hit_count_list))]
+    fa_prob = [false_alarm_list[i]/(hit_count_list[i]+false_alarm_list[i])
+               for i in range(len(hit_count_list))]
+
     plt.plot(food_reward_list, hit_prob, '-*g')
     plt.plot(food_reward_list, fa_prob, '-*r')
     plt.legend(['hit', 'false alarm'])
@@ -419,6 +440,7 @@ def plot_hit_fa(food_reward_list, hit_count_list, false_alarm_list, title = ''):
     plt.xticks(food_reward_list, [f'{a:.0f}' for a in food_reward_list])
     plt.title(title)
     plt.show()
+
 
 def count_less_equal_index(lst):
     '''count number of trial end at i'''
@@ -429,8 +451,6 @@ def count_less_equal_index(lst):
     return np.array(result)
 
 
-from scipy.signal import savgol_filter
-
 def smooth_list(lst, window_size=3, polynomial_order=1):
     '''smoothing'''
     return savgol_filter(lst, window_size, polynomial_order)
@@ -438,52 +458,57 @@ def smooth_list(lst, window_size=3, polynomial_order=1):
 
 def previous_block_gap(lst):
     '''we define block as continus int. this function finds the gap of each item's block to previous block end'''
-    res=[0]
-    r=0
+    res = [0]
+    r = 0
     for i in lst:
-        if i==r+1: # continues in block
-            res.append(res[-1]) # the answer should be the same as begining of the block
-        else: # not in block. r is previous block end
+        if i == r+1:  # continues in block
+            # the answer should be the same as begining of the block
+            res.append(res[-1])
+        else:  # not in block. r is previous block end
             res.append(i-r)
-        r=i
+        r = i
     return res[1:]
+
 
 def previous_item_gap(lst, remove_first=True):
     '''we define block as continus int. this function finds the gap of each item to previous item. '''
-    if remove_first: # remove begining of trial as an attention
+    if remove_first:  # remove begining of trial as an attention
         return np.diff(lst)
     return np.diff(np.append([0], lst))
 
+
 def previous_block_size(lst):
     '''we define block as continus int. this function finds the previous block size'''
-    block_starts = [i for i in range(len(lst)) if i == 0 or lst[i] != lst[i-1] + 1]
+    block_starts = [i for i in range(
+        len(lst)) if i == 0 or lst[i] != lst[i-1] + 1]
     block_sizes = []
     for i in range(len(lst)):
-        current_block_index = next((index for index in block_starts[::-1] if index <= i), None)
+        current_block_index = next(
+            (index for index in block_starts[::-1] if index <= i), None)
         if current_block_index is not None:
-            prev_block_index = next((index for index in block_starts[::-1] if index < current_block_index), None)
+            prev_block_index = next(
+                (index for index in block_starts[::-1] if index < current_block_index), None)
             if prev_block_index is not None:
                 block_sizes.append(current_block_index - prev_block_index)
             else:
-                block_sizes.append(current_block_index + 1)  # If no previous block found, length is up to current block start.
+                # If no previous block found, length is up to current block start.
+                block_sizes.append(current_block_index + 1)
         else:
             block_sizes.append(0)  # If not in any block, length is 0.
     return block_sizes
 
 
-
-
 def compute_action_probs(belief, agent):
     def find_lick_prob(pi):
         prob_val = 0
-        prob_val += find_action_comb_probs(lick_choice = 1, att_choice = 0, pi = pi)
-        prob_val += find_action_comb_probs(lick_choice = 1, att_choice = 1, pi = pi)
+        prob_val += find_action_comb_probs(lick_choice=1, att_choice=0, pi=pi)
+        prob_val += find_action_comb_probs(lick_choice=1, att_choice=1, pi=pi)
         return prob_val
 
     def find_att_prob(pi):
         prob_val = 0
-        prob_val += find_action_comb_probs(lick_choice = 0, att_choice = 1, pi = pi)
-        prob_val += find_action_comb_probs(lick_choice = 1, att_choice = 1, pi = pi)
+        prob_val += find_action_comb_probs(lick_choice=0, att_choice=1, pi=pi)
+        prob_val += find_action_comb_probs(lick_choice=1, att_choice=1, pi=pi)
         return prob_val
 
     def find_action_comb_probs(lick_choice, att_choice, pi):
@@ -494,16 +519,22 @@ def compute_action_probs(belief, agent):
     att_prob = find_att_prob(pi)
     return lick_prob, att_prob
 
+
 def compute_action_probs(belief, agent):
     '''same function rewrite just for clarity'''
     pi = agent.policy.get_distribution(torch.tensor(belief)[None].to('cpu'))
-    nolicknoatt=np.exp(pi.log_prob(torch.tensor([np.array([0, 0])], dtype=torch.long, device='cpu')).item())
-    nolickatt=np.exp(pi.log_prob(torch.tensor([np.array([0, 1])], dtype=torch.long, device='cpu')).item())
-    licknoatt=np.exp(pi.log_prob(torch.tensor([np.array([1, 0])], dtype=torch.long, device='cpu')).item())
-    lickatt=np.exp(pi.log_prob(torch.tensor([np.array([1, 1])], dtype=torch.long, device='cpu')).item())
-    lick_prob=licknoatt+lickatt
-    att_prob=nolickatt+lickatt
+    nolicknoatt = np.exp(pi.log_prob(torch.tensor(
+        [np.array([0, 0])], dtype=torch.long, device='cpu')).item())
+    nolickatt = np.exp(pi.log_prob(torch.tensor(
+        [np.array([0, 1])], dtype=torch.long, device='cpu')).item())
+    licknoatt = np.exp(pi.log_prob(torch.tensor(
+        [np.array([1, 0])], dtype=torch.long, device='cpu')).item())
+    lickatt = np.exp(pi.log_prob(torch.tensor(
+        [np.array([1, 1])], dtype=torch.long, device='cpu')).item())
+    lick_prob = licknoatt+lickatt
+    att_prob = nolickatt+lickatt
     return lick_prob, att_prob
+
 
 def get_att_lick_probs_new(episode, agent):
     '''new from lokesh may 6th'''
@@ -513,7 +544,8 @@ def get_att_lick_probs_new(episode, agent):
     noise_probs = []
     start_time = 1
 
-    for ind in range(start_time, len(episode['beliefs'][:-1])): #Last belief is not used for action
+    # Last belief is not used for action
+    for ind in range(start_time, len(episode['beliefs'][:-1])):
         belief = episode['beliefs'][:-1][ind]
         lick_prob, att_prob = compute_action_probs(belief, agent)
         lick_probs.append(lick_prob)
@@ -524,10 +556,22 @@ def get_att_lick_probs_new(episode, agent):
     return att_probs, lick_probs, noise_probs, time
 
 
-
 def compute_autocorrelation(sequence):
     autocorr = np.correlate(sequence, sequence, mode='full')
     autocorr /= np.max(autocorr)
     return autocorr
 
 
+def open_pickle_file(file_name):
+    open_file = open(file_name, "rb")
+    data = pickle.load(open_file)
+    open_file.close()
+    return data
+
+
+def save_pickle_file(file_name, data):
+    directory = os.path.dirname(file_name)
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+    with open(file_name, 'wb') as f:
+        pickle.dump(data, f)
