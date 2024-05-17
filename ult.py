@@ -11,6 +11,7 @@ from matplotlib.colors import ListedColormap
 import multiprocess
 from matplotlib import font_manager
 from matplotlib.colors import LinearSegmentedColormap
+from contextlib import contextmanager, ExitStack, redirect_stderr, redirect_stdout
 # ---notification------
 import requests
 import configparser
@@ -49,6 +50,16 @@ plt.rcParams.update({
     'axes.spines.top': False, 'axes.spines.right': False,
     'savefig.dpi': 1200,
 })
+
+@contextmanager
+def suppress(out=True, err=False):
+    with ExitStack() as stack:
+        with open(os.devnull, "w") as null:
+            if out:
+                stack.enter_context(redirect_stdout(null))
+            if err:
+                stack.enter_context(redirect_stderr(null))
+            yield
 
 
 def quicksave(name, modelname='noinfo', fig=None):
