@@ -272,8 +272,10 @@ def gap_histogram_all_rows(arr):
                     count = 0
 
     # Compute histogram for all gap lengths together
-    histogram = np.histogram(
-        gap_lengths, bins=np.arange(1, max(gap_lengths) + 2))
+    if gap_lengths==[]:
+        return # None for attn all time
+
+    histogram = np.histogram(gap_lengths, bins=np.arange(1, max(gap_lengths) + 2))
     return histogram
 
 
