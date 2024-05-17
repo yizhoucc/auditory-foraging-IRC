@@ -995,3 +995,65 @@ def quickleg(ax, loc='lower right', bbox_to_anchor=(0,0)):
                     loc='lower right', bbox_to_anchor=bbox_to_anchor)
     for lh in leg.legendHandles:
         lh.set_alpha(1)
+
+
+def empirical_autocorrelation_new(list_of_seqs, min_no_samples):
+    # input is a list of lists, each inner list being a sequence
+
+    def get_mean_and_variance(list_of_seqs):
+        flattened_list = [item for sublist in list_of_seqs for item in sublist]
+        np_array = np.array(flattened_list)
+        mean = np.mean(np_array)
+        variance = np.var(np_array)
+        return mean, variance
+        
+    def normalize(np_array, mean, variance):
+        return (np_array - mean**2)/variance
+    
+    def first_index_above_value(array, value):
+        indices = np.where(array >= value)
+        if len(indices[0]) == 0:
+            return None
+        return indices[0][0]
+
+    def pad_lists_with_zeros(lists):
+        max_length = max(len(inner_list) for inner_list in lists) 
+        padded_lists = []
+        for inner_list in lists:
+            current_length = len(inner_list)
+            total_padding = max_length - current_length
+            left_padding = total_padding // 2
+            right_padding = total_padding - left_padding
+            padded_list = [0] * left_padding + inner_list + [0] * right_padding
+            padded_lists.append(padded_list)
+        return padded_lists
+
+    def generate_autocorr_count(n):
+        no_samples_one_direction = [n - i for i in range(n)]
+        no_samples_both_directions = list(reversed(no_samples_one_direction[1:])) + no_samples_one_direction
+        return no_samples_both_directions 
+
+    def convert_to_float(list_of_lists):
+        return [[float(elt) for elt in sublist] for sublist in list_of_lists]
+    
+    list_of_seqs = convert_to_float(list_of_seqs)
+    mean, variance = get_mean_and_variance(list_of_seqs)
+    list_of_counts = []
+    list_of_unorm_corrs = []
+    for seq in list_of_seqs:
+        unorm_corr = np.correlate(seq, seq, mode='full')
+        list_of_unorm_corrs.append(list(unorm_corr))
+        list_of_counts.append(generate_autocorr_count(len(seq)))
+    total_counts = np.sum(np.array(pad_lists_with_zeros(list_of_counts)), 0)
+    autocorr = np.sum(np.array(pad_lists_with_zeros(list_of_unorm_corrs)), 0)/total_counts
+
+    ind = first_index_above_value(total_counts, min_no_samples)
+    if ind != 0:
+        return normalize(autocorr[ind:-ind], mean, variance), total_counts[ind:-ind]
+    if np.sum(variance)==0: # all time att
+        res= np.zeros_like(autocorr)
+        res[len(res)//2]=1
+        return res, total_counts
+    return normalize(autocorr, mean, variance), total_counts
+
+
