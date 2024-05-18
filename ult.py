@@ -51,6 +51,17 @@ plt.rcParams.update({
     'savefig.dpi': 1200,
 })
 
+
+
+lick_color, attn_color='tab:orange', 'tab:blue'
+sig_color='black'
+
+start_rgb = (0.0, 1, 0.7) # low reward
+end_rgb = (0.0, 0.2, 0.2) # high reward
+cmap = LinearSegmentedColormap.from_list('custom_cmap', [start_rgb, end_rgb])
+
+
+
 @contextmanager
 def suppress(out=True, err=False):
     with ExitStack() as stack:
