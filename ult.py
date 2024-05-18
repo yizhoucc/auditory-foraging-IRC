@@ -1063,7 +1063,7 @@ def empirical_autocorrelation_new(list_of_seqs, min_no_samples):
         return normalize(autocorr[ind:-ind], mean, variance), total_counts[ind:-ind]
     if np.sum(variance)==0: # all time att
         res= np.zeros_like(autocorr)
-        res[len(res)//2]=1
+        # res[len(res)//2]=1
         return res, total_counts
     return normalize(autocorr, mean, variance), total_counts
 
