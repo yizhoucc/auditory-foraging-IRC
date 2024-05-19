@@ -52,10 +52,10 @@ plt.rcParams.update({
 })
 
 
-
+# color choice --------------
 lick_color, attn_color='tab:orange', 'tab:blue'
 sig_color='black'
-
+noise_color='white'
 start_rgb = (0.0, 1, 0.7) # low reward
 end_rgb = (0.0, 0.2, 0.2) # high reward
 cmap = LinearSegmentedColormap.from_list('custom_cmap', [start_rgb, end_rgb])
@@ -73,7 +73,10 @@ def suppress(out=True, err=False):
             yield
 
 
-def quicksave(name, modelname='noinfo', fig=None):
+def quicksave(name, modelname='default', fig=None):
+    '''save to pdf. 
+    name, name of figure.
+    modelname, name of the folder'''
     directory = f'fig/{modelname}'
     if not os.path.exists(directory):
         os.makedirs(directory)
