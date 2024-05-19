@@ -13,3 +13,4 @@ runs/
 privateconfig
 fig/
 .*
+.DS_Store
