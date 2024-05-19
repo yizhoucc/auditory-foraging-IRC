@@ -66,7 +66,21 @@ start_rgb = (0.0, 1, 0.7) # low reward
 end_rgb = (0.0, 0.2, 0.2) # high reward
 cmap = LinearSegmentedColormap.from_list('custom_cmap', [start_rgb, end_rgb])
 
+def find_block_lengths(numbers):
+    block_lengths = []
+    current_length = 1
 
+    for i in range(1, len(numbers)):
+        if numbers[i] == numbers[i - 1] + 1:
+            current_length += 1
+        else:
+            block_lengths.append(current_length)
+            current_length = 1
+
+    # Append the length of the last block
+    block_lengths.append(current_length)
+
+    return block_lengths
 
 @contextmanager
 def suppress(out=True, err=False):

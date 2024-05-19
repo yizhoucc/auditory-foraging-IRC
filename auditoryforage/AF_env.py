@@ -1082,3 +1082,43 @@ class AF2pp(AuditoryForaging):
         return  np.concatenate([new_belief, [self.p1,self.p2]])
     
 
+
+class AFnorate(AuditoryForagingReward2):
+    ''' add reward into belief, mainly the belief init and update functions '''
+
+    def __init__(self,
+                 *,
+                 spec: Optional[dict] = None,
+                 rng: Union[RandGen, int, None] = None,
+                 ):
+        
+        super().__init__(spec=spec,rng=rng)
+        self.food_reward_list=None # need to be assigned from outside
+
+    def find_reward(self, lick_choice, attention_choice):
+        """
+        Computes the reward, given the choice of licking and the amount of attention.
+        new function may 9th. just to use the attentino coef as the attention cost. low attentinon has no cost.
+        """
+
+        lick_cost_value = lick_choice * self.lick_cost
+        attention_cost_value=attention_choice*self.attention_cost_coeff
+        if self.state >= 1 and self.state <= self.no_signal_nodes and lick_choice == 1:
+            food_reward_value = self.food_reward
+        else:
+            food_reward_value = 0
+
+        if self.state == 0 and lick_choice == 1:
+            penalty_cost_value = self.penalty_cost
+        else:
+            penalty_cost_value = 0
+
+        if self.state == self.no_signal_nodes + 2:
+            iti_cost_value = self.iti_cost
+        else:
+            iti_cost_value = 0
+ 
+        rw = food_reward_value + attention_cost_value + lick_cost_value + \
+            penalty_cost_value + iti_cost_value + self.time_in_game_reward
+
+        return rw
