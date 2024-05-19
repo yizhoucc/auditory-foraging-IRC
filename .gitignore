@@ -14,3 +14,4 @@ privateconfig
 fig/
 .*
 .DS_Store
+__pycache__
