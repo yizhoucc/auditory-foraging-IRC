@@ -39,6 +39,7 @@ plt.rcParams['axes.unicode_minus'] = False
 plt.rcParams['svg.fonttype'] = 'none'
 plt.rcParams['mathtext.default'] = 'regular'
 plt.rcParams['pdf.fonttype'] = 42
+
 cmaps = OrderedDict()
 cmaps['Qualitative'] = ['Pastel1', 'Pastel2', 'Paired', 'Accent',
                         'Dark2', 'Set1', 'Set2', 'Set3',
@@ -56,6 +57,11 @@ plt.rcParams.update({
 lick_color, attn_color='tab:orange', 'tab:blue'
 sig_color='black'
 noise_color='white'
+hit_color='green'
+fa_color='red'
+miss_color='grey'
+
+
 start_rgb = (0.0, 1, 0.7) # low reward
 end_rgb = (0.0, 0.2, 0.2) # high reward
 cmap = LinearSegmentedColormap.from_list('custom_cmap', [start_rgb, end_rgb])
