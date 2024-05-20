@@ -507,6 +507,39 @@ def plot_hit_fa(food_reward_list, hit_count_list, false_alarm_list, title=''):
     plt.show()
 
 
+def find_blocks(alist):
+    '''return att blocks in (s,e)'''
+    blocks=[]
+    cur=-2
+    for a in alist:
+        # print(a,cur, blocks)
+        if a==cur+1: # cont
+            blocks[-1][-1]=a
+        else:
+            blocks.append([a,a])
+        cur=a
+    return blocks
+
+def find_gaps(alist):
+    '''find gaps in att list'''
+    blocks=find_blocks(alist)
+    gaps=[]
+    for (_,s),(e,_) in zip(blocks, blocks[1:]):
+        gaps.append(e-s)
+    return gaps
+    # print(gaps)
+
+def find_blocksize(alst):
+    '''find att block size. 
+    alst: attention list such as [10,22,23,45]'''
+    lst=np.diff(alst)
+    one_indices = np.where(lst == 1)[0]
+    blocks = np.split(one_indices, np.where(np.diff(one_indices) != 1)[0] + 1)
+    block_sizes=[len(block)+1 for block in blocks if block.size > 0]
+    return block_sizes
+
+
+
 def count_less_equal_index(lst):
     '''count number of trial end at i'''
     result = []
@@ -539,8 +572,31 @@ def previous_item_gap(lst, remove_first=True):
     '''we define block as continus int. this function finds the gap of each item to previous item. '''
     if remove_first:  # remove begining of trial as an attention
         return np.diff(lst)
-    return np.diff(np.append([0], lst))
+    res=np.diff(np.append([0], lst))
+    res=res[res!=1]
+    return res
 
+def find_blockgap(alst):
+    '''find att block gap. 
+    alst: attention list such as [10,22,23,45]'''
+    lst=np.diff(alst)
+    one_indices = np.where(lst == 1)[0]
+    blocks = np.split(one_indices, np.where(np.diff(one_indices) != 1)[0] + 1)
+    block_sizes=[len(block)+1 for block in blocks if block.size > 0]
+    res=[]
+    for e,s in zip(blocks, blocks[1:]):
+        res.append(s[0]-s[-1])
+    return np.array(res)
+
+def find_blocksize(alst):
+    '''find att block size. 
+    alst: attention list such as [10,22,23,45]'''
+    lst=np.diff(alst)
+    one_indices = np.where(lst == 1)[0]
+    blocks = np.split(one_indices, np.where(np.diff(one_indices) != 1)[0] + 1)
+    block_sizes=[len(block)+1 for block in blocks if block.size > 0]
+    # alst, lst, one_indices,block_sizes
+    return block_sizes
 
 def previous_block_size(lst):
     '''we define block as continus int. this function finds the previous block size'''
