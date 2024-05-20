@@ -1,5 +1,6 @@
 from scipy.signal import savgol_filter
 import numpy as np
+import pandas as pd
 import torch
 from matplotlib import pyplot as plt
 from collections import OrderedDict, defaultdict
@@ -33,8 +34,6 @@ font_files = font_manager.findSystemFonts(fontpaths=font_dirs)
 for font_file in font_files:
     font_manager.fontManager.addfont(font_file)
 plt.rcParams['font.family'] = 'CMU Serif'
-
-
 plt.rcParams['axes.unicode_minus'] = False
 plt.rcParams['svg.fonttype'] = 'none'
 plt.rcParams['mathtext.default'] = 'regular'
@@ -64,7 +63,14 @@ miss_color='grey'
 
 start_rgb = (0.0, 1, 0.7) # low reward
 end_rgb = (0.0, 0.2, 0.2) # high reward
-cmap = LinearSegmentedColormap.from_list('custom_cmap', [start_rgb, end_rgb])
+rewardcmap = LinearSegmentedColormap.from_list('rewardmap', [start_rgb, end_rgb])
+
+colors = [attn_color, 'white', lick_color]
+stops = [0.0, 0.5, 1.0]
+attnlickcmap = LinearSegmentedColormap.from_list(
+    'attmap', list(zip(stops, colors)))
+
+pcmap = LinearSegmentedColormap.from_list('pcmap', [start_rgb, end_rgb])
 
 def find_block_lengths(numbers):
     block_lengths = []
