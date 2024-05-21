@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 import torch
 from matplotlib import pyplot as plt
-from collections import OrderedDict, defaultdict
+from collections import OrderedDict, defaultdict, Counter
 import seaborn as sns
 import os
 import pickle
@@ -567,6 +567,21 @@ def previous_block_gap(lst):
         r = i
     return res[1:]
 
+def trialsb(b):
+    sb=b[:-1,1:26]
+    sb=np.sum(sb,axis=1)
+    return sb
+
+def trialnextatt(alist, b):
+    r=0
+    nextatt=[]
+    for t in range(len(b)):
+        while r<len(alist)-1 and t>alist[r]:
+            r+=1
+        # print(r, t)
+        nextatt.append(alist[r]-t)
+    nextatt=np.array(nextatt)
+    return nextatt
 
 def previous_item_gap(lst, remove_first=True):
     '''we define block as continus int. this function finds the gap of each item to previous item. '''
