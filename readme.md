@@ -1,5 +1,40 @@
 # AF project
 
+# state about this pr
+this is the version we have at the date of nips deadline.
+the files are pretty messy, wie dont have time to do a full reorganization.
+but they can be split into 2 groups.
+plot notebooks. they are done on macbook laptop. 
+i use them for plottings. 
+the load agent load data should be on my laptop. 
+(i dont have a function to check exist to avoid overwrite when save fig save data yet, i should have one soon.)
+
+the vary notebooks.
+they are used for training, and usually do not need extra file to run.
+rare case, they are continue training. can just change the epoch index to 0 and start fresh. 
+because of the set seed, we should have same result.
+the trained agents are on the linux and mac server, i still have all the agents checkpoints.
+
+reorganize plans.
+curently, the notebooks for training and eval mainly have 2 versions. 
+i did not finish the reorg. 
+old version, i have the dict as data stucture because we only vary reward.
+new version, i have the df as data structure for easy querying when vary for multi variables.
+we will fully make this to df.
+
+after that, we will thinking about improving smoothness of varying p1 and n nodes.
+need to intergrate them into the aganet family.
+but things are harder than reward.
+eg, varying p1 changes belief directly. 
+from my past exp, the agent do not think the extra knowledge of p1 help very much, and nearly ignore the extra dimention.
+maybe we need some belief representation, since the current belief is not information dense.
+
+we also want either a template or pipepline(prefered) to run experiemtns.
+running exp, should have proper log, checkpoint saved, figure exported and visualized on some webpage. now i have to check it manually or show in vscode, make the notebook huge and slow.
+better to keep to modular.
+
+
+
 # about this branch
 for testing purpose mainly. has some plotting functions.
 the structure is train then analysis.
