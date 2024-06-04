@@ -54,6 +54,17 @@ please refer to latex
 
 - use 'compare across seeds and epoch.ipynb' to generate plots. we want the reward to match with the plots in 'expected result' folder.
 
+# example privateconfig (put it under the repo folder)
+
+[Datafolder]
+data = 'path to data folder'
+
+[Codefolder]
+workspace = 'path to repo folder'
+
+[Notification]
+token= 'bark token' 
+
 
 # file directory
 
@@ -64,6 +75,10 @@ please refer to latex
 - irc_gym folder. a wraper of stablebaseline. no need to use it in my opionion. you can just run training individually with more flexibility. example in yc.ipynb.
 
 - store. store the data occur during this.
+
+- plot xxx notebooks. to generate the plots
+
+- vary xxx notebooks, to train the agents.
 
 # hints
  - curiculum training. learning a complex task is hard. learning without punishment coudl be a first step. we can add punishment back later.
