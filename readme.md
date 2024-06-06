@@ -1,5 +1,9 @@
 # AF project
 
+# todo
+
+0605. vary node np case. the problem is what we dicussed earlier. the current autocorr plot is not realy for this. should use the min wait time plot for eval.
+
 # state about this pr
 this is the version we have at the date of nips deadline.
 the files are pretty messy, wie dont have time to do a full reorganization.
@@ -83,3 +87,4 @@ token= 'bark token'
 # hints
  - curiculum training. learning a complex task is hard. learning without punishment coudl be a first step. we can add punishment back later.
  - we already have the simlar trend compared to expected result. we just lack the smoothness. modeling the reward as a input paramter (reward as one dim of the observation space) could link differetn reward tasks together and generate smooth behavior.
+
