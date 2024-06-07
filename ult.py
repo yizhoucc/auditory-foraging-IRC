@@ -76,8 +76,8 @@ end_rgb = (0.2, 0.2, 0.2) # high reward
 pcmap = LinearSegmentedColormap.from_list('pcmap', [start_rgb, end_rgb])
 # pcmap(np.linspace(0, 1, len(plist)))
 
-start_rgb = (0.6, 0.1, 0.5) # low 
-end_rgb = (0.0, 0.2, 0.2) # high 
+start_rgb = (0.9, 0.2, 0.7) # low 
+end_rgb = (0.3, 0.1, 0.1) # high 
 nodecmap = LinearSegmentedColormap.from_list('nodecmap', [start_rgb, end_rgb])
 
 

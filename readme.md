@@ -2,7 +2,16 @@
 
 # todo
 
+- vary node np case.
 0605. vary node np case. the problem is what we dicussed earlier. the current autocorr plot is not realy for this. should use the min wait time plot for eval.
+0606. vary node np case, use min wait time and total reward instead of reward rate. there is a trend. but should be more obvious with some other parameter combinations.
+
+- refactor. 
+variable name align. 
+use df to pack and collect data. include 3 varys (reward, node, p1) so that same function works for all varying.
+use df to plot. now we have that already. but need to copy and paste to move things over. pack things in funtion if possible.
+- devcontainer.
+
 
 # state about this pr
 this is the version we have at the date of nips deadline.
