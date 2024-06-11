@@ -1,0 +1,26 @@
+{
+    "image": "continuumio/miniconda3:latest",
+    "containerEnv": {
+        "datafolder":"/data",
+        "workspace":"/workspaces"
+    },
+    // "mounts": ["source=D://mkdata,target=/data,type=bind,consistency=cached"],
+
+    "customizations": {
+      "vscode": {
+        "extensions": [
+			"dbaeumer.vscode-eslint",
+			"ms-toolsai.jupyter",
+			"ms-toolsai.jupyter-renderers",
+			"ms-toolsai.jupyter-keymap"
+		]
+      }
+    },
+    "forwardPorts": [3000],
+    "runArgs": [
+        "--memory=8gb",
+        "--cpus=8",
+        "--name",
+        "AF"
+    ]
+}

@@ -5,7 +5,7 @@
 *.csv
 *.mat
 *.key
-*.json
+# *.json
 *.pyc
 *.zip
 wandb/
