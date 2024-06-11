@@ -12,6 +12,6 @@ wandb/
 runs/
 privateconfig
 fig/
-.*
+.vscode
 .DS_Store
 __pycache__
