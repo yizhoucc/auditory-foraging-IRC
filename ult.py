@@ -34,7 +34,7 @@ font_dirs = ['fonts/computer-modern', ]
 font_files = font_manager.findSystemFonts(fontpaths=font_dirs)
 for font_file in font_files:
     font_manager.fontManager.addfont(font_file)
-plt.rcParams['font.family'] = 'Times New Roman'
+# plt.rcParams['font.family'] = 'Times New Roman'
 plt.rcParams['axes.unicode_minus'] = False
 plt.rcParams['svg.fonttype'] = 'none'
 plt.rcParams['mathtext.default'] = 'regular'

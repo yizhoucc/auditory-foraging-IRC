@@ -1,5 +1,5 @@
 {
-    "image": "continuumio/miniconda3:latest",
+    "image": "yzsimple/audioforage:v0.1",
     "containerEnv": {
         "datafolder":"/data",
         "workspace":"/workspaces"
