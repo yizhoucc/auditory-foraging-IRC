@@ -9,7 +9,7 @@ import seaborn as sns
 import os
 import pickle
 from matplotlib.patches import Patch
-from matplotlib.colors import ListedColormap
+from matplotlib.colors import  ListedColormap, BoundaryNorm
 import multiprocess
 from matplotlib import font_manager
 from matplotlib.colors import LinearSegmentedColormap
