@@ -655,7 +655,6 @@ class AuditoryForagingReward(AuditoryForaging):
 
         return obs, rw, done, info
 
-
     def init_belief(self, observation):
         r"""Initializes belief with observation.
 
@@ -1099,7 +1098,6 @@ class AuditoryForagingEnergy(AuditoryForaging):
         self.observation_space = (MultiDiscrete(
             [len(self.dict_observation_possible), 6]))
 
-
     def reset(self):
         """
         Resetting to beginning of ITI period.
@@ -1118,10 +1116,10 @@ class AuditoryForagingEnergy(AuditoryForaging):
         self.food_reward = self.food_reward_list[self.food_reward_idx]
         self.preivous_high_attention_count = 0
         obs = self.observe_step(0)
-        obs = (obs[0], self.food_reward_idx/(len(self.food_reward_list)-1), self.preivous_high_attention_count/self.no_signal_nodes)
+        obs = (obs[0], self.food_reward_idx/(len(self.food_reward_list)-1),
+               self.preivous_high_attention_count/self.time)
 
         return obs
-
 
     def init_belief(self, observation):
         r"""Initializes belief with observation.
@@ -1159,7 +1157,7 @@ class AuditoryForagingEnergy(AuditoryForaging):
                 belief[0] = (self.no_attention_modes -
                              certainity_sum)/normalization
                 belief[1:self.no_signal_nodes+1] = certainity_sum/normalization
-        return np.concatenate([belief, [self.food_reward_idx/(len(self.food_reward_list)-1),self.preivous_high_attention_count/self.no_signal_nodes]])
+        return np.concatenate([belief, [self.food_reward_idx/(len(self.food_reward_list)-1), self.preivous_high_attention_count/self.time]])
 
     def update_belief(self, previous_belief, action, observation):
         """
@@ -1171,8 +1169,8 @@ class AuditoryForagingEnergy(AuditoryForaging):
         previous_belief = previous_belief[:-1]  # remove the food reward dim
         lick_choice, attention_choice = action
 
-        if attention_choice: 
-            self.preivous_high_attention_count+=1
+        if attention_choice:
+            self.preivous_high_attention_count += 1
 
         transition_matrix = self.find_transition_matrix()
         observation_matrix = self.find_observation_matrix()
@@ -1189,8 +1187,7 @@ class AuditoryForagingEnergy(AuditoryForaging):
         else:
             new_belief = new_belief/np.sum(new_belief)  # Normalization
 
-        return np.concatenate([new_belief, [self.food_reward_idx/(len(self.food_reward_list)-1),self.preivous_high_attention_count/self.no_signal_nodes]])
-
+        return np.concatenate([new_belief, [self.food_reward_idx/(len(self.food_reward_list)-1), self.preivous_high_attention_count/self.time]])
 
     def find_reward(self, lick_choice, attention_choice):
         """
@@ -1200,7 +1197,8 @@ class AuditoryForagingEnergy(AuditoryForaging):
         """
 
         lick_cost_value = lick_choice * self.lick_cost
-        attention_cost_value = attention_choice*self.attention_cost_coeff*(self.preivous_high_attention_count/self.no_signal_nodes)
+        attention_cost_value = attention_choice*self.attention_cost_coeff * \
+            (self.preivous_high_attention_count/self.time)
         if self.state >= 1 and self.state <= self.no_signal_nodes and lick_choice == 1:
             food_reward_value = self.food_reward
         else:
@@ -1221,3 +1219,150 @@ class AuditoryForagingEnergy(AuditoryForaging):
 
         return rw
 
+
+class AuditoryForagingEnergycap(AuditoryForaging):
+    ''' add energy level as last dim of belief.
+    modified reward function.
+    energy has a fix amount. beyound that, no attention is possible.
+    the energy level is randomized
+    TODO'''
+
+    def __init__(self,
+                 *,
+                 spec: Optional[dict] = None,
+                 rng: Union[RandGen, int, None] = None,
+                 ):
+        r"""
+        Args
+        ----
+        spec:
+            Environment specification.
+        rng:
+            Random number generator or seed.
+
+        """
+        super().__init__()
+        self.food_reward_list = None
+        self.observation_space = (MultiDiscrete(
+            [len(self.dict_observation_possible), 6]))
+
+    def reset(self):
+        """
+        Resetting to beginning of ITI period.
+        """
+
+        # self.state = 1 + self.no_signal_nodes + self.no_penalty_nodes
+
+        # Lokesh changed this to make ITI 1
+        # #for episodic
+        # self.state = self.no_signal_nodes + self.no_penalty_nodes + np.random.randint(1, int(self.no_ITI_nodes/3)+1)
+        self.state = self.no_signal_nodes + self.no_penalty_nodes + 1
+
+        self.time = 1
+
+        self.food_reward_idx = random.choice(list(range(5)))
+        self.food_reward = self.food_reward_list[self.food_reward_idx]
+        self.preivous_high_attention_count = 0
+        obs = self.observe_step(0)
+        obs = (obs[0], self.food_reward_idx/(len(self.food_reward_list)-1),
+               self.preivous_high_attention_count/self.time)
+
+        return obs
+
+    def init_belief(self, observation):
+        r"""Initializes belief with observation.
+
+        add energy level into belief
+
+        """
+        if observation[0] not in range(len(self.observation_possible)):
+            raise NotImplementedError(
+                "Only the example environment is implemented.")
+        belief = np.zeros(shape=self.no_nodes)
+
+        if observation[0] not in range(2):
+
+            # for episodic
+            # belief[observation[0]+self.no_signal_nodes-1] = 1
+            if observation[0] == self.observation_possible[-2]:
+                belief[self.no_signal_nodes+1:self.no_signal_nodes +
+                       1+self.no_penalty_nodes] = 1/self.no_penalty_nodes
+            elif observation[0] == self.observation_possible[-1]:
+                belief[self.no_signal_nodes+1 +
+                       self.no_penalty_nodes:self.no_nodes] = 1/self.no_ITI_nodes
+
+        else:
+            certainity_sum = np.sum(self.obs_certainity_possible)
+            if observation[0] == 0:
+                normalization = (1 - self.no_signal_nodes) * certainity_sum + \
+                    self.no_signal_nodes * self.no_attention_modes
+                belief[0] = certainity_sum/normalization
+                belief[1:self.no_signal_nodes +
+                       1] = (self.no_attention_modes - certainity_sum)/normalization
+            elif observation[0] == 1:
+                normalization = (self.no_signal_nodes - 1) * \
+                    certainity_sum + self.no_attention_modes
+                belief[0] = (self.no_attention_modes -
+                             certainity_sum)/normalization
+                belief[1:self.no_signal_nodes+1] = certainity_sum/normalization
+        return np.concatenate([belief, [self.food_reward_idx/(len(self.food_reward_list)-1), self.preivous_high_attention_count/self.time]])
+
+    def update_belief(self, previous_belief, action, observation):
+        """
+        Updating belief, given previous belief, new observation, and past action.
+        add energy level into belief
+        """
+
+        # lick_choice, attention_choice = self.dict_action_possible[int(action)]
+        previous_belief = previous_belief[:-1]  # remove the food reward dim
+        lick_choice, attention_choice = action
+
+        if attention_choice:
+            self.preivous_high_attention_count += 1
+
+        transition_matrix = self.find_transition_matrix()
+        observation_matrix = self.find_observation_matrix()
+        new_belief = np.zeros(self.no_nodes)
+
+        for state in range(self.no_nodes):
+            # note the transpose below, because of the way we made transition_matrix: (current state, next state, action)
+            new_belief[state] = observation_matrix[observation[0], state, int(attention_choice)] * np.reshape(
+                np.transpose(transition_matrix[:, state, int(lick_choice)]), (1, self.no_nodes)) @ previous_belief
+
+        if np.sum(new_belief) == 0:
+            # print('Error: Mistake in belief update as all probabilities are coming out to be 0 somehow. Returned None!')
+            new_belief = None
+        else:
+            new_belief = new_belief/np.sum(new_belief)  # Normalization
+
+        return np.concatenate([new_belief, [self.food_reward_idx/(len(self.food_reward_list)-1), self.preivous_high_attention_count/self.time]])
+
+    def find_reward(self, lick_choice, attention_choice):
+        """
+        Computes the reward, given the choice of licking and the amount of attention.
+        new function may 9th. just to use the attentino coef as the attention cost. low attentinon has no cost.
+        energy level att cost.
+        """
+
+        lick_cost_value = lick_choice * self.lick_cost
+        attention_cost_value = attention_choice*self.attention_cost_coeff * \
+            (self.preivous_high_attention_count/self.time)
+        if self.state >= 1 and self.state <= self.no_signal_nodes and lick_choice == 1:
+            food_reward_value = self.food_reward
+        else:
+            food_reward_value = 0
+
+        if self.state == 0 and lick_choice == 1:
+            penalty_cost_value = self.penalty_cost
+        else:
+            penalty_cost_value = 0
+
+        if self.state == self.no_signal_nodes + 2:
+            iti_cost_value = self.iti_cost
+        else:
+            iti_cost_value = 0
+
+        rw = food_reward_value + attention_cost_value + lick_cost_value + \
+            penalty_cost_value + iti_cost_value + self.time_in_game_reward
+
+        return rw
