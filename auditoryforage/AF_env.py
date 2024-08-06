@@ -1097,7 +1097,7 @@ class AuditoryForagingEnergy(AuditoryForaging):
         self.food_reward_list = None
         # self.observation_space = (MultiDiscrete(
         #     [len(self.dict_observation_possible), 5]))
-
+        self.energycap=15
     def reset(self):
         """
         Resetting to beginning of ITI period.
@@ -1195,7 +1195,7 @@ class AuditoryForagingEnergy(AuditoryForaging):
 
         lick_cost_value = lick_choice * self.lick_cost
         attention_cost_value = attention_choice*self.attention_cost_coeff * \
-            (self.preivous_high_attention_count/self.time)
+            (0.8+(self.preivous_high_attention_count/self.time)*0.2)
         if self.state >= 1 and self.state <= self.no_signal_nodes and lick_choice == 1:
             food_reward_value = self.food_reward
         else:
