@@ -229,7 +229,7 @@ def run_one_episode(task, taskbelief, agent,
         t += 1
         if done or t == num_steps:
             break
-
+    # print(observations)
     episode = {
         'trial_food_reward_idx': task.food_reward_idx,
         'num_steps': t,

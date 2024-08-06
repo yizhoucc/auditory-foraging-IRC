@@ -1095,8 +1095,8 @@ class AuditoryForagingEnergy(AuditoryForaging):
         """
         super().__init__()
         self.food_reward_list = None
-        self.observation_space = (MultiDiscrete(
-            [len(self.dict_observation_possible), 6]))
+        # self.observation_space = (MultiDiscrete(
+        #     [len(self.dict_observation_possible), 5]))
 
     def reset(self):
         """
@@ -1116,9 +1116,6 @@ class AuditoryForagingEnergy(AuditoryForaging):
         self.food_reward = self.food_reward_list[self.food_reward_idx]
         self.preivous_high_attention_count = 0
         obs = self.observe_step(0)
-        obs = (obs[0], self.food_reward_idx/(len(self.food_reward_list)-1),
-               self.preivous_high_attention_count/self.time)
-
         return obs
 
     def init_belief(self, observation):
@@ -1164,7 +1161,7 @@ class AuditoryForagingEnergy(AuditoryForaging):
         Updating belief, given previous belief, new observation, and past action.
         add energy level into belief
         """
-
+        previous_belief = previous_belief[:-1] 
         # lick_choice, attention_choice = self.dict_action_possible[int(action)]
         previous_belief = previous_belief[:-1]  # remove the food reward dim
         lick_choice, attention_choice = action
@@ -1243,8 +1240,8 @@ class AuditoryForagingEnergycap(AuditoryForaging):
         """
         super().__init__()
         self.food_reward_list = None
-        self.observation_space = (MultiDiscrete(
-            [len(self.dict_observation_possible), 6]))
+        # self.observation_space = (MultiDiscrete(
+        #     [len(self.dict_observation_possible), 6]))
 
     def reset(self):
         """
@@ -1264,9 +1261,6 @@ class AuditoryForagingEnergycap(AuditoryForaging):
         self.food_reward = self.food_reward_list[self.food_reward_idx]
         self.preivous_high_attention_count = 0
         obs = self.observe_step(0)
-        obs = (obs[0], self.food_reward_idx/(len(self.food_reward_list)-1),
-               self.preivous_high_attention_count/self.time)
-
         return obs
 
     def init_belief(self, observation):
