@@ -252,6 +252,71 @@ def run_one_episode(task, taskbelief, agent,
 
     return episode
 
+def run_one_episode_attcost(task, taskbelief, agent,
+                    num_steps=1000, deterministic=True):
+    '''modified run one ep function.'''
+    q_states = [[i] for i in range(task.no_nodes)]
+
+    actions, rewards, states, observations, beliefs = [], [], [], [], []
+    trial_food_reward = []
+
+    def get_queries(env): return q_states
+    try:
+        _q_states = get_queries(taskbelief.env)
+        _q_states, _q_probs = [], []
+    except:
+        get_queries = None
+    task.reset()
+    p1p2 = task.obs_certainity_possible
+    belief, info = taskbelief.reset(task, return_info=True)
+    states.append(info['state'])
+    observations.append(info['observation'])
+    beliefs.append(belief)
+    if get_queries is not None:
+        _q_states.append(np.array(get_queries(taskbelief.env)))
+        _q_probs.append(taskbelief.query_probs(_q_states[-1]))
+    t = 0
+    while True:
+
+        action, _ = agent.predict(belief, deterministic=deterministic)
+        # action, _ = agent.predict(belief)
+        action = action
+
+        actions.append(action)
+        belief, reward, done, info = taskbelief.step(action, task)
+        rewards.append(reward)
+        states.append(info['state'])
+        observations.append(info['observation'])
+        beliefs.append(belief)
+        if get_queries is not None:
+            _q_states.append(np.array(get_queries(taskbelief.env)))
+            _q_probs.append(taskbelief.query_probs(_q_states[-1]))
+        t += 1
+        if done or t == num_steps:
+            break
+    # print(observations)
+    episode = {
+        'att_idx': task.att_idx,
+        'num_steps': t,
+        'actions': np.array(actions),  # [0, t)
+        'rewards': np.array(rewards),  # [0, t)
+        'states': np.array(states),  # [0, t]
+        'observations': np.array(observations),  # [0, t]
+        'beliefs': np.array(beliefs),  # [0, t]
+        'p1p2': p1p2
+    }
+
+    if get_queries is not None:
+        diffs = ((_q_states-_q_states[0]) **
+                 2).reshape(len(_q_states), -1).sum(axis=1)
+        if np.all(diffs < 1e-8):  # merge fixed query set
+            _q_states = _q_states[0]
+        # (num_queries, state_dim, t+1) or (num_queries, state_dim)
+        episode['q_states'] = np.array(_q_states)
+        episode['q_probs'] = np.array(_q_probs)  # (num_queries, t+1)
+
+    return episode
+
 
 def find_activation(agent, belief):
     features = torch.tensor(belief, dtype=torch.float32)

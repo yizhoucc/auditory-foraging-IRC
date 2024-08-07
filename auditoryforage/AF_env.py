@@ -1228,7 +1228,7 @@ class AFVaryAttention(AuditoryForaging):
 
         super().__init__(spec=spec, rng=rng)
         self.att_cost_list = None  # need to be assigned from outside
-
+        self.food_reward=None
     def reset(self, att_idx=None):
         """
         randomly choose a reward condition to train.
