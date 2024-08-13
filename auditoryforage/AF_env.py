@@ -1098,6 +1098,7 @@ class AuditoryForagingEnergy(AuditoryForaging):
         # self.observation_space = (MultiDiscrete(
         #     [len(self.dict_observation_possible), 5]))
         self.energycap=15
+    
     def reset(self):
         """
         Resetting to beginning of ITI period.
@@ -1154,7 +1155,7 @@ class AuditoryForagingEnergy(AuditoryForaging):
                 belief[0] = (self.no_attention_modes -
                              certainity_sum)/normalization
                 belief[1:self.no_signal_nodes+1] = certainity_sum/normalization
-        return np.concatenate([belief, [self.food_reward_idx/(len(self.food_reward_list)-1), self.preivous_high_attention_count/self.time]])
+        return np.concatenate([belief, [self.food_reward_idx/(len(self.food_reward_list)-1), self.preivous_high_attention_count/self.energycap]])
 
     def update_belief(self, previous_belief, action, observation):
         """
@@ -1184,7 +1185,7 @@ class AuditoryForagingEnergy(AuditoryForaging):
         else:
             new_belief = new_belief/np.sum(new_belief)  # Normalization
 
-        return np.concatenate([new_belief, [self.food_reward_idx/(len(self.food_reward_list)-1), self.preivous_high_attention_count/self.time]])
+        return np.concatenate([new_belief, [self.food_reward_idx/(len(self.food_reward_list)-1), self.preivous_high_attention_count/self.energycap]])
 
     def find_reward(self, lick_choice, attention_choice):
         """
@@ -1194,8 +1195,7 @@ class AuditoryForagingEnergy(AuditoryForaging):
         """
 
         lick_cost_value = lick_choice * self.lick_cost
-        attention_cost_value = attention_choice*self.attention_cost_coeff * \
-            (0.8+(self.preivous_high_attention_count/self.time)*0.2)
+        attention_cost_value = attention_choice*self.attention_cost_coeff * 1.1**(self.preivous_high_attention_count)
         if self.state >= 1 and self.state <= self.no_signal_nodes and lick_choice == 1:
             food_reward_value = self.food_reward
         else:
