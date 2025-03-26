@@ -1241,3 +1241,128 @@ def empirical_autocorrelation_new(list_of_seqs, min_no_samples):
     return normalize(autocorr, mean, variance), total_counts
 
 
+def run_one_episode_cont(task, taskbelief, agent,
+                    num_steps=1000, deterministic=True):
+    '''modified run one ep function.'''
+    q_states = [[i] for i in range(task.no_nodes)]
+
+    actions, rewards, states, observations, beliefs = [], [], [], [], []
+    trial_food_reward = []
+
+    def get_queries(env): return q_states
+    try:
+        _q_states = get_queries(taskbelief.env)
+        _q_states, _q_probs = [], []
+    except:
+        get_queries = None
+    task.reset()
+    p1p2 = task.obs_certainity_possible
+    belief, info = taskbelief.reset(task, return_info=True)
+    states.append(info['state'])
+    observations.append(info['observation'])
+    beliefs.append(belief)
+    if get_queries is not None:
+        _q_states.append(np.array(get_queries(taskbelief.env)))
+        _q_probs.append(taskbelief.query_probs(_q_states[-1]))
+    t = 0
+    while True:
+
+        action, _ = agent.predict(belief, deterministic=deterministic)
+        # action, _ = agent.predict(belief)
+        action = action
+
+        actions.append(action)
+        belief, reward, done, info = taskbelief.step(action, task)
+        rewards.append(reward)
+        states.append(info['state'])
+        observations.append(info['observation'])
+        beliefs.append(belief)
+        if get_queries is not None:
+            _q_states.append(np.array(get_queries(taskbelief.env)))
+            _q_probs.append(taskbelief.query_probs(_q_states[-1]))
+        t += 1
+        if done or t == num_steps:
+            break
+    # print(observations)
+    episode = {
+        'food_reward_idx': task.food_reward_idx,
+        'num_steps': t,
+        'actions': np.array(actions),  # [0, t)
+        'rewards': np.array(rewards),  # [0, t)
+        'states': np.array(states),  # [0, t]
+        'observations': np.array(observations),  # [0, t]
+        'beliefs': np.array(beliefs),  # [0, t]
+        'p1p2': p1p2
+    }
+
+    if get_queries is not None:
+        diffs = ((_q_states-_q_states[0]) **
+                 2).reshape(len(_q_states), -1).sum(axis=1)
+        if np.all(diffs < 1e-8):  # merge fixed query set
+            _q_states = _q_states[0]
+        # (num_queries, state_dim, t+1) or (num_queries, state_dim)
+        episode['q_states'] = np.array(_q_states)
+        episode['q_probs'] = np.array(_q_probs)  # (num_queries, t+1)
+
+    return episode
+
+def process_one_subdf_df(subdf,no_signal_nodes=25, no_penalty_nodes=1):
+    '''process the subdf data into result lists. the input is a df'''
+    hit_count = 0
+    miss_count = 0
+    false_alarm_count = 0
+    noise_time_before_lick = 0
+    signal_time_before_lick = 0
+    total_noise_time = 0
+    total_signal_time = 0
+    total_reward = 0
+
+    attention_time_points_across_subdfs = []
+    subdf_length_across_subdfs = []
+    hit_reaction_time_across_subdfs = []
+    fa_reaction_time_across_subdfs = []
+
+    # process single ep data
+    if subdf['actions'][-1][0] == 1:
+        if subdf['states'][-1][0] >  no_signal_nodes +  no_penalty_nodes:
+            hit_count += 1
+            signal_time_before_lick_curr_subdf = count_no_elements(
+                subdf['states'], 1,  no_signal_nodes)
+            hit_reaction_time_across_subdfs.append(
+                signal_time_before_lick_curr_subdf)
+            signal_time_before_lick += signal_time_before_lick_curr_subdf
+        else:
+            false_alarm_count += 1
+            noise_time_before_lick_curr_subdf = count_no_elements(
+                subdf['states'], 0, 0)
+            fa_reaction_time_across_subdfs.append(
+                noise_time_before_lick_curr_subdf)
+            noise_time_before_lick += noise_time_before_lick_curr_subdf
+    else:
+        miss_count += 1
+    total_signal_time += count_no_elements(
+        subdf['states'], 1,  no_signal_nodes)
+    total_noise_time += count_no_elements(subdf['states'], 0, 0)
+    total_reward += sum(subdf['rewards'])
+    # attention_time_points_across_subdfs.append(np.where(subdf['actions'] % env.no_attention_modes > 0)[0])
+    attention_time_points_across_subdfs.append(
+        np.where(np.array([elt[1] for elt in subdf['actions']]) == 1)[0])
+    subdf_length_across_subdfs.append(len(subdf['states']))
+    # end process single ep data
+    food_reward_idx = subdf['food_reward_idx']
+    return (food_reward_idx,
+            hit_count,
+            miss_count,
+            false_alarm_count,
+            noise_time_before_lick,
+            signal_time_before_lick,
+            total_noise_time,
+            total_signal_time,
+            total_reward,
+            attention_time_points_across_subdfs,
+            subdf_length_across_subdfs,
+            hit_reaction_time_across_subdfs,
+            fa_reaction_time_across_subdfs
+            )
+
+
