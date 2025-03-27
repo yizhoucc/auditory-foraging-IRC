@@ -1242,6 +1242,7 @@ def empirical_autocorrelation_new(list_of_seqs, min_no_samples):
 
 
 def run_one_episode_cont(task, taskbelief, agent,
+                     food_reward_idx=None,
                     num_steps=1000, deterministic=True):
     '''modified run one ep function.'''
     q_states = [[i] for i in range(task.no_nodes)]
@@ -1255,7 +1256,8 @@ def run_one_episode_cont(task, taskbelief, agent,
         _q_states, _q_probs = [], []
     except:
         get_queries = None
-    task.reset()
+    task.reset(food_reward_idx=food_reward_idx)
+
     p1p2 = task.obs_certainity_possible
     belief, info = taskbelief.reset(task, return_info=True)
     states.append(info['state'])
@@ -1269,6 +1271,7 @@ def run_one_episode_cont(task, taskbelief, agent,
 
         action, _ = agent.predict(belief, deterministic=deterministic)
         # action, _ = agent.predict(belief)
+        # print('raw',action)
         action = action
 
         actions.append(action)
@@ -1283,7 +1286,6 @@ def run_one_episode_cont(task, taskbelief, agent,
         t += 1
         if done or t == num_steps:
             break
-    # print(observations)
     episode = {
         'food_reward_idx': task.food_reward_idx,
         'num_steps': t,
@@ -1365,4 +1367,148 @@ def process_one_subdf_df(subdf,no_signal_nodes=25, no_penalty_nodes=1):
             fa_reaction_time_across_subdfs
             )
 
+def process_row_cont(row, no_signal_nodes=25, no_penalty_nodes=1):
 
+    hit_count = 0
+    miss_count = 0
+    false_alarm_count = 0
+    noise_time_before_lick = 0
+    signal_time_before_lick = 0
+    total_noise_time = 0
+    total_signal_time = 0
+    total_reward = 0
+
+    attention_time_points_across_subdfs = []
+    subdf_length_across_subdfs = []
+    hit_reaction_time_across_subdfs = []
+    fa_reaction_time_across_subdfs = []
+
+    # process single ep data
+    if row['actions'][-1][0] >0.5: # lick
+
+        if row['states'][-1][0] >  no_signal_nodes +  no_penalty_nodes: # lick during signal
+      
+            hit_count += 1
+            signal_time_before_lick_curr_row = count_no_elements(
+                row['states'], 1,  no_signal_nodes)
+            hit_reaction_time_across_subdfs.append(
+                signal_time_before_lick_curr_row)
+            signal_time_before_lick += signal_time_before_lick_curr_row
+        else: # lick during noise
+
+            false_alarm_count += 1
+            noise_time_before_lick_curr_row = count_no_elements(
+                row['states'], 0, 0)
+            hit_reaction_time_across_subdfs.append(
+                noise_time_before_lick_curr_row)
+            noise_time_before_lick += noise_time_before_lick_curr_row
+    else: # no lick, missed
+
+        miss_count += 1
+    total_signal_time += count_no_elements(
+        row['states'], 1,  no_signal_nodes)
+    total_noise_time += count_no_elements(row['states'], 0, 0)
+    total_reward += sum(row['rewards'])
+    # attention_time_points_across_subdfs.append(np.where(subdf['actions'] % env.no_attention_modes > 0)[0])
+    attention_time_points_across_subdfs.append(
+        np.where(np.array([elt[1] for elt in row['actions']]) == 1)[0])
+    subdf_length_across_subdfs.append(len(row['states']))
+
+    food_reward_idx = row['food_reward_idx']
+
+    return (food_reward_idx,
+            hit_count,
+            miss_count,
+            false_alarm_count,
+            noise_time_before_lick,
+            signal_time_before_lick,
+            total_noise_time,
+            total_signal_time,
+            total_reward,
+            attention_time_points_across_subdfs,
+            subdf_length_across_subdfs,
+            hit_reaction_time_across_subdfs,
+            fa_reaction_time_across_subdfs
+            )
+
+
+
+def hit_miss_fa(df, task):
+    # hit reaction plot for continous attension
+    hit_count_list = [[0] for _ in range(len(task.food_reward_list))]
+    miss_count_list = [[0] for _ in range(len(task.food_reward_list))]
+    false_alarm_list = [[0] for _ in range(len(task.food_reward_list))]
+
+    noise_time_before_lick_list = [[0] for _ in range(len(task.food_reward_list))]
+    signal_time_before_lick_list = [[0] for _ in range(len(task.food_reward_list))]
+    total_noise_time_list = [[0] for _ in range(len(task.food_reward_list))]
+    total_signal_time_list = [[0] for _ in range(len(task.food_reward_list))]
+    # dist naming space: list of list of num. big list of each reward cond. small list of each trial's summary stats, which is a single number.
+    total_reward_dist= [[] for _ in range(len(task.food_reward_list))]
+    rt_hit_dist=[[] for _ in range(len(task.food_reward_list))]
+    rt_fa_dist=[[] for _ in range(len(task.food_reward_list))]
+    total_att_time_dist = [[] for _ in range(len(task.food_reward_list))]
+
+    for i in range(len(df)):
+        (food_reward_idx,
+        hit_count,
+        miss_count,
+        false_alarm_count,
+
+        noise_time_before_lick,
+        signal_time_before_lick,
+        total_noise_time,
+        total_signal_time,
+
+        total_reward,
+
+        attention_time_points_across_episodes,
+        episode_length_across_episodes,
+        hit_reaction_time_across_episodes,
+        fa_reaction_time_across_episodes
+        ) = process_row_cont(df.iloc[i])
+
+
+        hit_count_list[food_reward_idx][0] += (hit_count)
+        miss_count_list[food_reward_idx][0] += (miss_count)
+        false_alarm_list[food_reward_idx][0] += (false_alarm_count)
+
+        noise_time_before_lick_list[food_reward_idx][0] += (noise_time_before_lick)
+        signal_time_before_lick_list[food_reward_idx][0] += (
+            signal_time_before_lick)
+        total_noise_time_list[food_reward_idx][0] += (total_noise_time)
+        total_signal_time_list[food_reward_idx][0] += (total_signal_time)
+
+        total_reward_dist[food_reward_idx].append(total_reward)
+        rt_hit_dist[food_reward_idx].append(signal_time_before_lick)
+        rt_fa_dist[food_reward_idx].append(noise_time_before_lick)
+        total_att_time_dist[food_reward_idx].append(len(attention_time_points_across_episodes[0]))
+
+
+    hit_count_list, miss_count_list, false_alarm_list = np.array(
+        hit_count_list), np.array(miss_count_list), np.array(false_alarm_list)
+    hit_prob = [hit_count_list[i]/(hit_count_list[i]+miss_count_list[i] +
+                                    false_alarm_list[i]) for i in range(len(hit_count_list))]
+    miss_prob = [miss_count_list[i]/(hit_count_list[i]+miss_count_list[i] +
+                                        false_alarm_list[i]) for i in range(len(hit_count_list))]
+    fa_prob = [false_alarm_list[i]/(hit_count_list[i]+miss_count_list[i] +
+                                    false_alarm_list[i]) for i in range(len(hit_count_list))]
+
+
+    xs=np.arange(len(task.food_reward_list))
+    fig, ax=plt.subplots(1,1, figsize=(5,4))
+
+    ax.plot(xs, hit_prob, '-*g', label='hit')
+    ax.plot(xs, miss_prob, '-*b', label='miss')
+    ax.plot(xs, fa_prob, '-*r', label='fa')
+    quickleg(ax, bbox_to_anchor=(-0.5,0))
+    ax.set_xlabel('food reward')
+    ax.set_ylabel('probability')
+    # ax.set_xticks(xs, [f'{a:.0f}' for a in task.food_reward_list]) # actual values
+    ax.set_xticks([xs[i] for i in [0,-1]], ['low', 'high']) # low high
+    ax.set_xticks(xs)
+    ax.set_yticks([0,0.5,1], ['0', '.5','1'])
+    ax.set_xticks(xs)
+    centerax(ax)
+    ax.set_title('hit, miss, false alarm')
+    plt.show()

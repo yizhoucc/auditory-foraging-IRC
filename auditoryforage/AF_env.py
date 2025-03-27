@@ -149,6 +149,7 @@ class AuditoryForaging(Env):
         """
 
         attention_cost_value = - self.attention_cost_coeff * abs(self.signal_obs_mean - self.noise_obs_mean)/attention_choice
+        # print('att c ost', attention_cost_value, attention_choice)
         lick_cost_value = lick_choice * self.lick_cost
         if self.state>=1 and self.state<=self.no_signal_nodes and lick_choice == 1:
             food_reward_value = self.food_reward
@@ -237,7 +238,7 @@ class AuditoryForaging(Env):
         info = {}
 
         lick_choice, attention_choice = self.transform_action(action)
-
+        # print(lick_choice, attention_choice)
         # Reward
         rw = self.find_reward(lick_choice, attention_choice)
         self.collected_reward += rw
@@ -265,7 +266,7 @@ class AuditoryForaging(Env):
         self.time = 1
 
         # yc add
-        if food_reward_idx:
+        if food_reward_idx is not None:
             self.food_reward_idx = food_reward_idx
         else:
             self.food_reward_idx = random.choice(
