@@ -37,9 +37,9 @@ echo "Python: $(python3 --version)"
 echo "Repo: $REPO"
 echo "GPU: $(nvidia-smi --query-gpu=name --format=csv,noheader 2>/dev/null || echo 'CPU only')"
 
-# Collect all training scripts
+# Collect training scripts (notebooks only, not yctest)
 SCRIPTS=()
-for f in notebooks/*.py yctest/*.py; do
+for f in notebooks/*.py; do
     [ -f "$f" ] && SCRIPTS+=("$f")
 done
 
