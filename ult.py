@@ -15,17 +15,18 @@ from matplotlib import font_manager
 from matplotlib.colors import LinearSegmentedColormap
 from contextlib import contextmanager, ExitStack, redirect_stderr, redirect_stdout
 # ---notification------
-import requests
-import configparser
-config = configparser.ConfigParser()
-config.read_file(open('privateconfig'))
-token = config['Notification']['token']
-
-
 def notify(msg='plots ready', group='lab', title='plot'):
-    notification = "https://api.day.app/{}/{}/{}?group={}".format(
-        token, title, msg, group)
-    requests.get(notification)
+    try:
+        import requests
+        import configparser
+        config = configparser.ConfigParser()
+        config.read_file(open('privateconfig'))
+        token = config['Notification']['token']
+        notification = "https://api.day.app/{}/{}/{}?group={}".format(
+            token, title, msg, group)
+        requests.get(notification)
+    except Exception:
+        pass
 
 
 # ---plot configs------

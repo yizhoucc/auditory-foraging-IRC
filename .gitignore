@@ -5,14 +5,19 @@
 *.csv
 *.mat
 *.key
-# *.json
-*.pyc
 *.zip
+*.egg-info/
+
+__pycache__/
+.DS_Store
+.vscode/
+.ipynb_checkpoints/
+
 wandb/
 runs/
-privateconfig
 fig/
-.vscode
-.DS_Store
-__pycache__
 ycstore/
+
+privateconfig
+.env
+.claude_session_logs.md
