@@ -20,7 +20,8 @@ def notify(msg='plots ready', group='lab', title='plot'):
         import requests
         import configparser
         config = configparser.ConfigParser()
-        config.read_file(open('privateconfig'))
+        with open('privateconfig') as f:
+            config.read_file(f)
         token = config['Notification']['token']
         notification = "https://api.day.app/{}/{}/{}?group={}".format(
             token, title, msg, group)

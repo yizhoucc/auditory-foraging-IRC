@@ -96,7 +96,6 @@ class AuditoryForaging(Env):
         # Initial rewards collected is 0
         self.collected_reward = 0
 
-        # yc add
         self.food_reward_list = None  # need to be assigned from outside
    
     def get_param(self):
@@ -149,7 +148,6 @@ class AuditoryForaging(Env):
         """
 
         attention_cost_value = - self.attention_cost_coeff * abs(self.signal_obs_mean - self.noise_obs_mean)/attention_choice
-        # print('att c ost', attention_cost_value, attention_choice)
         lick_cost_value = lick_choice * self.lick_cost
         if self.state>=1 and self.state<=self.no_signal_nodes and lick_choice == 1:
             food_reward_value = self.food_reward
@@ -238,7 +236,6 @@ class AuditoryForaging(Env):
         info = {}
 
         lick_choice, attention_choice = self.transform_action(action)
-        # print(lick_choice, attention_choice)
         # Reward
         rw = self.find_reward(lick_choice, attention_choice)
         self.collected_reward += rw
@@ -265,14 +262,12 @@ class AuditoryForaging(Env):
 
         self.time = 1
 
-        # yc add
         if food_reward_idx is not None:
             self.food_reward_idx = food_reward_idx
         else:
             self.food_reward_idx = random.choice(
                 list(range(len(self.food_reward_list))))
         self.food_reward = self.food_reward_list[self.food_reward_idx]
-        # end yc add
         obs = self.observe_step(self.min_attention_std)
         return obs
 
@@ -285,42 +280,60 @@ class AuditoryForaging(Env):
         print(f"Total Reward : {self.collected_reward}")
         print("=============================================================================")
 
-    def update_belief(self, previous_belief, action, observation):
-        """
-        Updating belief, given previous belief, new observation, and past action.
-        """
-        previous_belief = previous_belief[:-1]
+    def _compute_obs_prob(self, state, obs, attention_choice):
+        """Observation probability for a given state, observation value, and attention level."""
+        special_obs = (self.iti_obs, self.penalty_obs)
+        if obs not in special_obs:
+            if state == 0:
+                return norm.pdf(obs, loc=self.noise_obs_mean, scale=attention_choice)
+            elif 1 <= state <= self.no_signal_nodes:
+                return norm.pdf(obs, loc=self.signal_obs_mean, scale=attention_choice)
+            return 0
+        penalty_start = self.no_signal_nodes + 1
+        iti_start = penalty_start + self.no_penalty_nodes
+        if penalty_start <= state < iti_start and obs == self.penalty_obs:
+            return 1
+        if iti_start <= state < self.no_nodes and obs == self.iti_obs:
+            return 1
+        return 0
+
+    def _init_core_belief(self, observation):
+        """Core belief initialization without extra dimensions."""
+        belief = np.zeros(shape=self.no_nodes)
+        if observation[0] == self.penalty_obs:
+            belief[self.no_signal_nodes+1:self.no_signal_nodes+1+self.no_penalty_nodes] = 1/self.no_penalty_nodes
+        elif observation[0] == self.iti_obs:
+            belief[self.no_signal_nodes+1+self.no_penalty_nodes:self.no_nodes] = 1/self.no_ITI_nodes
+        else:
+            belief[0] = norm.pdf(observation, loc=self.noise_obs_mean, scale=self.min_attention_std)
+            belief[1:self.no_signal_nodes+1] = norm.pdf(observation, loc=self.signal_obs_mean, scale=self.min_attention_std)
+            belief = belief/np.sum(belief)
+        return belief
+
+    def _update_core_belief(self, core_belief, action, observation):
+        """Core belief update without extra dimensions. Takes belief with extras already stripped."""
         lick_choice, attention_choice = self.transform_action(action)
         transition_matrix = self.find_transition_matrix()
         new_belief = np.zeros(self.no_nodes)
-
         obs = observation[0]
+        lick_idx = int(lick_choice)
 
         for state in range(self.no_nodes):
-            if obs not in [self.iti_obs, self.penalty_obs]:
-                if state == 0:
-                    obs_prob  = norm.pdf(obs, loc=self.noise_obs_mean, scale=attention_choice)
-                elif state in range(1, self.no_signal_nodes + 1):
-                    obs_prob  = norm.pdf(obs, loc=self.signal_obs_mean, scale=attention_choice)
-                else:
-                    obs_prob = 0
-            else:
-                if state in range(self.no_signal_nodes + 1, self.no_signal_nodes + self.no_penalty_nodes + 1) and obs == self.penalty_obs:
-                    obs_prob  = 1
-                elif state in range(self.no_signal_nodes + self.no_penalty_nodes + 1, self.no_nodes) and obs == self.iti_obs:
-                    obs_prob  = 1
-                else:
-                    obs_prob  = 0
+            obs_prob = self._compute_obs_prob(state, obs, attention_choice)
+            new_belief[state] = obs_prob * (transition_matrix[:, state, lick_idx] @ core_belief)
 
-            # note the transpose below, because of the way we made transition_matrix: (current state, next state, action)
-            new_belief[state] = obs_prob * np.reshape(np.transpose(transition_matrix[:,state,int(lick_choice)]),(1,self.no_nodes)) @ previous_belief
-        
         if np.sum(new_belief) == 0:
             raise ValueError("Mistake in belief update as all probabilities are coming out to be 0 somehow")
-        else:
-            new_belief = new_belief/np.sum(new_belief) #Normalization
-        # yc edit
-        return np.concatenate([new_belief, [self.food_reward_idx/(len(self.food_reward_list)-1)]])
+        return new_belief / np.sum(new_belief)
+
+    def _normalize_idx(self, idx, list_len):
+        """Normalize an index to [0, 1] range, safe for single-element lists."""
+        return idx / max(list_len - 1, 1)
+
+    def update_belief(self, previous_belief, action, observation):
+        """Updating belief, given previous belief, new observation, and past action."""
+        new_belief = self._update_core_belief(previous_belief[:-1], action, observation)
+        return np.concatenate([new_belief, [self._normalize_idx(self.food_reward_idx, len(self.food_reward_list))]])
 
     def find_transition_matrix(self):
         """
@@ -356,31 +369,9 @@ class AuditoryForaging(Env):
         return transition_matrix
 
     def init_belief(self, observation):
-        r"""Initializes belief with observation.
-
-        Args
-        ----
-        observation:
-            Initial observation at the start of an episode, may not be provided
-            by the current environment.
-
-        Returns
-        -------
-        belief:
-            A belief vector compatible with the given observation.
-
-        """
-        belief = np.zeros(shape=self.no_nodes)
-        if observation[0] == self.penalty_obs:
-            belief[self.no_signal_nodes+1:self.no_signal_nodes+1+self.no_penalty_nodes] = 1/self.no_penalty_nodes
-        elif observation[0] == self.iti_obs:
-            belief[self.no_signal_nodes+1+self.no_penalty_nodes:self.no_nodes] = 1/self.no_ITI_nodes
-        else:
-            belief[0] = norm.pdf(observation, loc=self.noise_obs_mean, scale=self.min_attention_std)
-            belief[1:self.no_signal_nodes+1] = norm.pdf(observation, loc=self.signal_obs_mean, scale=self.min_attention_std)
-            belief = belief/np.sum(belief) #Normalization
-        # yc edit
-        return np.concatenate([belief, [self.food_reward_idx/(len(self.food_reward_list)-1)]])
+        r"""Initializes belief with observation."""
+        belief = self._init_core_belief(observation)
+        return np.concatenate([belief, [self._normalize_idx(self.food_reward_idx, len(self.food_reward_list))]])
     
     def sample_state(self, belief):
         r"""Samples a state from the distribution described by the belief vector.
@@ -429,45 +420,11 @@ class AuditoryForagingReward(AuditoryForaging):
     '''Appends raw food_reward value (not normalized index) to belief.'''
 
     def init_belief(self, observation):
-        belief = np.zeros(shape=self.no_nodes)
-        if observation[0] == self.penalty_obs:
-            belief[self.no_signal_nodes+1:self.no_signal_nodes+1+self.no_penalty_nodes] = 1/self.no_penalty_nodes
-        elif observation[0] == self.iti_obs:
-            belief[self.no_signal_nodes+1+self.no_penalty_nodes:self.no_nodes] = 1/self.no_ITI_nodes
-        else:
-            belief[0] = norm.pdf(observation, loc=self.noise_obs_mean, scale=self.min_attention_std)
-            belief[1:self.no_signal_nodes+1] = norm.pdf(observation, loc=self.signal_obs_mean, scale=self.min_attention_std)
-            belief = belief/np.sum(belief)
+        belief = self._init_core_belief(observation)
         return np.concatenate([belief, [self.food_reward]])
 
     def update_belief(self, previous_belief, action, observation):
-        previous_belief = previous_belief[:-1]
-        lick_choice, attention_choice = self.transform_action(action)
-        transition_matrix = self.find_transition_matrix()
-        new_belief = np.zeros(self.no_nodes)
-        obs = observation[0]
-
-        for state in range(self.no_nodes):
-            if obs not in [self.iti_obs, self.penalty_obs]:
-                if state == 0:
-                    obs_prob = norm.pdf(obs, loc=self.noise_obs_mean, scale=attention_choice)
-                elif state in range(1, self.no_signal_nodes + 1):
-                    obs_prob = norm.pdf(obs, loc=self.signal_obs_mean, scale=attention_choice)
-                else:
-                    obs_prob = 0
-            else:
-                if state in range(self.no_signal_nodes + 1, self.no_signal_nodes + self.no_penalty_nodes + 1) and obs == self.penalty_obs:
-                    obs_prob = 1
-                elif state in range(self.no_signal_nodes + self.no_penalty_nodes + 1, self.no_nodes) and obs == self.iti_obs:
-                    obs_prob = 1
-                else:
-                    obs_prob = 0
-            new_belief[state] = obs_prob * np.reshape(np.transpose(transition_matrix[:,state,int(lick_choice)]),(1,self.no_nodes)) @ previous_belief
-
-        if np.sum(new_belief) == 0:
-            raise ValueError("Mistake in belief update")
-        else:
-            new_belief = new_belief/np.sum(new_belief)
+        new_belief = self._update_core_belief(previous_belief[:-1], action, observation)
         return np.concatenate([new_belief, [self.food_reward]])
 
 
@@ -498,47 +455,16 @@ class AF2p(AuditoryForaging):
         obs = self.observe_step(self.min_attention_std)
         return obs
 
+    def _belief_extras(self):
+        return [self._normalize_idx(self.food_reward_idx, len(self.food_reward_list)), self.p1id]
+
     def init_belief(self, observation):
-        belief = np.zeros(shape=self.no_nodes)
-        if observation[0] == self.penalty_obs:
-            belief[self.no_signal_nodes+1:self.no_signal_nodes+1+self.no_penalty_nodes] = 1/self.no_penalty_nodes
-        elif observation[0] == self.iti_obs:
-            belief[self.no_signal_nodes+1+self.no_penalty_nodes:self.no_nodes] = 1/self.no_ITI_nodes
-        else:
-            belief[0] = norm.pdf(observation, loc=self.noise_obs_mean, scale=self.min_attention_std)
-            belief[1:self.no_signal_nodes+1] = norm.pdf(observation, loc=self.signal_obs_mean, scale=self.min_attention_std)
-            belief = belief/np.sum(belief)
-        return np.concatenate([belief, [self.food_reward_idx/(len(self.food_reward_list)-1), self.p1id]])
+        belief = self._init_core_belief(observation)
+        return np.concatenate([belief, self._belief_extras()])
 
     def update_belief(self, previous_belief, action, observation):
-        previous_belief = previous_belief[:-2]
-        lick_choice, attention_choice = self.transform_action(action)
-        transition_matrix = self.find_transition_matrix()
-        new_belief = np.zeros(self.no_nodes)
-        obs = observation[0]
-
-        for state in range(self.no_nodes):
-            if obs not in [self.iti_obs, self.penalty_obs]:
-                if state == 0:
-                    obs_prob = norm.pdf(obs, loc=self.noise_obs_mean, scale=attention_choice)
-                elif state in range(1, self.no_signal_nodes + 1):
-                    obs_prob = norm.pdf(obs, loc=self.signal_obs_mean, scale=attention_choice)
-                else:
-                    obs_prob = 0
-            else:
-                if state in range(self.no_signal_nodes + 1, self.no_signal_nodes + self.no_penalty_nodes + 1) and obs == self.penalty_obs:
-                    obs_prob = 1
-                elif state in range(self.no_signal_nodes + self.no_penalty_nodes + 1, self.no_nodes) and obs == self.iti_obs:
-                    obs_prob = 1
-                else:
-                    obs_prob = 0
-            new_belief[state] = obs_prob * np.reshape(np.transpose(transition_matrix[:,state,int(lick_choice)]),(1,self.no_nodes)) @ previous_belief
-
-        if np.sum(new_belief) == 0:
-            raise ValueError("Mistake in belief update")
-        else:
-            new_belief = new_belief/np.sum(new_belief)
-        return np.concatenate([new_belief, [self.food_reward_idx/(len(self.food_reward_list)-1), self.p1id]])
+        new_belief = self._update_core_belief(previous_belief[:-2], action, observation)
+        return np.concatenate([new_belief, self._belief_extras()])
 
 
 class AF2pp(AuditoryForaging):
@@ -563,45 +489,11 @@ class AF2pp(AuditoryForaging):
         return obs
 
     def init_belief(self, observation):
-        belief = np.zeros(shape=self.no_nodes)
-        if observation[0] == self.penalty_obs:
-            belief[self.no_signal_nodes+1:self.no_signal_nodes+1+self.no_penalty_nodes] = 1/self.no_penalty_nodes
-        elif observation[0] == self.iti_obs:
-            belief[self.no_signal_nodes+1+self.no_penalty_nodes:self.no_nodes] = 1/self.no_ITI_nodes
-        else:
-            belief[0] = norm.pdf(observation, loc=self.noise_obs_mean, scale=self.min_attention_std)
-            belief[1:self.no_signal_nodes+1] = norm.pdf(observation, loc=self.signal_obs_mean, scale=self.min_attention_std)
-            belief = belief/np.sum(belief)
+        belief = self._init_core_belief(observation)
         return np.concatenate([belief, [self.p1, self.p2]])
 
     def update_belief(self, previous_belief, action, observation):
-        previous_belief = previous_belief[:-2]
-        lick_choice, attention_choice = self.transform_action(action)
-        transition_matrix = self.find_transition_matrix()
-        new_belief = np.zeros(self.no_nodes)
-        obs = observation[0]
-
-        for state in range(self.no_nodes):
-            if obs not in [self.iti_obs, self.penalty_obs]:
-                if state == 0:
-                    obs_prob = norm.pdf(obs, loc=self.noise_obs_mean, scale=attention_choice)
-                elif state in range(1, self.no_signal_nodes + 1):
-                    obs_prob = norm.pdf(obs, loc=self.signal_obs_mean, scale=attention_choice)
-                else:
-                    obs_prob = 0
-            else:
-                if state in range(self.no_signal_nodes + 1, self.no_signal_nodes + self.no_penalty_nodes + 1) and obs == self.penalty_obs:
-                    obs_prob = 1
-                elif state in range(self.no_signal_nodes + self.no_penalty_nodes + 1, self.no_nodes) and obs == self.iti_obs:
-                    obs_prob = 1
-                else:
-                    obs_prob = 0
-            new_belief[state] = obs_prob * np.reshape(np.transpose(transition_matrix[:,state,int(lick_choice)]),(1,self.no_nodes)) @ previous_belief
-
-        if np.sum(new_belief) == 0:
-            raise ValueError("Mistake in belief update")
-        else:
-            new_belief = new_belief/np.sum(new_belief)
+        new_belief = self._update_core_belief(previous_belief[:-2], action, observation)
         return np.concatenate([new_belief, [self.p1, self.p2]])
 
 
@@ -625,50 +517,19 @@ class AuditoryForagingEnergy(AuditoryForaging):
         obs = self.observe_step(self.min_attention_std)
         return obs
 
+    def _belief_extras(self):
+        return [self._normalize_idx(self.food_reward_idx, len(self.food_reward_list)), self.previous_high_attention_count/self.energycap]
+
     def init_belief(self, observation):
-        belief = np.zeros(shape=self.no_nodes)
-        if observation[0] == self.penalty_obs:
-            belief[self.no_signal_nodes+1:self.no_signal_nodes+1+self.no_penalty_nodes] = 1/self.no_penalty_nodes
-        elif observation[0] == self.iti_obs:
-            belief[self.no_signal_nodes+1+self.no_penalty_nodes:self.no_nodes] = 1/self.no_ITI_nodes
-        else:
-            belief[0] = norm.pdf(observation, loc=self.noise_obs_mean, scale=self.min_attention_std)
-            belief[1:self.no_signal_nodes+1] = norm.pdf(observation, loc=self.signal_obs_mean, scale=self.min_attention_std)
-            belief = belief/np.sum(belief)
-        return np.concatenate([belief, [self.food_reward_idx/(len(self.food_reward_list)-1), self.previous_high_attention_count/self.energycap]])
+        belief = self._init_core_belief(observation)
+        return np.concatenate([belief, self._belief_extras()])
 
     def update_belief(self, previous_belief, action, observation):
-        previous_belief = previous_belief[:-1]
-        previous_belief = previous_belief[:-1]
-        lick_choice, attention_choice = self.transform_action(action)
+        _, attention_choice = self.transform_action(action)
         if attention_choice < self.min_attention_std:
             self.previous_high_attention_count += 1
-        transition_matrix = self.find_transition_matrix()
-        new_belief = np.zeros(self.no_nodes)
-        obs = observation[0]
-
-        for state in range(self.no_nodes):
-            if obs not in [self.iti_obs, self.penalty_obs]:
-                if state == 0:
-                    obs_prob = norm.pdf(obs, loc=self.noise_obs_mean, scale=attention_choice)
-                elif state in range(1, self.no_signal_nodes + 1):
-                    obs_prob = norm.pdf(obs, loc=self.signal_obs_mean, scale=attention_choice)
-                else:
-                    obs_prob = 0
-            else:
-                if state in range(self.no_signal_nodes + 1, self.no_signal_nodes + self.no_penalty_nodes + 1) and obs == self.penalty_obs:
-                    obs_prob = 1
-                elif state in range(self.no_signal_nodes + self.no_penalty_nodes + 1, self.no_nodes) and obs == self.iti_obs:
-                    obs_prob = 1
-                else:
-                    obs_prob = 0
-            new_belief[state] = obs_prob * np.reshape(np.transpose(transition_matrix[:,state,int(lick_choice)]),(1,self.no_nodes)) @ previous_belief
-
-        if np.sum(new_belief) == 0:
-            raise ValueError("Mistake in belief update")
-        else:
-            new_belief = new_belief/np.sum(new_belief)
-        return np.concatenate([new_belief, [self.food_reward_idx/(len(self.food_reward_list)-1), self.previous_high_attention_count/self.energycap]])
+        new_belief = self._update_core_belief(previous_belief[:-2], action, observation)
+        return np.concatenate([new_belief, self._belief_extras()])
 
     def find_reward(self, lick_choice, attention_choice):
         lick_cost_value = lick_choice * self.lick_cost
@@ -709,46 +570,12 @@ class AFVaryAttention(AuditoryForaging):
         return obs
 
     def init_belief(self, observation):
-        belief = np.zeros(shape=self.no_nodes)
-        if observation[0] == self.penalty_obs:
-            belief[self.no_signal_nodes+1:self.no_signal_nodes+1+self.no_penalty_nodes] = 1/self.no_penalty_nodes
-        elif observation[0] == self.iti_obs:
-            belief[self.no_signal_nodes+1+self.no_penalty_nodes:self.no_nodes] = 1/self.no_ITI_nodes
-        else:
-            belief[0] = norm.pdf(observation, loc=self.noise_obs_mean, scale=self.min_attention_std)
-            belief[1:self.no_signal_nodes+1] = norm.pdf(observation, loc=self.signal_obs_mean, scale=self.min_attention_std)
-            belief = belief/np.sum(belief)
-        return np.concatenate([belief, [self.att_idx/(len(self.att_cost_list)-1)]])
+        belief = self._init_core_belief(observation)
+        return np.concatenate([belief, [self._normalize_idx(self.att_idx, len(self.att_cost_list))]])
 
     def update_belief(self, previous_belief, action, observation):
-        previous_belief = previous_belief[:-1]
-        lick_choice, attention_choice = self.transform_action(action)
-        transition_matrix = self.find_transition_matrix()
-        new_belief = np.zeros(self.no_nodes)
-        obs = observation[0]
-
-        for state in range(self.no_nodes):
-            if obs not in [self.iti_obs, self.penalty_obs]:
-                if state == 0:
-                    obs_prob = norm.pdf(obs, loc=self.noise_obs_mean, scale=attention_choice)
-                elif state in range(1, self.no_signal_nodes + 1):
-                    obs_prob = norm.pdf(obs, loc=self.signal_obs_mean, scale=attention_choice)
-                else:
-                    obs_prob = 0
-            else:
-                if state in range(self.no_signal_nodes + 1, self.no_signal_nodes + self.no_penalty_nodes + 1) and obs == self.penalty_obs:
-                    obs_prob = 1
-                elif state in range(self.no_signal_nodes + self.no_penalty_nodes + 1, self.no_nodes) and obs == self.iti_obs:
-                    obs_prob = 1
-                else:
-                    obs_prob = 0
-            new_belief[state] = obs_prob * np.reshape(np.transpose(transition_matrix[:,state,int(lick_choice)]),(1,self.no_nodes)) @ previous_belief
-
-        if np.sum(new_belief) == 0:
-            raise ValueError("Mistake in belief update")
-        else:
-            new_belief = new_belief/np.sum(new_belief)
-        return np.concatenate([new_belief, [self.att_idx/(len(self.att_cost_list)-1)]])
+        new_belief = self._update_core_belief(previous_belief[:-1], action, observation)
+        return np.concatenate([new_belief, [self._normalize_idx(self.att_idx, len(self.att_cost_list))]])
 
     def find_reward(self, lick_choice, attention_choice):
         lick_cost_value = lick_choice * self.lick_cost
