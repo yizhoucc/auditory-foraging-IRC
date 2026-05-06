@@ -203,7 +203,7 @@ def run_one_episode(task, taskbelief, agent,
     except:
         get_queries = None
     task.reset()
-    p1p2 = task.obs_certainity_possible
+    p1p2 = getattr(task, 'obs_certainity_possible', None)
     belief, info = taskbelief.reset(task, return_info=True)
     states.append(info['state'])
     observations.append(info['observation'])
@@ -268,7 +268,7 @@ def run_one_episode_attcost(task, taskbelief, agent,
     except:
         get_queries = None
     task.reset()
-    p1p2 = task.obs_certainity_possible
+    p1p2 = getattr(task, 'obs_certainity_possible', None)
     belief, info = taskbelief.reset(task, return_info=True)
     states.append(info['state'])
     observations.append(info['observation'])
@@ -801,7 +801,7 @@ def assign_state_class(true_state, no_signal_nodes, no_penalty_nodes):
 
 
 def plot_AF_episode(episode, env, agent, nodes_from_zero = 20, time_steps_before_lick = 10):        
-    obs_certainity_possible = env.obs_certainity_possible
+    obs_certainity_possible = getattr(env, 'obs_certainity_possible', None)
     dict_action_possible = env.dict_action_possible #{key: (lick_choice,attention_choice)}
     no_attention_modes = env.no_attention_modes
 
@@ -1260,7 +1260,7 @@ def run_one_episode_cont(task, taskbelief, agent,
         get_queries = None
     task.reset(food_reward_idx=food_reward_idx)
 
-    p1p2 = task.obs_certainity_possible
+    p1p2 = getattr(task, 'obs_certainity_possible', None)
     belief, info = taskbelief.reset(task, return_info=True)
     states.append(info['state'])
     observations.append(info['observation'])
