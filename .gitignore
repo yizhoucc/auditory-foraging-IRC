@@ -5,7 +5,6 @@
 *.csv
 *.mat
 *.key
-*.zip
 *.egg-info/
 
 __pycache__/
@@ -19,7 +18,7 @@ ycstore.tar.gz
 wandb/
 runs/
 fig/
-ycstore/
+ycstore/vary reward sigmoid.ipynb
 
 privateconfig
 .env
